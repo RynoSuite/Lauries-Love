@@ -163,16 +163,16 @@ export function Messages() {
   }
 
   if (!isEnabled('messaging'))
-    return <p className="text-gray-500">Messaging is turned off.</p>;
+    return <p className="text-muted">Messaging is turned off.</p>;
 
   return (
     <div className="flex h-[70vh] gap-4">
-      <aside className="w-64 shrink-0 overflow-y-auto rounded-2xl border border-brand-100 bg-white">
-        <div className="flex items-center justify-between border-b p-3 font-semibold text-brand-700">
+      <aside className="w-64 shrink-0 overflow-y-auto rounded-2xl border border-line bg-surface">
+        <div className="flex items-center justify-between border-b p-3 font-semibold text-heading">
           <span>Messages</span>
           <button
             onClick={() => setComposing((v) => !v)}
-            className="rounded-full bg-brand-700 px-2 py-0.5 text-xs font-medium text-white"
+            className="rounded-full bg-magenta px-2 py-0.5 text-xs font-medium text-white"
           >
             {composing ? 'Cancel' : '+ New'}
           </button>
@@ -185,18 +185,18 @@ export function Messages() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search members…"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
             />
             <div className="mt-2 space-y-1">
               {search.trim().length >= 2 && hits.length === 0 && (
-                <p className="text-xs text-gray-400">No members found.</p>
+                <p className="text-xs text-faint">No members found.</p>
               )}
               {hits.map((h) => (
                 <button
                   key={h.id}
                   disabled={starting}
                   onClick={() => startWith(h.id)}
-                  className="block w-full rounded px-2 py-1 text-left text-sm hover:bg-brand-50 disabled:opacity-50"
+                  className="block w-full rounded px-2 py-1 text-left text-sm hover:bg-surface-2 disabled:opacity-50"
                 >
                   {h.display_name || h.first_name || 'Member'}
                 </button>
@@ -210,20 +210,20 @@ export function Messages() {
             key={c.id}
             onClick={() => setActive(c.id)}
             className={`block w-full border-b px-3 py-2 text-left text-sm ${
-              active === c.id ? 'bg-brand-50' : ''
+              active === c.id ? 'bg-surface-2' : ''
             }`}
           >
             <div className="font-medium">{convTitle(c, meId)}</div>
-            <div className="truncate text-xs text-gray-400">
+            <div className="truncate text-xs text-faint">
               {c.last_message_body ?? 'No messages yet'}
             </div>
           </button>
         ))}
       </aside>
 
-      <section className="flex flex-1 flex-col rounded-2xl border border-brand-100 bg-white">
+      <section className="flex flex-1 flex-col rounded-2xl border border-line bg-surface">
         {!active ? (
-          <div className="grid flex-1 place-items-center text-gray-400">
+          <div className="grid flex-1 place-items-center text-faint">
             Select a conversation or start a new one
           </div>
         ) : (
@@ -234,8 +234,8 @@ export function Messages() {
                   key={m.id}
                   className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
                     m.sender_id === meId
-                      ? 'ml-auto bg-brand-700 text-white'
-                      : 'bg-brand-50'
+                      ? 'ml-auto bg-magenta text-white'
+                      : 'bg-surface-2'
                   }`}
                 >
                   {m.body}
@@ -249,11 +249,11 @@ export function Messages() {
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && send()}
                 placeholder="Message…"
-                className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-brand-500"
+                className="flex-1 rounded-full border border-line px-4 py-2 text-sm outline-none focus:border-magenta"
               />
               <button
                 onClick={send}
-                className="rounded-full bg-brand-700 px-4 py-2 text-sm font-medium text-white"
+                className="rounded-full bg-magenta px-4 py-2 text-sm font-medium text-white"
               >
                 Send
               </button>

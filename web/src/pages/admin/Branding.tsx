@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentOrgId } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
+import { PageTitle } from '../../components/PageTitle';
 
 // Branding editor: app name, colors, logo. Writes branding_settings (owner-only
 // at the DB). Public read means these can theme the login screen and mobile.
@@ -81,8 +82,8 @@ export function AdminBranding() {
   });
 
   if (!isAdmin)
-    return <p className="text-gray-500">Owner access is required to edit branding.</p>;
-  if (isLoading) return <p className="text-brand-700">Loading…</p>;
+    return <p className="text-muted">Owner access is required to edit branding.</p>;
+  if (isLoading) return <p className="text-heading">Loading…</p>;
 
   const field = (
     label: string,
@@ -90,26 +91,26 @@ export function AdminBranding() {
     type: 'text' | 'color' = 'text',
   ) => (
     <label className="block text-sm">
-      <span className="mb-1 block text-gray-500">{label}</span>
+      <span className="mb-1 block text-muted">{label}</span>
       {type === 'color' ? (
         <div className="flex items-center gap-2">
           <input
             type="color"
             value={form[key]}
             onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            className="h-9 w-12 rounded border border-gray-300"
+            className="h-9 w-12 rounded border border-line"
           />
           <input
             value={form[key]}
             onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-            className="w-32 rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+            className="w-32 rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
           />
         </div>
       ) : (
         <input
           value={form[key]}
           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+          className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
         />
       )}
     </label>
@@ -117,8 +118,8 @@ export function AdminBranding() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Branding</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <PageTitle>Branding</PageTitle>
+      <p className="mb-6 text-sm text-muted">
         Name, colors, and logo. Applies across web and mobile.
       </p>
       <div className="space-y-4">
@@ -130,15 +131,15 @@ export function AdminBranding() {
         {field('Support email', 'support_email')}
       </div>
       {save.isError && (
-        <p className="mt-3 text-sm text-red-600">Couldn’t save — try again.</p>
+        <p className="mt-3 text-sm text-danger">Couldn’t save — try again.</p>
       )}
       {save.isSuccess && !save.isPending && (
-        <p className="mt-3 text-sm text-green-600">Saved.</p>
+        <p className="mt-3 text-sm text-success">Saved.</p>
       )}
       <button
         onClick={() => save.mutate(form)}
         disabled={save.isPending}
-        className="mt-4 rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+        className="mt-4 rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
       >
         {save.isPending ? 'Saving…' : 'Save branding'}
       </button>

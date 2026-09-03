@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
+import { PageTitle } from '../../components/PageTitle';
 
 // Member management: search, alphabetical sort, and (owners only) grant/revoke
 // staff roles by writing Jeremy's support_staff table (owner | agent).
@@ -75,20 +76,20 @@ export function AdminMembers() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Members</h1>
-      <p className="mb-4 text-sm text-gray-500">
+      <PageTitle>Members</PageTitle>
+      <p className="mb-4 text-sm text-muted">
         Search and manage members. {isAdmin ? 'You can grant staff roles.' : 'Owner access required to change roles.'}
       </p>
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name…"
-        className="mb-4 w-full max-w-sm rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+        className="mb-4 w-full max-w-sm rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
       />
-      {members.isLoading && <p className="text-brand-700">Loading…</p>}
+      {members.isLoading && <p className="text-heading">Loading…</p>}
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b text-left text-xs uppercase text-gray-400">
+          <tr className="border-b text-left text-xs tracking-wide text-faint">
             <th className="py-2">Member</th>
             <th>Joined</th>
             <th>Status</th>
@@ -103,21 +104,21 @@ export function AdminMembers() {
             return (
               <tr key={m.id} className="border-b last:border-0">
                 <td className="py-2 font-medium">{name}</td>
-                <td className="text-gray-500">
+                <td className="text-muted">
                   {new Date(m.created_at).toLocaleDateString()}
                 </td>
                 <td>
-                  <span className={m.active ? 'text-green-600' : 'text-gray-400'}>
+                  <span className={m.active ? 'text-success' : 'text-faint'}>
                     {m.active ? 'Active' : 'Inactive'}
                   </span>
                 </td>
                 <td>
                   {role ? (
-                    <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700">
+                    <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-semibold text-heading">
                       {role}
                     </span>
                   ) : (
-                    <span className="text-gray-400">member</span>
+                    <span className="text-faint">member</span>
                   )}
                 </td>
                 {isAdmin && (
@@ -130,7 +131,7 @@ export function AdminMembers() {
                           role: (e.target.value || null) as 'owner' | 'agent' | null,
                         })
                       }
-                      className="rounded border border-gray-300 px-2 py-1 text-xs"
+                      className="rounded border border-line px-2 py-1 text-xs"
                     >
                       <option value="">member</option>
                       <option value="agent">agent</option>

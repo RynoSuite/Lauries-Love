@@ -51,25 +51,25 @@ export function Donate() {
   }
 
   if (!isEnabled('donations'))
-    return <p className="text-gray-500">Donations are turned off.</p>;
+    return <p className="text-muted">Donations are turned off.</p>;
 
   return (
     <div className="mx-auto max-w-md">
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Support Laurie’s Love</h1>
-      <p className="mb-5 text-sm text-gray-500">
+      <h1 className="mb-1 text-xl font-bold text-heading">Support Laurie’s Love</h1>
+      <p className="mb-5 text-sm text-muted">
         Your gift keeps the community free for members.
       </p>
 
-      <div className="mb-4 flex rounded-full bg-brand-50 p-1 text-sm">
+      <div className="mb-4 flex rounded-full bg-surface-2 p-1 text-sm">
         <button
           onClick={() => setRecurring(false)}
-          className={`flex-1 rounded-full py-2 ${!recurring ? 'bg-brand-700 text-white' : 'text-brand-700'}`}
+          className={`flex-1 rounded-full py-2 ${!recurring ? 'bg-magenta text-white' : 'text-heading'}`}
         >
           One-time
         </button>
         <button
           onClick={() => setRecurring(true)}
-          className={`flex-1 rounded-full py-2 ${recurring ? 'bg-brand-700 text-white' : 'text-brand-700'}`}
+          className={`flex-1 rounded-full py-2 ${recurring ? 'bg-magenta text-white' : 'text-heading'}`}
         >
           Monthly
         </button>
@@ -81,7 +81,7 @@ export function Donate() {
             key={p}
             onClick={() => setAmount(p)}
             className={`rounded-lg border py-2 font-semibold ${
-              amount === p ? 'border-brand-500 bg-brand-50 text-brand-700' : 'border-gray-200'
+              amount === p ? 'border-magenta bg-surface-2 text-heading' : 'border-line'
             }`}
           >
             ${p}
@@ -93,17 +93,17 @@ export function Donate() {
         min={1}
         value={amount}
         onChange={(e) => setAmount(Math.max(1, Number(e.target.value) || 0))}
-        className="mb-3 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+        className="mb-3 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
       />
 
-      <div className="mb-4 rounded-lg bg-brand-50 p-3 text-sm text-brand-700">
+      <div className="mb-4 rounded-lg bg-surface-2 p-3 text-sm text-heading">
         {coverage(amount)}
       </div>
 
       <button
         onClick={donate}
         disabled={loading}
-        className="w-full rounded-lg bg-brand-700 py-3 font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+        className="w-full rounded-lg bg-magenta py-3 font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
       >
         {loading
           ? 'Redirecting…'
@@ -111,7 +111,7 @@ export function Donate() {
             ? `Give $${amount}/month`
             : `Give $${amount}`}
       </button>
-      {status && <p className="mt-3 text-center text-sm text-amber-700">{status}</p>}
+      {status && <p className="mt-3 text-center text-sm text-warn">{status}</p>}
     </div>
   );
 }

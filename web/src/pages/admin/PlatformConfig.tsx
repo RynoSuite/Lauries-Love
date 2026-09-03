@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentOrgId } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
+import { PageTitle } from '../../components/PageTitle';
 
 // General platform config as JSON key/value pairs (org_settings). Owner-gated.
 // Used for things like the sponsorship tiers the member app reads.
@@ -68,7 +69,7 @@ export function AdminPlatformConfig() {
 
   if (!isAdmin)
     return (
-      <p className="text-gray-500">Owner access is required to edit platform config.</p>
+      <p className="text-muted">Owner access is required to edit platform config.</p>
     );
 
   // Merge server rows with any draft-only (new) keys.
@@ -84,8 +85,8 @@ export function AdminPlatformConfig() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Platform Config</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <PageTitle>Platform config</PageTitle>
+      <p className="mb-6 text-sm text-muted">
         Key/value settings stored as JSON. Read by the apps at runtime.
       </p>
 
@@ -94,23 +95,23 @@ export function AdminPlatformConfig() {
           value={newKey}
           onChange={(e) => setNewKey(e.target.value)}
           placeholder="new_setting_key"
-          className="w-64 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+          className="w-64 rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
         />
         <button
           onClick={addKey}
-          className="rounded-lg border border-brand-500 px-4 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50"
+          className="rounded-lg border border-magenta px-4 py-2 text-sm font-semibold text-heading hover:bg-surface-2"
         >
           Add key
         </button>
       </div>
 
-      {jsonError && <p className="mb-3 text-sm text-red-600">{jsonError}</p>}
-      {isLoading && <p className="text-brand-700">Loading…</p>}
+      {jsonError && <p className="mb-3 text-sm text-danger">{jsonError}</p>}
+      {isLoading && <p className="text-heading">Loading…</p>}
 
       <div className="space-y-4">
         {rows.map((row) => (
-          <div key={row.key} className="rounded-2xl border border-brand-100 bg-white p-4">
-            <div className="mb-2 font-mono text-sm font-semibold text-brand-700">
+          <div key={row.key} className="rounded-2xl border border-line bg-surface p-4">
+            <div className="mb-2 font-mono text-sm font-semibold text-heading">
               {row.key}
             </div>
             <textarea
@@ -120,13 +121,13 @@ export function AdminPlatformConfig() {
               }
               rows={6}
               spellCheck={false}
-              className="w-full rounded-lg border border-gray-200 p-3 font-mono text-xs outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line p-3 font-mono text-xs outline-none focus:border-magenta"
             />
             <div className="mt-2 flex justify-end">
               <button
                 onClick={() => save.mutate({ key: row.key, valueText: row.valueText })}
                 disabled={save.isPending}
-                className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+                className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
               >
                 Save
               </button>
@@ -134,7 +135,7 @@ export function AdminPlatformConfig() {
           </div>
         ))}
         {!isLoading && rows.length === 0 && (
-          <p className="text-gray-500">No settings yet. Add a key to get started.</p>
+          <p className="text-muted">No settings yet. Add a key to get started.</p>
         )}
       </div>
     </div>

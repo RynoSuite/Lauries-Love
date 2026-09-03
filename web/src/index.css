@@ -2,19 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Laurie's Love — "Plume, refined" (Skyway Media, Aug 2026)
+   Brand guide: https://branding.skyway.media/ll/
+
+   Deepwater leads and owns the surfaces. Lagoon is the only interface colour.
+   Magenta is the equity colour — ONE vivid stroke per view, never two.
+   Gilt is a metal, not a fill: it appears as a hairline, once per view.
+   Type is Fraunces (titles) + Figtree (subheads bold, body regular),
+   sentence case throughout — no uppercase anywhere in the system.
+   ────────────────────────────────────────────────────────────────────────── */
+
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+
+  /* Runtime-overridable by branding_settings via BrandingProvider. */
   --brand-primary: #0f474c; /* Deepwater */
   --brand-secondary: #1789a8; /* Lagoon */
+
   --gilt: #c6a45e; /* warm metal — line only */
+  --ground: #051a1d; /* Ink — the deck's own ground */
+  --surface: #0a2a2d; /* cards, lifted off the ground */
+  --line: rgb(255 255 255 / 0.08); /* faint white hairlines */
 }
+
 body {
   margin: 0;
   font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, Helvetica, Arial, sans-serif;
-  background: #eaf2f2; /* Sea Mist */
-  color: #0f474c; /* Deepwater ink */
+  background: var(--ground);
+  color: #d3e3e4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
 h1,
 h2,
 h3,
@@ -23,8 +44,12 @@ h5 {
   font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: #eaf2f2; /* Sea Mist */
 }
-/* Gilt hairline — gold appears as a LINE, never a fill. One moment per view. */
+
+/* Gilt hairline — gold appears as a LINE, never a fill. One moment per view.
+   Drawn as a gradient so it catches light the way real gilding does; it
+   flattens to a single warm #C6A45E anywhere a gradient cannot go. */
 .gilt-rule {
   height: 1px;
   border: 0;
@@ -42,3 +67,103 @@ h5 {
 .gilt-line {
   border-color: #c6a45e;
 }
+
+/* Placeholders sit at the 'faint' step so inputs read as empty, not filled. */
+::placeholder {
+  color: #6e8b8f;
+  opacity: 1;
+}
+
+::selection {
+  background: #911766; /* Magenta */
+  color: #eaf2f2;
+}
+
+/* Keyboard focus is Lagoon — the interface colour — never magenta or gold. */
+:focus-visible {
+  outline: 2px solid #f45faf;
+  outline-offset: 2px;
+}
+
+/* Dark scrollbars, so the chrome doesn't punch a light hole in the page. */
+* {
+  scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+  scrollbar-width: thin;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+
+/* Leaflet renders a white tile pane by default — keep the map on the ground
+   colour so it doesn't flash white while tiles load. */
+.leaflet-container {
+  background: #0a2a2d;
+}
+
+/* Leaflet ships its own light chrome — tooltips, popups and attribution are
+   hardcoded white, which punches a bright hole in the dark map page. Bring
+   them onto the surface colours. */
+.leaflet-tooltip,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #0a2a2d;
+  border-color: rgb(255 255 255 / 0.10);
+  color: #d3e3e4;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+.leaflet-tooltip::before {
+  border-top-color: rgb(255 255 255 / 0.10);
+  border-bottom-color: rgb(255 255 255 / 0.10);
+}
+.leaflet-control-attribution {
+  background: rgb(10 42 45 / 0.85) !important;
+  color: #6e8b8f;
+}
+.leaflet-control-attribution a {
+  color: #f45faf;
+}
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background: #0a2a2d;
+  color: #eaf2f2;
+  border-bottom-color: rgb(255 255 255 / 0.10);
+}
+
+/* Form controls had no background of their own — on the light theme they
+   inherited the browser's white. Under color-scheme:dark that default turns a
+   washed grey that belongs to no palette, so every input read as broken.
+   Declared in @layer base so the handful of fields with an explicit bg-*
+   utility still override it. Checkboxes and radios keep their native
+   rendering, which color-scheme already themes correctly. */
+@layer base {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  textarea,
+  select {
+    background-color: #0e383c; /* surface-2 */
+    color: #eaf2f2; /* Sea Mist */
+    border-color: rgb(255 255 255 / 0.10);
+  }
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    color: #6e8b8f;
+    opacity: 1;
+  }
+  /* The native picker glyphs ship as dark SVGs; invert so they stay visible. */
+  input[type='date']::-webkit-calendar-picker-indicator,
+  input[type='time']::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.6);
+  }
+}
+

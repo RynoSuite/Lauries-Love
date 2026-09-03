@@ -68,7 +68,7 @@ export function Sponsorships() {
   const config = data ?? DEFAULT_CONFIG;
 
   if (!isEnabled('sponsorships'))
-    return <p className="text-gray-500">Sponsorships are turned off.</p>;
+    return <p className="text-muted">Sponsorships are turned off.</p>;
 
   const mailto = (tier: Tier) =>
     `mailto:${config.contact_email}?subject=${encodeURIComponent(
@@ -80,8 +80,8 @@ export function Sponsorships() {
   return (
     <div>
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-brand-700">Become a Sponsor</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-heading">Become a Sponsor</h1>
+        <p className="mt-1 text-sm text-muted">
           Partner with Laurie’s Love to support cancer patients and their families.
         </p>
       </div>
@@ -91,20 +91,20 @@ export function Sponsorships() {
             key={t.name}
             className={`rounded-2xl border p-5 ${
               t.featured
-                ? 'border-brand-500 bg-brand-50 shadow-md'
-                : 'border-brand-100 bg-white'
+                ? 'border-magenta bg-surface-2 shadow-md'
+                : 'border-line bg-surface'
             }`}
           >
-            <div className="text-lg font-bold text-brand-700">{t.name}</div>
-            <div className="mb-3 text-sm text-brand-500">{t.price}</div>
-            <ul className="space-y-1 text-sm text-gray-600">
+            <div className="text-lg font-bold text-heading">{t.name}</div>
+            <div className="mb-3 text-sm text-magenta-text">{t.price}</div>
+            <ul className="space-y-1 text-sm text-muted">
               {t.perks.map((p) => (
                 <li key={p}>• {p}</li>
               ))}
             </ul>
             <a
               href={mailto(t)}
-              className="mt-4 block w-full rounded-lg bg-brand-700 py-2 text-center text-sm font-semibold text-white hover:bg-brand-500"
+              className="mt-4 block w-full rounded-lg bg-magenta py-2 text-center text-sm font-semibold text-white hover:bg-magenta-hi"
             >
               Become a {t.name.split(' ')[1] ?? 'Sponsor'}
             </a>

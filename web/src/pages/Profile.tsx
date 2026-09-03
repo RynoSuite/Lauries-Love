@@ -205,7 +205,7 @@ export function Profile() {
   });
 
   const inputClass =
-    'w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500';
+    'w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta';
 
   function renderFieldInput(field: CustomField) {
     const val = fieldValues[field.id] ?? '';
@@ -260,7 +260,7 @@ export function Profile() {
               checked={val === 'true'}
               onChange={(e) => setFieldValue(field.id, e.target.checked ? 'true' : 'false')}
             />
-            <span className="text-gray-600">Yes</span>
+            <span className="text-muted">Yes</span>
           </label>
         );
       default:
@@ -274,8 +274,8 @@ export function Profile() {
     }
   }
 
-  if (isLoading) return <p className="text-brand-700">Loading…</p>;
-  if (!data) return <p className="text-gray-500">Not signed in.</p>;
+  if (isLoading) return <p className="text-heading">Loading…</p>;
+  if (!data) return <p className="text-muted">Not signed in.</p>;
 
   const name = data.display_name || data.first_name || 'Member';
   const img = avatarUrl(data.avatar_path);
@@ -284,51 +284,51 @@ export function Profile() {
   if (editing) {
     return (
       <div className="mx-auto max-w-md">
-        <div className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
-          <h1 className="mb-4 text-xl font-bold text-brand-700">Edit profile</h1>
+        <div className="rounded-2xl border border-line bg-surface p-6 shadow-sm">
+          <h1 className="mb-4 text-xl font-bold text-heading">Edit profile</h1>
           <label className="mb-3 block text-sm">
-            <span className="mb-1 block text-gray-500">Display name</span>
+            <span className="mb-1 block text-muted">Display name</span>
             <input
               value={form.display_name}
               onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="mb-3 block text-sm">
-            <span className="mb-1 block text-gray-500">Bio</span>
+            <span className="mb-1 block text-muted">Bio</span>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full resize-none rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="mb-3 block text-sm">
-            <span className="mb-1 block text-gray-500">Email</span>
+            <span className="mb-1 block text-muted">Email</span>
             <input
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="mb-4 block text-sm">
-            <span className="mb-1 block text-gray-500">Phone</span>
+            <span className="mb-1 block text-muted">Phone</span>
             <input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
 
           {(fields ?? []).length > 0 && (
             <div className="mb-4 border-t pt-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <div className="mb-2 text-xs font-semibold tracking-wide text-faint">
                 More about you
               </div>
               {(fields ?? []).map((field) => (
                 <label key={field.id} className="mb-3 block text-sm">
-                  <span className="mb-1 block text-gray-500">{field.label}</span>
+                  <span className="mb-1 block text-muted">{field.label}</span>
                   {renderFieldInput(field)}
                 </label>
               ))}
@@ -336,19 +336,19 @@ export function Profile() {
           )}
 
           {save.isError && (
-            <p className="mb-3 text-sm text-red-600">Couldn’t save — try again.</p>
+            <p className="mb-3 text-sm text-danger">Couldn’t save — try again.</p>
           )}
           <div className="flex gap-2">
             <button
               onClick={() => save.mutate({ form, values: fieldValues })}
               disabled={save.isPending}
-              className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+              className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
             >
               {save.isPending ? 'Saving…' : 'Save'}
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:underline"
+              className="rounded-lg px-4 py-2 text-sm text-muted hover:underline"
             >
               Cancel
             </button>
@@ -360,44 +360,44 @@ export function Profile() {
 
   return (
     <div className="mx-auto max-w-md">
-      <div className="rounded-2xl border border-brand-100 bg-white p-6 text-center shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-6 text-center shadow-sm">
         {img ? (
           <img src={img} alt="" className="mx-auto mb-3 h-24 w-24 rounded-full object-cover" />
         ) : (
-          <div className="mx-auto mb-3 grid h-24 w-24 place-items-center rounded-full bg-brand-100 text-3xl font-bold text-brand-700">
+          <div className="mx-auto mb-3 grid h-24 w-24 place-items-center rounded-full bg-magenta text-3xl font-bold text-white">
             {name[0]}
           </div>
         )}
-        <h1 className="text-xl font-bold text-brand-700">{name}</h1>
-        {place && <p className="text-sm text-gray-500">{place}</p>}
+        <h1 className="text-xl font-bold text-heading">{name}</h1>
+        {place && <p className="text-sm text-muted">{place}</p>}
         {data.description && (
-          <p className="mt-2 text-sm text-gray-600">{data.description}</p>
+          <p className="mt-2 text-sm text-muted">{data.description}</p>
         )}
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-faint">
           Joined {data.created_at ? new Date(data.created_at).toLocaleDateString() : ''}
         </p>
 
         <div className="mt-4 flex justify-center gap-8">
           <div>
-            <div className="text-lg font-bold text-brand-500">{data.postCount}</div>
-            <div className="text-xs text-gray-400">Posts</div>
+            <div className="text-lg font-bold text-magenta-text">{data.postCount}</div>
+            <div className="text-xs text-faint">Posts</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-brand-500">{data.friendCount}</div>
-            <div className="text-xs text-gray-400">Friends</div>
+            <div className="text-lg font-bold text-magenta-text">{data.friendCount}</div>
+            <div className="text-xs text-faint">Friends</div>
           </div>
         </div>
 
         <div className="mt-6 space-y-1 border-t pt-4 text-left text-sm">
           {data.email && (
             <div>
-              <span className="text-gray-400">Email: </span>
+              <span className="text-faint">Email: </span>
               {data.email}
             </div>
           )}
           {data.phone && (
             <div>
-              <span className="text-gray-400">Phone: </span>
+              <span className="text-faint">Phone: </span>
               {data.phone}
             </div>
           )}
@@ -407,7 +407,7 @@ export function Profile() {
               return null;
             return (
               <div key={field.id}>
-                <span className="text-gray-400">{field.label}: </span>
+                <span className="text-faint">{field.label}: </span>
                 {formatFieldValue(field, v)}
               </div>
             );
@@ -416,7 +416,7 @@ export function Profile() {
 
         <button
           onClick={() => setEditing(true)}
-          className="mt-6 w-full rounded-lg bg-brand-700 py-2 text-sm font-semibold text-white hover:bg-brand-500"
+          className="mt-6 w-full rounded-lg bg-magenta py-2 text-sm font-semibold text-white hover:bg-magenta-hi"
         >
           Edit profile
         </button>

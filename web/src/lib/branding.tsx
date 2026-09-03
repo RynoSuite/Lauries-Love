@@ -64,7 +64,12 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
           tagline: row.tagline?.trim() || DEFAULT_BRANDING.tagline,
           primaryColor: row.primary_color?.trim() || DEFAULT_BRANDING.primaryColor,
           secondaryColor: row.secondary_color?.trim() || DEFAULT_BRANDING.secondaryColor,
-          logoUrl: row.logo_url?.trim() || null,
+          // Fall back to the bundled mark, not null. An org row exists long
+          // before anyone uploads a logo (logo_url is null on staging today),
+          // and `|| null` made DEFAULT_BRANDING.logoUrl unreachable — the
+          // header silently dropped to the placeholder icon instead of the
+          // real gold L♥L mark shipped in /public.
+          logoUrl: row.logo_url?.trim() || DEFAULT_BRANDING.logoUrl,
           supportEmail: row.support_email?.trim() || null,
         });
       });

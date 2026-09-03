@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentOrgId } from '../../lib/supabase';
+import { PageTitle } from '../../components/PageTitle';
 
 // Feature-toggle admin UI. Explicitly enumerates the 9 SOW platform modules so
 // the console always shows the full set (and can turn each on/off) regardless of
@@ -60,22 +61,22 @@ export function AdminFeatures() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Feature Toggles</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <PageTitle>Feature toggles</PageTitle>
+      <p className="mb-6 text-sm text-muted">
         Turn platform modules on or off. Changes apply across mobile and web.
       </p>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-800">
+        <div className="mb-4 rounded-lg bg-surface-2 p-4 text-sm text-warn">
           Couldn’t read <code>platform_features</code>. Toggles below still write
           (they upsert), but the current state may be stale until the table is
           reachable.
         </div>
       )}
 
-      {isLoading && <p className="text-brand-700">Loading…</p>}
+      {isLoading && <p className="text-heading">Loading…</p>}
 
-      <ul className="divide-y divide-brand-100">
+      <ul className="divide-y divide-line">
         {MODULES.map((m) => {
           // Default ON when a row is absent (matches the app's fail-open flag).
           const enabled = enabledMap[m.key] ?? true;
@@ -83,18 +84,18 @@ export function AdminFeatures() {
             <li key={m.key} className="flex items-center justify-between py-3">
               <div>
                 <div className="font-medium">{m.label}</div>
-                <div className="text-xs text-gray-400">{m.key}</div>
+                <div className="text-xs text-faint">{m.key}</div>
               </div>
               <button
                 onClick={() => toggle.mutate({ key: m.key, label: m.label, enabled })}
                 disabled={toggle.isPending}
                 className={`relative h-6 w-11 rounded-full transition ${
-                  enabled ? 'bg-brand-500' : 'bg-gray-300'
+                  enabled ? 'bg-magenta' : 'bg-surface-2'
                 }`}
                 aria-pressed={enabled}
               >
                 <span
-                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition ${
+                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface transition ${
                     enabled ? 'left-[22px]' : 'left-0.5'
                   }`}
                 />

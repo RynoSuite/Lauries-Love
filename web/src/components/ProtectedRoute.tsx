@@ -15,7 +15,7 @@ export function ProtectedRoute({
   if (!session) return <Navigate to="/login" replace />;
   if (requireStaff && !isStaff)
     return (
-      <div className="grid min-h-screen place-items-center text-brand-700">
+      <div className="grid min-h-screen place-items-center text-heading">
         You don’t have access to the admin console.
       </div>
     );

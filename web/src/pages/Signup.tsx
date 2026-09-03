@@ -38,16 +38,16 @@ export function Signup() {
 
   if (sentConfirmation) {
     return (
-      <div className="grid min-h-screen place-items-center bg-brand-50 px-4">
-        <div className="w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow-lg">
-          <h1 className="mb-2 text-xl font-bold text-brand-700">Check your email</h1>
-          <p className="text-sm text-gray-600">
+      <div className="grid min-h-screen place-items-center bg-ground px-4">
+        <div className="w-full max-w-sm rounded-2xl bg-surface p-8 text-center shadow-lg">
+          <h1 className="mb-2 text-xl font-bold text-heading">Check your email</h1>
+          <p className="text-sm text-muted">
             We sent a confirmation link to <strong>{email}</strong>. Confirm it, then
             sign in.
           </p>
           <Link
             to="/login"
-            className="mt-6 inline-block rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500"
+            className="mt-6 inline-block rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi"
           >
             Go to sign in
           </Link>
@@ -57,17 +57,17 @@ export function Signup() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-brand-50 px-4">
-      <form onSubmit={onSubmit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-lg">
-        <h1 className="mb-1 text-2xl font-bold text-brand-700">Laurie’s Love</h1>
-        <p className="mb-6 text-sm text-gray-500">Create your community account.</p>
+    <div className="grid min-h-screen place-items-center bg-ground px-4">
+      <form onSubmit={onSubmit} className="w-full max-w-sm rounded-2xl bg-surface p-8 shadow-lg">
+        <h1 className="mb-1 text-2xl font-bold text-heading">Laurie’s Love</h1>
+        <p className="mb-6 text-sm text-muted">Create your community account.</p>
 
         <label className="mb-1 block text-sm font-medium">Name</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+          className="mb-4 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
         />
         <label className="mb-1 block text-sm font-medium">Email</label>
         <input
@@ -75,7 +75,7 @@ export function Signup() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+          className="mb-4 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
         />
         <label className="mb-1 block text-sm font-medium">Password</label>
         <input
@@ -84,18 +84,18 @@ export function Signup() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          className="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+          className="mb-4 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
         />
-        {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+        {error && <p className="mb-3 text-sm text-danger">{error}</p>}
         <button
           disabled={busy}
-          className="w-full rounded-lg bg-brand-700 py-2 font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
+          className="w-full rounded-lg bg-magenta py-2 font-semibold text-white hover:bg-magenta-hi disabled:opacity-60"
         >
           {busy ? 'Creating account…' : 'Create account'}
         </button>
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-4 text-center text-sm text-muted">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-brand-700 hover:underline">
+          <Link to="/login" className="font-medium text-heading hover:underline">
             Sign in
           </Link>
         </p>

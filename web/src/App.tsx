@@ -30,7 +30,7 @@ export default function App() {
   const { loading } = useAuth();
   if (loading)
     return (
-      <div className="grid min-h-screen place-items-center text-brand-700">
+      <div className="grid min-h-screen place-items-center text-heading">
         Loading…
       </div>
     );

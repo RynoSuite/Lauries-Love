@@ -139,8 +139,8 @@ export function UserProfile() {
     else qc.invalidateQueries({ queryKey: ['friendship', id] });
   }
 
-  if (isLoading) return <p className="text-brand-700">Loading…</p>;
-  if (!data) return <p className="text-gray-500">Member not found.</p>;
+  if (isLoading) return <p className="text-heading">Loading…</p>;
+  if (!data) return <p className="text-muted">Member not found.</p>;
 
   const name = data.display_name || data.first_name || 'Member';
   const img = avatarUrl(data.avatar_path);
@@ -159,29 +159,29 @@ export function UserProfile() {
 
   return (
     <div className="mx-auto max-w-md">
-      <div className="rounded-2xl border border-brand-100 bg-white p-6 text-center shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-6 text-center shadow-sm">
         {img ? (
           <img src={img} alt="" className="mx-auto mb-3 h-24 w-24 rounded-full object-cover" />
         ) : (
-          <div className="mx-auto mb-3 grid h-24 w-24 place-items-center rounded-full bg-brand-100 text-3xl font-bold text-brand-700">
+          <div className="mx-auto mb-3 grid h-24 w-24 place-items-center rounded-full bg-magenta text-3xl font-bold text-white">
             {name[0]}
           </div>
         )}
-        <h1 className="text-xl font-bold text-brand-700">{name}</h1>
-        {place && <p className="text-sm text-gray-500">{place}</p>}
-        {data.description && <p className="mt-2 text-sm text-gray-600">{data.description}</p>}
-        <p className="mt-1 text-xs text-gray-400">
+        <h1 className="text-xl font-bold text-heading">{name}</h1>
+        {place && <p className="text-sm text-muted">{place}</p>}
+        {data.description && <p className="mt-2 text-sm text-muted">{data.description}</p>}
+        <p className="mt-1 text-xs text-faint">
           Joined {data.created_at ? new Date(data.created_at).toLocaleDateString() : ''}
         </p>
 
         <div className="mt-4 flex justify-center gap-8">
           <div>
-            <div className="text-lg font-bold text-brand-500">{data.postCount}</div>
-            <div className="text-xs text-gray-400">Posts</div>
+            <div className="text-lg font-bold text-magenta-text">{data.postCount}</div>
+            <div className="text-xs text-faint">Posts</div>
           </div>
           <div>
-            <div className="text-lg font-bold text-brand-500">{data.friendCount}</div>
-            <div className="text-xs text-gray-400">Friends</div>
+            <div className="text-lg font-bold text-magenta-text">{data.friendCount}</div>
+            <div className="text-xs text-faint">Friends</div>
           </div>
         </div>
 
@@ -190,7 +190,7 @@ export function UserProfile() {
             <button
               onClick={message}
               disabled={busy}
-              className="flex-1 rounded-lg bg-brand-700 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+              className="flex-1 rounded-lg bg-magenta py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
             >
               Message
             </button>
@@ -198,14 +198,14 @@ export function UserProfile() {
               <button
                 onClick={friendBtn.onClick}
                 disabled={busy || friendBtn.disabled}
-                className="flex-1 rounded-lg border border-brand-300 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50 disabled:opacity-60"
+                className="flex-1 rounded-lg border border-line py-2 text-sm font-semibold text-heading hover:bg-surface-2 disabled:opacity-60"
               >
                 {friendBtn.label}
               </button>
             )}
           </div>
         )}
-        {err && <p className="mt-3 text-sm text-red-600">{err}</p>}
+        {err && <p className="mt-3 text-sm text-danger">{err}</p>}
       </div>
     </div>
   );

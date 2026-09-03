@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
+import { PageTitle } from '../../components/PageTitle';
 
 // Live counts straight from Postgres. Retention / DAU / MAU / session duration
 // come from PostHog once its key is wired (SOW analytics) — those land as a
@@ -18,9 +19,9 @@ async function fetchCounts() {
 
 function Card({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-xl border border-brand-100 bg-brand-50 p-4">
-      <div className="text-2xl font-bold text-brand-500">{value}</div>
-      <div className="mt-1 text-xs uppercase tracking-wide text-gray-500">
+    <div className="rounded-xl border border-line bg-surface-2 p-4">
+      <div className="text-2xl font-bold text-magenta-text">{value}</div>
+      <div className="mt-1 text-xs tracking-wide text-muted">
         {label}
       </div>
     </div>
@@ -31,8 +32,8 @@ export function AdminDashboard() {
   const { data } = useQuery({ queryKey: ['admin-counts'], queryFn: fetchCounts });
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Dashboard</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <PageTitle>Dashboard</PageTitle>
+      <p className="mb-6 text-sm text-muted">
         Platform overview. Retention & active-user metrics arrive with the
         PostHog integration.
       </p>

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
+import { PageTitle } from '../components/PageTitle';
+import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
 
 type FeedPost = {
   id: string;
@@ -157,39 +159,39 @@ export function Feed() {
   });
 
   if (!isEnabled('community_wall'))
-    return <p className="text-gray-500">The community wall is turned off.</p>;
+    return <p className="text-muted">The community wall is turned off.</p>;
 
   const posts = data?.posts ?? [];
   const likedIds = data?.likedIds ?? new Set<string>();
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold text-brand-700">Community</h1>
+      <PageTitle>Community</PageTitle>
 
       {/* Composer */}
-      <div className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder="Share something with the community…"
           rows={3}
-          className="w-full resize-none rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+          className="w-full resize-none rounded-lg border border-line p-3 text-sm outline-none focus:border-magenta"
         />
         <div className="mt-2 flex justify-end">
           <button
             onClick={() => createPost.mutate(body)}
             disabled={!body.trim() || createPost.isPending}
-            className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+            className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
           >
             {createPost.isPending ? 'Posting…' : 'Post'}
           </button>
         </div>
       </div>
 
-      {isLoading && <p className="text-brand-700">Loading the feed…</p>}
-      {error && <p className="text-red-600">Couldn’t load the feed.</p>}
+      {isLoading && <p className="text-heading">Loading the feed…</p>}
+      {error && <p className="text-danger">Couldn’t load the feed.</p>}
       {!isLoading && !error && posts.length === 0 && (
-        <p className="text-gray-500">It’s quiet here — be the first to post.</p>
+        <p className="text-muted">It’s quiet here — be the first to post.</p>
       )}
 
       {posts.map((p) => {
@@ -199,7 +201,7 @@ export function Feed() {
         return (
           <article
             key={p.id}
-            className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm"
+            className="rounded-2xl border border-line bg-surface p-4 shadow-sm"
           >
             <header className="mb-2 flex items-center gap-3">
               {img ? (
@@ -209,7 +211,7 @@ export function Feed() {
                   className="h-9 w-9 rounded-full object-cover"
                 />
               ) : (
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
+                <div className="grid h-9 w-9 place-items-center rounded-full bg-magenta text-sm font-semibold text-white">
                   {name[0]}
                 </div>
               )}
@@ -217,14 +219,14 @@ export function Feed() {
                 {p.author?.id ? (
                   <Link
                     to={`/users/${p.author.id}`}
-                    className="text-sm font-semibold hover:text-brand-700 hover:underline"
+                    className="text-sm font-semibold hover:text-magenta-text hover:underline"
                   >
                     {name}
                   </Link>
                 ) : (
                   <div className="text-sm font-semibold">{name}</div>
                 )}
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-faint">
                   {new Date(p.created_at).toLocaleDateString()}
                   {p.visibility === 'group' && ' · group'}
                 </div>
@@ -233,30 +235,36 @@ export function Feed() {
             <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
               {p.body}
             </p>
-            <footer className="mt-3 flex gap-4 text-sm text-gray-500">
+            <footer className="mt-3 flex gap-4 text-sm text-muted">
               <button
                 onClick={() => toggleLike.mutate({ id: p.id, liked })}
                 disabled={toggleLike.isPending}
-                className={`flex items-center gap-1 ${
-                  liked ? 'font-semibold text-brand-700' : 'hover:text-brand-700'
+                className={`flex items-center gap-1.5 transition-colors ${
+                  liked ? 'font-semibold text-magenta' : 'hover:text-magenta-text'
                 }`}
               >
-                {liked ? '♥' : '♡'} {p.like_count}
+                {liked ? (
+                  <IconHeartFilled className="h-[17px] w-[17px]" />
+                ) : (
+                  <IconHeart className="h-[17px] w-[17px]" />
+                )}
+                {p.like_count}
               </button>
               <button
                 onClick={() =>
                   setCommentFor((cur) => (cur === p.id ? null : p.id))
                 }
-                className="hover:text-brand-700"
+                className="flex items-center gap-1.5 transition-colors hover:text-magenta-text"
               >
-                💬 {p.comments?.[0]?.count ?? 0}
+                <IconComment className="h-[17px] w-[17px]" />
+                {p.comments?.[0]?.count ?? 0}
               </button>
               {reportedIds.has(p.id) ? (
-                <span className="ml-auto text-xs text-gray-400">Reported ✓</span>
+                <span className="ml-auto text-xs text-faint">Reported ✓</span>
               ) : (
                 <button
                   onClick={() => setReportFor((cur) => (cur === p.id ? null : p.id))}
-                  className="ml-auto text-xs text-gray-400 hover:text-red-600"
+                  className="ml-auto text-xs text-faint hover:text-danger"
                 >
                   Report
                 </button>
@@ -269,14 +277,14 @@ export function Feed() {
                   value={commentBody}
                   onChange={(e) => setCommentBody(e.target.value)}
                   placeholder="Write a comment…"
-                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand-500"
+                  className="flex-1 rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
                 />
                 <button
                   onClick={() =>
                     addComment.mutate({ postId: p.id, text: commentBody })
                   }
                   disabled={!commentBody.trim() || addComment.isPending}
-                  className="rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+                  className="rounded-lg bg-magenta px-3 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
                 >
                   Send
                 </button>
@@ -289,12 +297,12 @@ export function Feed() {
                   value={reportReason}
                   onChange={(e) => setReportReason(e.target.value)}
                   placeholder="Reason (optional)…"
-                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-red-400"
+                  className="flex-1 rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-danger"
                 />
                 <button
                   onClick={() => report.mutate({ postId: p.id, reason: reportReason })}
                   disabled={report.isPending}
-                  className="rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-500 disabled:opacity-50"
+                  className="rounded-lg bg-danger px-3 py-2 text-sm font-semibold text-white hover:bg-danger-hi disabled:opacity-50"
                 >
                   {report.isPending ? 'Reporting…' : 'Report'}
                 </button>

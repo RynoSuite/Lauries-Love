@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
+import { PageTitle } from '../../components/PageTitle';
 
 // Admin group management. Reads/writes the shared groups table. Writes are
 // owner-gated at the DB (groups_owner_* policies) and in the UI.
@@ -112,20 +113,20 @@ export function AdminGroups() {
 
   if (!isAdmin)
     return (
-      <p className="text-gray-500">Owner access is required to manage groups.</p>
+      <p className="text-muted">Owner access is required to manage groups.</p>
     );
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Groups</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <PageTitle>Groups</PageTitle>
+      <p className="mb-6 text-sm text-muted">
         Create and manage community groups. Tags drive the recommendation
         matching on mobile.
       </p>
 
       {/* Editor */}
-      <div className="mb-6 rounded-2xl border border-brand-100 bg-brand-50 p-4">
-        <div className="mb-3 text-sm font-semibold text-brand-700">
+      <div className="mb-6 rounded-2xl border border-line bg-surface-2 p-4">
+        <div className="mb-3 text-sm font-semibold text-heading">
           {form.id ? 'Edit group' : 'New group'}
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -133,13 +134,13 @@ export function AdminGroups() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Group name"
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+            className="rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
           />
           <input
             value={form.tags}
             onChange={(e) => setForm({ ...form, tags: e.target.value })}
             placeholder="Tags (comma separated)"
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+            className="rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
           />
         </div>
         <textarea
@@ -147,11 +148,11 @@ export function AdminGroups() {
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           placeholder="Description"
           rows={2}
-          className="mt-3 w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-brand-500"
+          className="mt-3 w-full resize-none rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
         />
 
         <div className="mt-3">
-          <span className="mb-1 block text-sm text-gray-500">Cover image</span>
+          <span className="mb-1 block text-sm text-muted">Cover image</span>
           <div className="flex items-center gap-3">
             {coverUrl(form.cover_path) && (
               <img
@@ -160,7 +161,7 @@ export function AdminGroups() {
                 className="h-14 w-24 rounded-lg object-cover"
               />
             )}
-            <label className="cursor-pointer rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-brand-700 hover:border-brand-500">
+            <label className="cursor-pointer rounded-lg border border-line bg-surface px-3 py-2 text-sm text-heading hover:border-magenta">
               {uploading ? 'Uploading…' : form.cover_path ? 'Replace image' : 'Upload image'}
               <input
                 type="file"
@@ -178,32 +179,32 @@ export function AdminGroups() {
               <button
                 type="button"
                 onClick={() => setForm({ ...form, cover_path: '' })}
-                className="text-sm text-gray-500 hover:underline"
+                className="text-sm text-muted hover:underline"
               >
                 Remove
               </button>
             )}
           </div>
           {uploadError && (
-            <p className="mt-1 text-sm text-red-600">Couldn’t upload — try again.</p>
+            <p className="mt-1 text-sm text-danger">Couldn’t upload — try again.</p>
           )}
         </div>
 
         {upsert.isError && (
-          <p className="mt-2 text-sm text-red-600">Couldn’t save — try again.</p>
+          <p className="mt-2 text-sm text-danger">Couldn’t save — try again.</p>
         )}
         <div className="mt-3 flex gap-2">
           <button
             onClick={() => upsert.mutate(form)}
             disabled={!form.name.trim() || upsert.isPending}
-            className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+            className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
           >
             {form.id ? 'Save changes' : 'Create group'}
           </button>
           {form.id && (
             <button
               onClick={() => setForm(EMPTY)}
-              className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:underline"
+              className="rounded-lg px-4 py-2 text-sm text-muted hover:underline"
             >
               Cancel
             </button>
@@ -211,8 +212,8 @@ export function AdminGroups() {
         </div>
       </div>
 
-      {isLoading && <p className="text-brand-700">Loading…</p>}
-      <ul className="divide-y divide-brand-100">
+      {isLoading && <p className="text-heading">Loading…</p>}
+      <ul className="divide-y divide-line">
         {(data ?? []).map((g) => (
           <li key={g.id} className="flex items-start justify-between gap-4 py-3">
             <div className="flex items-start gap-3">
@@ -226,14 +227,14 @@ export function AdminGroups() {
               <div>
               <div className="font-medium">{g.name}</div>
               {g.description && (
-                <div className="text-sm text-gray-500">{g.description}</div>
+                <div className="text-sm text-muted">{g.description}</div>
               )}
               {g.tags && g.tags.length > 0 && (
                 <div className="mt-1 flex flex-wrap gap-1">
                   {g.tags.map((t) => (
                     <span
                       key={t}
-                      className="rounded-full bg-brand-100 px-2 py-0.5 text-xs text-brand-700"
+                      className="rounded-full bg-surface-2 px-2 py-0.5 text-xs text-heading"
                     >
                       {t}
                     </span>
@@ -253,7 +254,7 @@ export function AdminGroups() {
                     cover_path: g.cover_path ?? '',
                   })
                 }
-                className="text-brand-700 hover:underline"
+                className="text-heading hover:underline"
               >
                 Edit
               </button>
@@ -261,7 +262,7 @@ export function AdminGroups() {
                 onClick={() => {
                   if (confirm(`Delete “${g.name}”?`)) remove.mutate(g.id);
                 }}
-                className="text-red-600 hover:underline"
+                className="text-danger hover:underline"
               >
                 Delete
               </button>

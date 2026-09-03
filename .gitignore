@@ -37,3 +37,9 @@ app/android/app/build/
 *.log
 npm-debug.*
 yarn-error.log
+
+# Local design refs (brand guide, UI mockups) — not for the repo
+_handoff-assets/
+
+# TypeScript incremental build cache — a build artifact, not source
+web/tsconfig.tsbuildinfo

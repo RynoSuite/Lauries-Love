@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
+import { PageTitle } from '../../components/PageTitle';
 
 // Support inbox — reads Jeremy's support_tickets (staff can see all). Staff can
 // move a ticket's status. Columns per his schema: user_id, category, subject,
@@ -47,35 +48,35 @@ export function AdminSupportInbox() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Support Inbox</h1>
-      <p className="mb-4 text-sm text-gray-500">
+      <PageTitle>Support inbox</PageTitle>
+      <p className="mb-4 text-sm text-muted">
         Member support tickets. Reply in the linked conversation; set status here.
       </p>
       {error && (
-        <p className="text-red-600">Couldn’t load tickets (staff access required).</p>
+        <p className="text-danger">Couldn’t load tickets (staff access required).</p>
       )}
-      {isLoading && <p className="text-brand-700">Loading…</p>}
+      {isLoading && <p className="text-heading">Loading…</p>}
       {data && data.length === 0 && (
-        <p className="text-gray-500">No support tickets.</p>
+        <p className="text-muted">No support tickets.</p>
       )}
       <div className="space-y-3">
         {(data ?? []).map((t) => (
           <div
             key={t.id}
-            className="rounded-xl border border-brand-100 bg-white p-4 shadow-sm"
+            className="rounded-xl border border-line bg-surface p-4 shadow-sm"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="font-semibold">{t.subject}</div>
                 {t.category && (
-                  <div className="text-xs text-gray-400">{t.category}</div>
+                  <div className="text-xs text-faint">{t.category}</div>
                 )}
                 {t.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-600">
+                  <p className="mt-1 line-clamp-2 text-sm text-muted">
                     {t.description}
                   </p>
                 )}
-                <div className="mt-1 text-xs text-gray-400">
+                <div className="mt-1 text-xs text-faint">
                   {new Date(t.created_at).toLocaleString()}
                 </div>
               </div>
@@ -84,7 +85,7 @@ export function AdminSupportInbox() {
                 onChange={(e) =>
                   setStatus.mutate({ id: t.id, status: e.target.value })
                 }
-                className="rounded border border-gray-300 px-2 py-1 text-xs"
+                className="rounded border border-line px-2 py-1 text-xs"
               >
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>

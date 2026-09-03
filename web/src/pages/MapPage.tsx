@@ -11,6 +11,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import { supabase } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
+import { PageTitle } from '../components/PageTitle';
 
 // Community map. Loads only the members inside the current viewport via the
 // users_in_bbox RPC (privacy: coordinates are already coarsened to ~1km, and
@@ -57,12 +58,12 @@ export function MapPage() {
   const [markers, setMarkers] = useState<Marker[]>([]);
 
   if (!isEnabled('community_map'))
-    return <p className="text-gray-500">The community map is turned off.</p>;
+    return <p className="text-muted">The community map is turned off.</p>;
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-bold text-brand-700">Community Map</h1>
-      <div className="overflow-hidden rounded-2xl border border-brand-100" style={{ height: '70vh' }}>
+      <PageTitle>Community map</PageTitle>
+      <div className="overflow-hidden rounded-2xl border border-line" style={{ height: '70vh' }}>
         <MapContainer center={[39.5, -98.35]} zoom={4} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             attribution='&copy; OpenStreetMap contributors'
@@ -80,18 +81,18 @@ export function MapPage() {
                 <Popup>
                   <Link
                     to={`/users/${m.id}`}
-                    className="font-semibold text-brand-700 hover:underline"
+                    className="font-semibold text-heading hover:underline"
                   >
                     {m.display_name || m.first_name || 'Member'}
                   </Link>
-                  <div className="text-xs text-gray-400">View profile · Message</div>
+                  <div className="text-xs text-faint">View profile · Message</div>
                 </Popup>
               </CircleMarker>
             ))}
           </MarkerClusterGroup>
         </MapContainer>
       </div>
-      <p className="mt-2 text-xs text-gray-400">
+      <p className="mt-2 text-xs text-faint">
         {markers.length} members in view · locations are approximate (~1km) for privacy.
       </p>
     </div>

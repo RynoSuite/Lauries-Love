@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
+import { PageTitle } from '../../components/PageTitle';
 
 // CRUD for admin-defined custom profile fields. Owner-gated at the DB
 // (cpf_owner_write). org_id defaults server-side, so inserts don't carry it.
@@ -113,49 +114,49 @@ export function AdminCustomFields() {
 
   if (!isAdmin)
     return (
-      <p className="text-gray-500">Owner access is required to manage profile fields.</p>
+      <p className="text-muted">Owner access is required to manage profile fields.</p>
     );
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-bold text-brand-700">Custom Profile Fields</h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <PageTitle>Custom profile fields</PageTitle>
+      <p className="mb-6 text-sm text-muted">
         Define extra fields members can fill in on their profile.
       </p>
 
-      <div className="mb-6 rounded-2xl border border-brand-100 bg-brand-50 p-4">
-        <div className="mb-3 text-sm font-semibold text-brand-700">
+      <div className="mb-6 rounded-2xl border border-line bg-surface-2 p-4">
+        <div className="mb-3 text-sm font-semibold text-heading">
           {form.id ? 'Edit field' : 'New field'}
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block text-sm">
-            <span className="mb-1 block text-gray-500">Label</span>
+            <span className="mb-1 block text-muted">Label</span>
             <input
               value={form.label}
               onChange={(e) => setForm({ ...form, label: e.target.value })}
               placeholder="e.g. Favorite quote"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-gray-500">
-              Key <span className="text-gray-400">(auto from label if blank)</span>
+            <span className="mb-1 block text-muted">
+              Key <span className="text-faint">(auto from label if blank)</span>
             </span>
             <input
               value={form.field_key}
               onChange={(e) => setForm({ ...form, field_key: e.target.value })}
               placeholder="favorite_quote"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-gray-500">Type</span>
+            <span className="mb-1 block text-muted">Type</span>
             <select
               value={form.field_type}
               onChange={(e) =>
                 setForm({ ...form, field_type: e.target.value as FieldType })
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             >
               {FIELD_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -165,25 +166,25 @@ export function AdminCustomFields() {
             </select>
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-gray-500">Position</span>
+            <span className="mb-1 block text-muted">Position</span>
             <input
               type="number"
               value={form.position}
               onChange={(e) =>
                 setForm({ ...form, position: Number(e.target.value) || 0 })
               }
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
         </div>
         {form.field_type === 'select' && (
           <label className="mt-3 block text-sm">
-            <span className="mb-1 block text-gray-500">Options (comma separated)</span>
+            <span className="mb-1 block text-muted">Options (comma separated)</span>
             <input
               value={form.options}
               onChange={(e) => setForm({ ...form, options: e.target.value })}
               placeholder="Option A, Option B, Option C"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
+              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
         )}
@@ -193,23 +194,23 @@ export function AdminCustomFields() {
             checked={form.enabled}
             onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
           />
-          <span className="text-gray-600">Enabled (visible to members)</span>
+          <span className="text-muted">Enabled (visible to members)</span>
         </label>
         {upsert.isError && (
-          <p className="mt-2 text-sm text-red-600">Couldn’t save — a key may already exist.</p>
+          <p className="mt-2 text-sm text-danger">Couldn’t save — a key may already exist.</p>
         )}
         <div className="mt-3 flex gap-2">
           <button
             onClick={() => upsert.mutate(form)}
             disabled={!form.label.trim() || upsert.isPending}
-            className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+            className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
           >
             {form.id ? 'Save changes' : 'Add field'}
           </button>
           {form.id && (
             <button
               onClick={() => setForm(EMPTY)}
-              className="rounded-lg px-4 py-2 text-sm text-gray-500 hover:underline"
+              className="rounded-lg px-4 py-2 text-sm text-muted hover:underline"
             >
               Cancel
             </button>
@@ -217,18 +218,18 @@ export function AdminCustomFields() {
         </div>
       </div>
 
-      {isLoading && <p className="text-brand-700">Loading…</p>}
-      <ul className="divide-y divide-brand-100">
+      {isLoading && <p className="text-heading">Loading…</p>}
+      <ul className="divide-y divide-line">
         {(data ?? []).map((f) => (
           <li key={f.id} className="flex items-start justify-between gap-4 py-3">
             <div>
               <div className="font-medium">
                 {f.label}{' '}
                 {!f.enabled && (
-                  <span className="text-xs font-normal text-gray-400">(disabled)</span>
+                  <span className="text-xs font-normal text-faint">(disabled)</span>
                 )}
               </div>
-              <div className="text-xs text-gray-400">
+              <div className="text-xs text-faint">
                 {f.field_key} · {f.field_type}
                 {f.field_type === 'select' &&
                   f.options &&
@@ -249,7 +250,7 @@ export function AdminCustomFields() {
                     enabled: f.enabled,
                   })
                 }
-                className="text-brand-700 hover:underline"
+                className="text-heading hover:underline"
               >
                 Edit
               </button>
@@ -258,7 +259,7 @@ export function AdminCustomFields() {
                   if (confirm(`Delete “${f.label}”? Member values are removed too.`))
                     remove.mutate(f.id);
                 }}
-                className="text-red-600 hover:underline"
+                className="text-danger hover:underline"
               >
                 Delete
               </button>

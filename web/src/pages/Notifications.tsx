@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
+import { PageTitle } from '../components/PageTitle';
 
 // In-app notifications for the signed-in member. Reads the notifications table
 // (RLS: recipient-only). Push delivery is a separate edge function (send-push);
@@ -81,14 +82,14 @@ export function Notifications() {
   }
 
   if (!isEnabled('notifications'))
-    return <p className="text-gray-500">Notifications are turned off.</p>;
-  if (isLoading) return <p className="text-brand-700">Loading…</p>;
+    return <p className="text-muted">Notifications are turned off.</p>;
+  if (isLoading) return <p className="text-heading">Loading…</p>;
 
   return (
     <div className="mx-auto max-w-lg">
-      <h1 className="mb-4 text-xl font-bold text-brand-700">Notifications</h1>
+      <PageTitle>Notifications</PageTitle>
       {data && data.length === 0 && (
-        <p className="text-gray-500">You’re all caught up.</p>
+        <p className="text-muted">You’re all caught up.</p>
       )}
       <div className="space-y-2">
         {(data ?? []).map((n) => (
@@ -96,14 +97,14 @@ export function Notifications() {
             key={n.id}
             onClick={() => open(n)}
             className={`block w-full rounded-xl border p-3 text-left text-sm ${
-              n.read_at ? 'border-gray-100 bg-white' : 'border-brand-200 bg-brand-50'
+              n.read_at ? 'border-line bg-surface' : 'border-line bg-surface-2'
             }`}
           >
-            <div className="font-medium text-brand-700">
+            <div className="font-medium text-heading">
               {LABEL[n.entity_type] ?? n.entity_type}
             </div>
-            {n.content && <div className="text-gray-600">{n.content}</div>}
-            <div className="mt-1 text-xs text-gray-400">
+            {n.content && <div className="text-muted">{n.content}</div>}
+            <div className="mt-1 text-xs text-faint">
               {new Date(n.created_at).toLocaleString()}
             </div>
           </button>

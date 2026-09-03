@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
+import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
 
 // A single group: info, members, and a group-scoped feed (visibility='group').
 // RLS shows group posts only to members; the composer is shown only to members.
@@ -146,36 +147,36 @@ export function GroupDetail() {
     },
   });
 
-  if (!isEnabled('groups')) return <p className="text-gray-500">Groups are turned off.</p>;
-  if (isLoading) return <p className="text-brand-700">Loading…</p>;
-  if (!group) return <p className="text-gray-500">Group not found.</p>;
+  if (!isEnabled('groups')) return <p className="text-muted">Groups are turned off.</p>;
+  if (isLoading) return <p className="text-heading">Loading…</p>;
+  if (!group) return <p className="text-muted">Group not found.</p>;
 
   const posts = feed?.posts ?? [];
   const likedIds = feed?.likedIds ?? new Set<string>();
 
   return (
     <div className="space-y-4">
-      <Link to="/groups" className="text-sm text-brand-700 hover:underline">
+      <Link to="/groups" className="text-sm text-heading hover:underline">
         ← All groups
       </Link>
 
-      <div className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <h1 className="text-xl font-bold text-brand-700">{group.name}</h1>
-            <div className="text-xs text-gray-400">{group.members.length} members</div>
+            <h1 className="text-xl font-bold text-heading">{group.name}</h1>
+            <div className="text-xs text-faint">{group.members.length} members</div>
           </div>
           <button
             onClick={() => toggleJoin.mutate(group.joined)}
             disabled={toggleJoin.isPending}
             className={`rounded-full px-4 py-1 text-sm font-medium ${
-              group.joined ? 'bg-brand-100 text-brand-700' : 'bg-brand-700 text-white'
+              group.joined ? 'bg-surface-2 text-heading' : 'bg-magenta text-white'
             }`}
           >
             {group.joined ? 'Joined' : 'Join'}
           </button>
         </div>
-        {group.description && <p className="mt-2 text-sm text-gray-600">{group.description}</p>}
+        {group.description && <p className="mt-2 text-sm text-muted">{group.description}</p>}
 
         {group.members.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
@@ -186,12 +187,12 @@ export function GroupDetail() {
                 <Link
                   key={m.id}
                   to={`/users/${m.id}`}
-                  className="flex items-center gap-1 rounded-full bg-brand-50 px-2 py-1 text-xs text-brand-700 hover:bg-brand-100"
+                  className="flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-xs text-heading hover:bg-surface-2"
                 >
                   {im ? (
                     <img src={im} alt="" className="h-4 w-4 rounded-full object-cover" />
                   ) : (
-                    <span className="grid h-4 w-4 place-items-center rounded-full bg-brand-200 text-[9px] font-bold">
+                    <span className="grid h-4 w-4 place-items-center rounded-full bg-magenta text-[9px] font-bold text-white">
                       {nm[0]}
                     </span>
                   )}
@@ -204,19 +205,19 @@ export function GroupDetail() {
       </div>
 
       {group.joined && (
-        <div className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder={`Share something with ${group.name}…`}
             rows={2}
-            className="w-full resize-none rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+            className="w-full resize-none rounded-lg border border-line p-3 text-sm outline-none focus:border-magenta"
           />
           <div className="mt-2 flex justify-end">
             <button
               onClick={() => createPost.mutate(body)}
               disabled={!body.trim() || createPost.isPending}
-              className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+              className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
             >
               {createPost.isPending ? 'Posting…' : 'Post'}
             </button>
@@ -225,7 +226,7 @@ export function GroupDetail() {
       )}
 
       {posts.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           {group.joined ? 'No posts yet — start the conversation.' : 'Join to see and share posts in this group.'}
         </p>
       )}
@@ -235,37 +236,46 @@ export function GroupDetail() {
         const img = avatarUrl(p.author?.avatar_path);
         const liked = likedIds.has(p.id);
         return (
-          <article key={p.id} className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+          <article key={p.id} className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <header className="mb-2 flex items-center gap-3">
               {img ? (
                 <img src={img} alt="" className="h-9 w-9 rounded-full object-cover" />
               ) : (
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
+                <div className="grid h-9 w-9 place-items-center rounded-full bg-magenta text-sm font-semibold text-white">
                   {name[0]}
                 </div>
               )}
               <div>
                 {p.author?.id ? (
-                  <Link to={`/users/${p.author.id}`} className="text-sm font-semibold hover:text-brand-700 hover:underline">
+                  <Link to={`/users/${p.author.id}`} className="text-sm font-semibold hover:text-magenta-text hover:underline">
                     {name}
                   </Link>
                 ) : (
                   <div className="text-sm font-semibold">{name}</div>
                 )}
-                <div className="text-xs text-gray-400">{new Date(p.created_at).toLocaleDateString()}</div>
+                <div className="text-xs text-faint">{new Date(p.created_at).toLocaleDateString()}</div>
               </div>
             </header>
             <p className="whitespace-pre-wrap text-[15px] leading-relaxed">{p.body}</p>
-            <footer className="mt-3 flex gap-4 text-sm text-gray-500">
+            <footer className="mt-3 flex gap-4 text-sm text-muted">
               <button
                 onClick={() => toggleLike.mutate({ id: p.id, liked })}
                 disabled={toggleLike.isPending}
-                className={`flex items-center gap-1 ${liked ? 'font-semibold text-brand-700' : 'hover:text-brand-700'}`}
+                className={`flex items-center gap-1.5 transition-colors ${liked ? 'font-semibold text-magenta' : 'hover:text-magenta-text'}`}
               >
-                {liked ? '♥' : '♡'} {p.like_count}
+                {liked ? (
+                  <IconHeartFilled className="h-[17px] w-[17px]" />
+                ) : (
+                  <IconHeart className="h-[17px] w-[17px]" />
+                )}
+                {p.like_count}
               </button>
-              <button onClick={() => setCommentFor((c) => (c === p.id ? null : p.id))} className="hover:text-brand-700">
-                💬 {p.comments?.[0]?.count ?? 0}
+              <button
+                onClick={() => setCommentFor((c) => (c === p.id ? null : p.id))}
+                className="flex items-center gap-1.5 transition-colors hover:text-magenta-text"
+              >
+                <IconComment className="h-[17px] w-[17px]" />
+                {p.comments?.[0]?.count ?? 0}
               </button>
             </footer>
             {commentFor === p.id && (
@@ -274,12 +284,12 @@ export function GroupDetail() {
                   value={commentBody}
                   onChange={(e) => setCommentBody(e.target.value)}
                   placeholder="Write a comment…"
-                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand-500"
+                  className="flex-1 rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
                 />
                 <button
                   onClick={() => addComment.mutate({ postId: p.id, text: commentBody })}
                   disabled={!commentBody.trim() || addComment.isPending}
-                  className="rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-50"
+                  className="rounded-lg bg-magenta px-3 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
                 >
                   Send
                 </button>
