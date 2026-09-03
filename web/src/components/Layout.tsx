@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { useBranding } from '../lib/branding';
 import { UserMenu } from './UserMenu';
@@ -65,8 +65,17 @@ const railClass = (isActive: boolean) =>
     ? 'bg-magenta/15 font-semibold text-magenta-text'
     : 'text-body hover:bg-surface-2 hover:text-heading');
 
+// Pages whose content wants the width: grids of group cards, the two-pane
+// message view, and the map canvas. The right rail is contextual reading
+// material, so on these it costs more than it adds.
+const WIDE_ROUTES = ['/groups', '/messages', '/map'];
+
 export function Layout() {
   const { appName, logoUrl } = useBranding();
+  const { pathname } = useLocation();
+  const wide = WIDE_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(r + '/'),
+  );
 
   return (
     <div className="min-h-screen bg-ground">
@@ -108,7 +117,12 @@ export function Layout() {
         <hr className="border-0 border-b border-line" />
       </header>
 
-      <div className="mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_minmax(0,1fr)] xl:grid-cols-[248px_minmax(0,1fr)_296px]">
+      <div
+        className={
+          'mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_minmax(0,1fr)] ' +
+          (wide ? '' : 'xl:grid-cols-[248px_minmax(0,1fr)_296px]')
+        }
+      >
         {/* Left rail */}
         <aside className="hidden lg:block">
           <div className="sticky top-[92px] space-y-4">
@@ -171,7 +185,7 @@ export function Layout() {
         </main>
 
         {/* Right rail */}
-        <aside className="hidden xl:block">
+        <aside className={wide ? 'hidden' : 'hidden xl:block'}>
           <div className="sticky top-[92px] space-y-4">
             <RailCard
               Icon={IconHeart}
