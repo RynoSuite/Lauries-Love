@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
+import { AvatarUpload } from '../components/AvatarUpload';
 
 type MyProfile = {
   id: string;
@@ -51,12 +52,6 @@ async function fetchMyProfile(): Promise<MyProfile | null> {
     postCount: posts.count ?? 0,
     friendCount: friends.count ?? 0,
   };
-}
-
-function avatarUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl ?? null;
 }
 
 // Admin-defined custom profile fields + the caller's own values. Only enabled
@@ -277,8 +272,15 @@ export function Profile() {
   if (isLoading) return <p className="text-heading">Loading…</p>;
   if (!data) return <p className="text-muted">Not signed in.</p>;
 
-  const name = data.display_name || data.first_name || 'Member';
-  const img = avatarUrl(data.avatar_path);
+  // Same fallback chain as the header chip (UserMenu), so an account with no
+  // display name shows one identity in both places rather than "M" here and
+  // "J" up there. Showing the email handle also beats calling someone "Member"
+  // on their own profile.
+  const name =
+    data.display_name ||
+    data.first_name ||
+    data.email?.split('@')[0] ||
+    'Member';
   const place = [data.city, data.state, data.country].filter(Boolean).join(', ');
 
   if (editing) {
@@ -361,13 +363,9 @@ export function Profile() {
   return (
     <div className="mx-auto max-w-md">
       <div className="rounded-2xl border border-line bg-surface p-6 text-center shadow-sm">
-        {img ? (
-          <img src={img} alt="" className="mx-auto mb-3 h-24 w-24 rounded-full object-cover" />
-        ) : (
-          <div className="mx-auto mb-3 grid h-24 w-24 place-items-center rounded-full bg-magenta text-3xl font-bold text-white">
-            {name[0]}
-          </div>
-        )}
+        <div className="mb-4">
+          <AvatarUpload currentPath={data.avatar_path} name={name} />
+        </div>
         <h1 className="text-xl font-bold text-heading">{name}</h1>
         {place && <p className="text-sm text-muted">{place}</p>}
         {data.description && (

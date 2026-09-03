@@ -65,9 +65,18 @@ export function MapPage() {
       <PageTitle>Community map</PageTitle>
       <div className="overflow-hidden rounded-2xl border border-line" style={{ height: '70vh' }}>
         <MapContainer center={[39.5, -98.35]} zoom={4} style={{ height: '100%', width: '100%' }}>
+          {/* Standard OSM raster tiles, darkened on the client by a CSS filter
+              on .leaflet-tile-pane (see index.css). Rendering them raw looks
+              like a generic Google map against this UI.
+              Deliberately keyless: CARTO's dark basemap now watermarks
+              "API KEY REQUIRED", and Stadia/Mapbox also need a registered key,
+              so any hosted dark style would block the client review on someone
+              signing up. If a key is obtained later this is a one-line swap —
+              the filter below is the only other thing to remove. */}
           <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            maxZoom={19}
           />
           <ViewportLoader onData={setMarkers} />
           <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
@@ -76,7 +85,7 @@ export function MapPage() {
                 key={m.id}
                 center={[m.latitude, m.longitude]}
                 radius={8}
-                pathOptions={{ color: '#a5257e', fillColor: '#d84a9a', fillOpacity: 0.8 }}
+                pathOptions={{ color: '#F45FAF', weight: 2, fillColor: '#911766', fillOpacity: 0.85 }}
               >
                 <Popup>
                   <Link

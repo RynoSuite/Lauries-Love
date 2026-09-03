@@ -2,6 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
+import { Avatar } from '../components/Avatar';
 
 // Another member's profile (/users/:id). Shows their public info and the two
 // actions the web app was missing: start a direct message and send a friend
@@ -27,12 +28,6 @@ type Friendship = {
   addressee_id: string;
   status: 'pending' | 'accepted';
 };
-
-function avatarUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl ?? null;
-}
 
 async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
   const [{ data: profile, error }, posts, friends] = await Promise.all([
@@ -143,7 +138,6 @@ export function UserProfile() {
   if (!data) return <p className="text-muted">Member not found.</p>;
 
   const name = data.display_name || data.first_name || 'Member';
-  const img = avatarUrl(data.avatar_path);
   const place = [data.city, data.state, data.country].filter(Boolean).join(', ');
   const isSelf = meId === data.id;
 
@@ -160,13 +154,9 @@ export function UserProfile() {
   return (
     <div className="mx-auto max-w-md">
       <div className="rounded-2xl border border-line bg-surface p-6 text-center shadow-sm">
-        {img ? (
-          <img src={img} alt="" className="mx-auto mb-3 h-24 w-24 rounded-full object-cover" />
-        ) : (
-          <div className="mx-auto mb-3 grid h-24 w-24 place-items-center rounded-full bg-magenta text-3xl font-bold text-white">
-            {name[0]}
-          </div>
-        )}
+        <div className="mb-3 flex justify-center">
+          <Avatar path={data.avatar_path} name={name} size={96} />
+        </div>
         <h1 className="text-xl font-bold text-heading">{name}</h1>
         {place && <p className="text-sm text-muted">{place}</p>}
         {data.description && <p className="mt-2 text-sm text-muted">{data.description}</p>}

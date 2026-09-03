@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
 import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
+import { Avatar } from '../components/Avatar';
 
 // A single group: info, members, and a group-scoped feed (visibility='group').
 // RLS shows group posts only to members; the composer is shown only to members.
@@ -16,12 +17,6 @@ type GroupPost = {
   author: { id: string; first_name: string | null; display_name: string | null; avatar_path: string | null } | null;
   comments: { count: number }[];
 };
-
-function avatarUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl ?? null;
-}
 
 async function fetchGroup(id: string) {
   const me = await currentUserId();
@@ -182,20 +177,13 @@ export function GroupDetail() {
           <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
             {group.members.slice(0, 12).map((m) => {
               const nm = m.display_name || m.first_name || 'Member';
-              const im = avatarUrl(m.avatar_path);
               return (
                 <Link
                   key={m.id}
                   to={`/users/${m.id}`}
                   className="flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-xs text-heading hover:bg-surface-2"
                 >
-                  {im ? (
-                    <img src={im} alt="" className="h-4 w-4 rounded-full object-cover" />
-                  ) : (
-                    <span className="grid h-4 w-4 place-items-center rounded-full bg-magenta text-[9px] font-bold text-white">
-                      {nm[0]}
-                    </span>
-                  )}
+                  <Avatar path={m.avatar_path} name={nm} size={16} />
                   {nm}
                 </Link>
               );
@@ -233,18 +221,11 @@ export function GroupDetail() {
 
       {posts.map((p) => {
         const name = p.author?.display_name || p.author?.first_name || 'Member';
-        const img = avatarUrl(p.author?.avatar_path);
         const liked = likedIds.has(p.id);
         return (
           <article key={p.id} className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <header className="mb-2 flex items-center gap-3">
-              {img ? (
-                <img src={img} alt="" className="h-9 w-9 rounded-full object-cover" />
-              ) : (
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-magenta text-sm font-semibold text-white">
-                  {name[0]}
-                </div>
-              )}
+              <Avatar path={p.author?.avatar_path} name={name} size={36} />
               <div>
                 {p.author?.id ? (
                   <Link to={`/users/${p.author.id}`} className="text-sm font-semibold hover:text-magenta-text hover:underline">

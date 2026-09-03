@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { useMyAvatar } from '../lib/useMyAvatar';
+import { Avatar } from './Avatar';
 import { IconAdmin, IconProfile, IconSignOut, IconSupport } from './Icons';
 
 // The account chip in the header. Profile, Support, Admin and Sign out used to
@@ -31,12 +33,21 @@ export function UserMenu() {
     };
   }, [open]);
 
+  // Prefer the profiles row — it carries the avatar and is what the member
+  // actually edits. auth metadata is the fallback for a session whose profile
+  // row has not loaded yet.
+  const { data: me } = useMyAvatar();
   const meta = session?.user?.user_metadata as
     | { display_name?: string; first_name?: string }
     | undefined;
   const email = session?.user?.email ?? '';
-  const name = meta?.display_name || meta?.first_name || email.split('@')[0] || 'Member';
-  const initial = (name.trim()[0] || 'M').toUpperCase();
+  const name =
+    me?.display_name ||
+    me?.first_name ||
+    meta?.display_name ||
+    meta?.first_name ||
+    email.split('@')[0] ||
+    'Member';
 
   const itemClass =
     'flex items-center gap-2.5 px-3 py-2.5 text-sm text-body transition-colors hover:bg-surface-2 hover:text-heading';
@@ -49,11 +60,11 @@ export function UserMenu() {
         aria-expanded={open}
         aria-label={`Account menu for ${name}`}
         className={
-          'grid h-9 w-9 place-items-center rounded-full bg-magenta text-sm font-semibold text-white transition-shadow hover:bg-magenta-hi ' +
+          'rounded-full transition-shadow ' +
           (open ? 'ring-2 ring-magenta-text ring-offset-2 ring-offset-harbor' : '')
         }
       >
-        {initial}
+        <Avatar path={me?.avatar_path} name={name} size={36} />
       </button>
 
       {open && (

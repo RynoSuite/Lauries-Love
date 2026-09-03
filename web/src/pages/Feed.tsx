@@ -5,6 +5,7 @@ import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
 import { PageTitle } from '../components/PageTitle';
 import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
+import { Avatar } from '../components/Avatar';
 
 type FeedPost = {
   id: string;
@@ -57,13 +58,6 @@ async function fetchFeed(): Promise<FeedData> {
     likedIds = new Set((likes ?? []).map((r: { entity_id: string }) => r.entity_id));
   }
   return { posts, likedIds };
-}
-
-function avatarUrl(path: string | null | undefined): string | null {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-  return data.publicUrl ?? null;
 }
 
 export function Feed() {
@@ -196,7 +190,6 @@ export function Feed() {
 
       {posts.map((p) => {
         const name = p.author?.display_name || p.author?.first_name || 'Member';
-        const img = avatarUrl(p.author?.avatar_path);
         const liked = likedIds.has(p.id);
         return (
           <article
@@ -204,17 +197,7 @@ export function Feed() {
             className="rounded-2xl border border-line bg-surface p-4 shadow-sm"
           >
             <header className="mb-2 flex items-center gap-3">
-              {img ? (
-                <img
-                  src={img}
-                  alt=""
-                  className="h-9 w-9 rounded-full object-cover"
-                />
-              ) : (
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-magenta text-sm font-semibold text-white">
-                  {name[0]}
-                </div>
-              )}
+              <Avatar path={p.author?.avatar_path} name={name} size={36} />
               <div>
                 {p.author?.id ? (
                   <Link

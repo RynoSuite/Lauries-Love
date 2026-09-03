@@ -167,3 +167,50 @@ h5 {
   }
 }
 
+
+/* Marker clusters. react-leaflet-cluster ships Leaflet's stock blue/green/
+   yellow bubbles, which are more off-brand than the tiles were. These are
+   magenta discs matching the individual member markers. The size classes
+   (small/medium/large) map to how many members a cluster holds, so they keep
+   their scale cue while sharing one colour. */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: rgb(145 23 102 / 0.35);
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: #911766;
+  color: #ffffff;
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-weight: 600;
+  box-shadow: 0 0 0 1px rgb(244 95 175 / 0.55);
+}
+.marker-cluster span {
+  line-height: 30px;
+}
+
+/* Dark basemap without a tile-provider account.
+   The filter is scoped to .leaflet-tile-pane so it only touches the basemap —
+   markers, clusters and popups live in other panes and keep their real colours.
+   invert + hue-rotate(180deg) is the standard pair: inverting alone would turn
+   the map's blues orange, and rotating the hue back puts water and land near
+   their original relationships while everything is now dark. The saturate and
+   brightness trims stop it glowing against the Ink ground, and the slight
+   sepia warms the greys a touch toward the brand rather than pure neutral. */
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.86) contrast(0.92)
+    saturate(0.55) sepia(0.12);
+}
+/* Zoom buttons ship white with dark glyphs; the inversion above does not reach
+   them because controls sit outside the tile pane. */
+.leaflet-control-zoom a {
+  background: #0a2a2d;
+  color: #eaf2f2;
+  border-color: rgb(255 255 255 / 0.1);
+}
+.leaflet-control-zoom a:hover {
+  background: #0e383c;
+  color: #f45faf;
+}
