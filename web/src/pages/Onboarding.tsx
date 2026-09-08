@@ -67,6 +67,7 @@ export function Onboarding() {
         gender: p.gender ?? '',
         city: p.city ?? '',
         state: p.state ?? '',
+        country: p.country || 'United States',
         latitude: p.latitude ?? null,
         longitude: p.longitude ?? null,
         zip_code: (priv as { zip_code?: string } | null)?.zip_code ?? '',

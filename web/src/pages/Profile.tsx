@@ -165,6 +165,7 @@ export function Profile() {
         gender: data.gender ?? '',
         city: data.city ?? '',
         state: data.state ?? '',
+        country: data.country || 'United States',
         zip_code: data.zip_code ?? '',
         latitude: data.latitude ?? null,
         longitude: data.longitude ?? null,

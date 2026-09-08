@@ -32,6 +32,7 @@ export type ProfileForm = {
   gender: string;
   city: string;
   state: string;
+  country: string;
   zip_code: string;
   latitude: number | null;
   longitude: number | null;
@@ -50,6 +51,11 @@ export const EMPTY_PROFILE_FORM: ProfileForm = {
   gender: '',
   city: '',
   state: '',
+  // The mobile app refuses to leave its logged-out navigator until country is
+  // set, among other fields. Web signup never asked, so anyone who joined on
+  // the web could log into the app and be handed silently back to the login
+  // screen. Defaulted rather than blank so the common case is already right.
+  country: 'United States',
   zip_code: '',
   latitude: null,
   longitude: null,
@@ -57,7 +63,7 @@ export const EMPTY_PROFILE_FORM: ProfileForm = {
 
 // The public columns these fields map to, so both pages select the same set.
 export const PROFILE_COLUMNS =
-  'first_name, last_name, display_name, description, role_id, diagnosis_type_ids, diagnosis_subtype_ids, diagnosis_year, age_range, gender, city, state, latitude, longitude';
+  'first_name, last_name, display_name, description, role_id, diagnosis_type_ids, diagnosis_subtype_ids, diagnosis_year, age_range, gender, city, state, country, latitude, longitude';
 
 // Builds the profiles update payload. Empty strings become null rather than
 // writing '' into a column that other code null-checks.
@@ -75,6 +81,7 @@ export function profileUpdatePayload(f: ProfileForm) {
     gender: f.gender || null,
     city: f.city.trim() || null,
     state: f.state.trim() || null,
+    country: f.country.trim() || null,
     latitude: f.latitude,
     longitude: f.longitude,
   };
@@ -388,6 +395,14 @@ export function ProfileFields({
             <input
               value={form.zip_code}
               onChange={(e) => setForm((f) => ({ ...f, zip_code: e.target.value }))}
+              className={inputClass}
+            />
+          </label>
+          <label className="block sm:col-span-2">
+            <span className="mb-1 block text-sm font-medium text-heading">Country</span>
+            <input
+              value={form.country}
+              onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
               className={inputClass}
             />
           </label>
