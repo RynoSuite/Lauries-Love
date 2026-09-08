@@ -174,7 +174,7 @@ export function Layout() {
                 to="/support"
                 className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-line px-3 py-2 text-sm text-heading transition-colors hover:border-magenta hover:text-magenta-text"
               >
-                View support resources
+                Contact support
               </Link>
             </section>
           </div>
@@ -192,13 +192,9 @@ export function Layout() {
               title="Community guidelines"
               body="Be kind. Be respectful. Be supportive. Together we keep this a safe space for everyone."
             />
-            <RailCard
-              Icon={IconGroups}
-              title="Support resources"
-              body="Find trusted organisations and hotlines when you need them."
-              to="/support"
-              cta="View resources"
-            />
+            {/* "Support resources" removed: it duplicated the support card in
+                the left rail, so the same destination appeared twice on one
+                screen. The left one is kept because it sits above the fold. */}
             <RailCard
               Icon={IconCommunity}
               title="Active groups"
