@@ -47,7 +47,7 @@ export function NewGroupThread({
     if (error || !data) {
       setErr(
         /function|does not exist/i.test(error?.message ?? '')
-          ? 'Group messages need migrations 20260908240000_group_messages_v1.sql and 20260908300000_group_min_two_v1.sql on this project.'
+          ? 'Group messages need migration 20260908240000_group_messages_v1.sql on this project.'
           : (error?.message ?? 'Could not create the group.'),
       );
       return;
@@ -110,20 +110,28 @@ export function NewGroupThread({
 
       {/* The hint gets its own line. Inline beside the buttons it collided
           with Cancel in the 16rem rail. */}
-      {picked.size === 0 && (
+      {(connections ?? []).length === 1 ? (
         <p className="mt-3 text-[11px] leading-relaxed text-faint">
-          Pick at least one person. A named thread with one other member is
-          kept separate from your direct messages with them.
+          A group needs at least three people. You have one connection so far,
+          so use the One person tab for now.
         </p>
+      ) : (
+        picked.size < 2 && (
+          <p className="mt-3 text-[11px] leading-relaxed text-faint">
+            Pick {picked.size === 1 ? 'one more person' : 'at least two people'}.
+            For one, use the One person tab instead.
+          </p>
+        )
       )}
 
       <div className="mt-2 flex items-center gap-3">
         <button
           onClick={create}
-          // One other person minimum. A two-person group and a direct message
-          // with the same member are separate threads by design; the hint
-          // above says so, because otherwise a reply can land in the wrong one.
-          disabled={busy || picked.size < 1}
+          // Two others minimum. With one, a group thread would duplicate the
+          // direct message with that person: direct threads are unique by
+          // direct_key, group threads are not, so both would sit in the list
+          // accepting messages and a reply could land in the one nobody reads.
+          disabled={busy || picked.size < 2}
           className="rounded-lg bg-magenta px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-magenta-hi disabled:opacity-50"
         >
           {busy ? 'Creating…' : `Create group (${picked.size})`}
