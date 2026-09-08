@@ -501,7 +501,12 @@ export function Messages() {
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && send()}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      void send();
+                    }
+                  }}
                   placeholder="Message…"
                   className="flex-1 rounded-full border border-line px-4 py-2 text-sm outline-none focus:border-magenta"
                 />

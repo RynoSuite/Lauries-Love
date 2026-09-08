@@ -217,6 +217,17 @@ export function Feed() {
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
+          onKeyDown={(e) => {
+            // Ctrl/Cmd+Enter posts. Plain Enter has to stay a newline here:
+            // people write several paragraphs about their week, and a composer
+            // that submits on Enter would cut them off mid-thought.
+            if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+              e.preventDefault();
+              if ((body.trim() || imagePath) && !createPost.isPending && !uploading) {
+                createPost.mutate(body);
+              }
+            }
+          }}
           placeholder="Share something with the community…"
           rows={3}
           className="w-full resize-none rounded-lg border border-line p-3 text-sm outline-none focus:border-magenta"
