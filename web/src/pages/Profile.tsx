@@ -2,6 +2,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { AvatarUpload } from '../components/AvatarUpload';
+import { ChangePassword } from '../components/ChangePassword';
 import { useDefinitions } from '../lib/useDefinitions';
 import {
   ProfileFields,
@@ -353,6 +354,8 @@ export function Profile() {
             </label>
           </div>
         </div>
+
+        <ChangePassword />
 
         <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
           {(fields ?? []).length > 0 && (

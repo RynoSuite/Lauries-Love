@@ -260,13 +260,18 @@ export function GroupDetail() {
               (m) => {
                 const nm = m.display_name || m.first_name || 'Member';
                 return (
+                  // Face only. Names turned the roster into a block of text
+                  // that competed with the group itself; the avatars read as
+                  // people at a glance. The name stays as the tooltip and the
+                  // accessible label, so nothing is lost to a screen reader.
                   <Link
                     key={m.id}
                     to={`/users/${m.id}`}
-                    className="flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-xs text-heading transition-colors hover:text-magenta-text"
+                    title={nm}
+                    aria-label={nm}
+                    className="rounded-full ring-2 ring-transparent transition-all hover:ring-magenta"
                   >
-                    <Avatar path={m.avatar_path} name={nm} size={16} />
-                    {nm}
+                    <Avatar path={m.avatar_path} name={nm} size={30} />
                   </Link>
                 );
               },

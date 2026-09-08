@@ -4,6 +4,18 @@
     "promptToConfigurePushNotifications": false
   },
   "build": {
+    "development": {
+      "node": "22.11.0",
+      "environment": "development",
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "node": "22.11.0",
       "channel": "production",

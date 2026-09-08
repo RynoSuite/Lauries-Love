@@ -43,10 +43,20 @@ export const customShowError = (dataError: {
       message,
       type: 'error',
     });
-  } else if (error instanceof Error && showToast) {
+  } else if (showToast) {
+    // Deliberately not gated on `instanceof Error`. Supabase throws AuthError,
+    // a subclass of Error, and subclassed builtins routinely fail instanceof
+    // once transpiled — so a failed login threw, matched neither branch, and
+    // showed nothing at all. The button appeared dead.
+    //
+    // Anything that reaches here is a failure the member is waiting on, so say
+    // something rather than nothing.
+    const message =
+      (error && (error.message || error.error_description || error.msg)) ||
+      'Something went wrong. Please try again.';
     showToast({
       title: 'Error',
-      message: error.message,
+      message: String(message),
       type: 'error',
     });
   }
