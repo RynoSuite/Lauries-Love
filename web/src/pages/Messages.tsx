@@ -3,6 +3,11 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
+import { MessageAttachment } from '../components/MessageAttachment';
+
+// Supabase storage caps a standard upload at 50MB; 25 keeps well inside that
+// and keeps a member on mobile data from sending something enormous by accident.
+const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
 
 type Conversation = {
   id: string;
@@ -17,6 +22,7 @@ type Message = {
   body: string | null;
   sender_id: string;
   created_at: string;
+  attachment_path: string | null;
 };
 type MemberHit = {
   id: string;
@@ -67,6 +73,8 @@ export function Messages() {
   const [search, setSearch] = useState('');
   const [hits, setHits] = useState<MemberHit[]>([]);
   const [starting, setStarting] = useState(false);
+  const [attaching, setAttaching] = useState(false);
+  const [attachError, setAttachError] = useState<string | null>(null);
 
   useEffect(() => {
     currentUserId().then(setMeId);
@@ -112,7 +120,7 @@ export function Messages() {
     let cancelled = false;
     supabase
       .from('messages')
-      .select('id, body, sender_id, created_at')
+      .select('id, body, sender_id, created_at, attachment_path')
       .eq('conversation_id', active)
       .order('created_at', { ascending: true })
       .limit(100)
@@ -144,6 +152,50 @@ export function Messages() {
     setText('');
     await supabase.from('messages').insert({ conversation_id: active, sender_id: me, body });
     qc.invalidateQueries({ queryKey: ['conversations'] });
+  }
+
+  // Attachments go to the private chat-attachments bucket. The storage policy
+  // gates on conversation membership by reading the FIRST path segment as a
+  // conversation id, so the path shape is not cosmetic: it is the access
+  // check. Same convention the mobile app writes, so files sent from either
+  // surface open on both.
+  async function sendAttachment(file: File) {
+    if (!active) return;
+    setAttachError(null);
+    if (file.size > MAX_ATTACHMENT_BYTES) {
+      setAttachError('Files need to be under 25MB.');
+      return;
+    }
+    setAttaching(true);
+    try {
+      const me = await currentUserId();
+      if (!me) throw new Error('Not signed in');
+      const ext = (file.name.split('.').pop() || 'bin').toLowerCase().slice(0, 8);
+      const path = `${active}/${me}-${Date.now()}.${ext}`;
+
+      const { error: upErr } = await supabase.storage
+        .from('chat-attachments')
+        .upload(path, file, {
+          contentType: file.type || 'application/octet-stream',
+          upsert: false,
+        });
+      if (upErr) throw upErr;
+
+      // body stays null: the table's CHECK allows a message with an
+      // attachment and no text.
+      const { error: msgErr } = await supabase.from('messages').insert({
+        conversation_id: active,
+        sender_id: me,
+        attachment_path: path,
+      });
+      if (msgErr) throw msgErr;
+
+      qc.invalidateQueries({ queryKey: ['conversations'] });
+    } catch (err) {
+      setAttachError(err instanceof Error ? err.message : 'Could not send that file.');
+    } finally {
+      setAttaching(false);
+    }
   }
 
   async function startWith(profileId: string) {
@@ -229,34 +281,64 @@ export function Messages() {
         ) : (
           <>
             <div className="flex-1 space-y-2 overflow-y-auto p-4">
-              {msgs.map((m) => (
-                <div
-                  key={m.id}
-                  className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm ${
-                    m.sender_id === meId
-                      ? 'ml-auto bg-magenta text-white'
-                      : 'bg-surface-2'
-                  }`}
-                >
-                  {m.body}
-                </div>
-              ))}
+              {msgs.map((m) => {
+                const mine = m.sender_id === meId;
+                return (
+                  <div
+                    key={m.id}
+                    className={`max-w-[75%] space-y-1.5 rounded-2xl px-3 py-2 text-sm ${
+                      mine ? 'ml-auto bg-magenta text-white' : 'bg-surface-2'
+                    }`}
+                  >
+                    {m.attachment_path && (
+                      <MessageAttachment path={m.attachment_path} mine={mine} />
+                    )}
+                    {m.body && <p className="whitespace-pre-wrap">{m.body}</p>}
+                  </div>
+                );
+              })}
               <div ref={endRef} />
             </div>
-            <div className="flex gap-2 border-t p-3">
-              <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && send()}
-                placeholder="Message…"
-                className="flex-1 rounded-full border border-line px-4 py-2 text-sm outline-none focus:border-magenta"
-              />
-              <button
-                onClick={send}
-                className="rounded-full bg-magenta px-4 py-2 text-sm font-medium text-white"
-              >
-                Send
-              </button>
+            <div className="border-t border-line p-3">
+              {attachError && (
+                <p className="mb-2 text-sm text-danger">{attachError}</p>
+              )}
+              <div className="flex gap-2">
+                <label
+                  title="Attach a photo, video or file"
+                  className="grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-full border border-line text-muted transition-colors hover:border-magenta hover:text-magenta-text"
+                >
+                  {attaching ? (
+                    <span className="text-[10px]">…</span>
+                  ) : (
+                    <span aria-hidden="true">📎</span>
+                  )}
+                  <span className="sr-only">Attach a photo, video or file</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    disabled={attaching}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      e.target.value = '';
+                      if (f) void sendAttachment(f);
+                    }}
+                  />
+                </label>
+                <input
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && send()}
+                  placeholder="Message…"
+                  className="flex-1 rounded-full border border-line px-4 py-2 text-sm outline-none focus:border-magenta"
+                />
+                <button
+                  onClick={send}
+                  className="rounded-full bg-magenta px-4 py-2 text-sm font-medium text-white"
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </>
         )}
