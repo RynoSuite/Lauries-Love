@@ -325,7 +325,7 @@ export function MapPage() {
         {activeCount > 0 && markers.length !== visible.length
           ? ` (filtered from ${markers.length})`
           : ''}
-        . Locations are approximate to about half a mile, on purpose.
+        . Locations are approximate to about half a mile to keep users location private.
         {located === false &&
           ' Allow location access to start near you.'}
       </p>
