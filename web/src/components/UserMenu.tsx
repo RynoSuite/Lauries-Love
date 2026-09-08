@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
 import { useMyAvatar } from '../lib/useMyAvatar';
+import { useAdminCounts } from '../lib/useAdminCounts';
 import { Avatar } from './Avatar';
 import { IconAdmin, IconProfile, IconSignOut, IconSupport } from './Icons';
 
@@ -37,6 +38,9 @@ export function UserMenu() {
   // actually edits. auth metadata is the fallback for a session whose profile
   // row has not loaded yet.
   const { data: me } = useMyAvatar();
+  // Reports and tickets waiting, so staff notice from the member side too.
+  const { data: adminCounts } = useAdminCounts();
+  const adminWaiting = (adminCounts?.moderation ?? 0) + (adminCounts?.tickets ?? 0);
   const meta = session?.user?.user_metadata as
     | { display_name?: string; first_name?: string }
     | undefined;
@@ -89,6 +93,11 @@ export function UserMenu() {
             <Link to="/admin" className={itemClass} role="menuitem" onClick={() => setOpen(false)}>
               <IconAdmin className="h-[18px] w-[18px] shrink-0 text-magenta-text" />
               Admin console
+              {adminWaiting > 0 && (
+                <span className="ml-auto grid min-w-[20px] place-items-center rounded-full bg-magenta px-1.5 text-[11px] font-semibold text-white">
+                  {adminWaiting > 99 ? '99+' : adminWaiting}
+                </span>
+              )}
             </Link>
           )}
 
