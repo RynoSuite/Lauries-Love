@@ -66,9 +66,16 @@ export function AdminGroups() {
       if (!me) throw new Error('Not signed in');
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
       const path = `${me}/group-covers/${Date.now()}.${ext}`;
+      // NOT upsert. Upsert makes storage issue INSERT ... ON CONFLICT DO
+      // UPDATE, which is also checked against the bucket's UPDATE policy —
+      // and avatars_owner_update has a USING clause but no WITH CHECK, so the
+      // write is refused with "new row violates row-level security policy".
+      // The path carries Date.now(), so it cannot collide and upsert bought
+      // nothing. (AvatarUpload already passes upsert:false, which is why
+      // member photos worked while group covers did not.)
       const { error } = await supabase.storage
         .from('avatars')
-        .upload(path, file, { upsert: true, contentType: file.type || undefined });
+        .upload(path, file, { upsert: false, contentType: file.type || undefined });
       if (error) throw error;
       setForm((prev) => ({ ...prev, cover_path: path }));
     } catch (err) {
