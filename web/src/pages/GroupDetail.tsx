@@ -191,19 +191,23 @@ export function GroupDetail() {
               <p className="mt-1.5 text-sm text-muted">{group.description}</p>
             )}
           </div>
-          {/* "Joined" used to be the leave button. It dropped members out of
-              a support group on one click, with nothing saying it would and no
-              way back other than rejoining. Leaving is now named, and
-              confirmed. */}
+          {/* Membership state and the action to end it are two separate
+              things. They were one button that said "Joined" and meant
+              "leave", which is unreadable on a phone, where there is no hover
+              to reveal the real label. */}
           {group.joined ? (
-            <button
-              onClick={() => setLeaving(true)}
-              disabled={toggleJoin.isPending}
-              className="group/leave shrink-0 rounded-full bg-surface-2 px-4 py-1 text-sm font-medium text-heading transition-colors hover:bg-danger hover:text-white"
-            >
-              <span className="group-hover/leave:hidden">Joined</span>
-              <span className="hidden group-hover/leave:inline">Leave</span>
-            </button>
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="rounded-full bg-surface-2 px-3 py-1 text-sm font-medium text-heading">
+                Joined
+              </span>
+              <button
+                onClick={() => setLeaving(true)}
+                disabled={toggleJoin.isPending}
+                className="rounded-full border border-line px-3 py-1 text-sm font-medium text-muted transition-colors hover:border-danger hover:text-danger disabled:opacity-50"
+              >
+                Leave group
+              </button>
+            </div>
           ) : (
             <button
               onClick={() => toggleJoin.mutate(false)}
