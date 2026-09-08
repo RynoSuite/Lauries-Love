@@ -5,6 +5,7 @@ import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
 import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
 import { Avatar } from '../components/Avatar';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 // Covers live in the public 'avatars' bucket under the uploader's uid prefix.
 function coverUrl(path: string | null | undefined): string | null {
@@ -74,6 +75,7 @@ async function fetchGroupPosts(id: string): Promise<{ posts: GroupPost[]; likedI
 export function GroupDetail() {
   const { id = '' } = useParams();
   const { isEnabled } = useFeatureFlags();
+  const [leaving, setLeaving] = useState(false);
   const qc = useQueryClient();
   const [body, setBody] = useState('');
   const [commentFor, setCommentFor] = useState<string | null>(null);
@@ -189,15 +191,28 @@ export function GroupDetail() {
               <p className="mt-1.5 text-sm text-muted">{group.description}</p>
             )}
           </div>
-          <button
-            onClick={() => toggleJoin.mutate(group.joined)}
-            disabled={toggleJoin.isPending}
-            className={`shrink-0 rounded-full px-4 py-1 text-sm font-medium ${
-              group.joined ? 'bg-surface-2 text-heading' : 'bg-magenta text-white'
-            }`}
-          >
-            {group.joined ? 'Joined' : 'Join'}
-          </button>
+          {/* "Joined" used to be the leave button. It dropped members out of
+              a support group on one click, with nothing saying it would and no
+              way back other than rejoining. Leaving is now named, and
+              confirmed. */}
+          {group.joined ? (
+            <button
+              onClick={() => setLeaving(true)}
+              disabled={toggleJoin.isPending}
+              className="group/leave shrink-0 rounded-full bg-surface-2 px-4 py-1 text-sm font-medium text-heading transition-colors hover:bg-danger hover:text-white"
+            >
+              <span className="group-hover/leave:hidden">Joined</span>
+              <span className="hidden group-hover/leave:inline">Leave</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => toggleJoin.mutate(false)}
+              disabled={toggleJoin.isPending}
+              className="shrink-0 rounded-full bg-magenta px-4 py-1 text-sm font-medium text-white transition-colors hover:bg-magenta-hi"
+            >
+              Join
+            </button>
+          )}
         </div>
 
         {group.members.length > 0 && (
@@ -306,6 +321,20 @@ export function GroupDetail() {
           </article>
         );
       })}
+
+      <ConfirmDialog
+        open={leaving}
+        title={`Leave ${group.name}?`}
+        body="You will stop seeing this group's posts in your feed and will not be able to post in it. Your existing posts and comments stay where they are. You can rejoin at any time."
+        confirmLabel="Leave group"
+        destructive
+        busy={toggleJoin.isPending}
+        onConfirm={() => {
+          toggleJoin.mutate(true);
+          setLeaving(false);
+        }}
+        onCancel={() => setLeaving(false)}
+      />
     </div>
   );
 }

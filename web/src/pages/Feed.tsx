@@ -17,6 +17,10 @@ type FeedPost = {
   visibility: string;
   image_path: string | null;
   edited_at: string | null;
+  group_id: string | null;
+  // Named so a group post says which group, and links there: the feed is how
+  // members discover groups they are not in yet.
+  group: { id: string; name: string } | null;
   author: {
     id: string;
     first_name: string | null;
@@ -39,7 +43,7 @@ async function fetchFeed(): Promise<FeedData> {
   const { data, error } = await supabase
     .from('posts')
     .select(
-      'id, body, created_at, like_count, visibility, image_path, edited_at, author:profiles!posts_author_id_fkey(id, first_name, display_name, avatar_path), comments(count)',
+      'id, body, created_at, like_count, visibility, image_path, edited_at, group_id, group:groups(id, name), author:profiles!posts_author_id_fkey(id, first_name, display_name, avatar_path), comments(count)',
     )
     .order('created_at', { ascending: false })
     .limit(30);
@@ -307,7 +311,19 @@ export function Feed() {
                 <div className="text-xs text-faint">
                   {new Date(p.created_at).toLocaleDateString()}
                   {p.edited_at && ' · edited'}
-                  {p.visibility === 'group' && ' · group'}
+                  {p.group ? (
+                    <>
+                      {' · '}
+                      <Link
+                        to={`/groups/${p.group.id}`}
+                        className="text-magenta-text hover:underline"
+                      >
+                        {p.group.name}
+                      </Link>
+                    </>
+                  ) : (
+                    p.visibility === 'group' && ' · group'
+                  )}
                 </div>
               </div>
               <div className="ml-auto">

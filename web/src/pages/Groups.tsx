@@ -73,21 +73,25 @@ export function Groups() {
     return <p className="text-muted">Groups are turned off.</p>;
   if (isLoading) return <p className="text-heading">Loading groups…</p>;
 
-  return (
-    <div>
-      <PageTitle>Groups</PageTitle>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {(data ?? []).map((g) => {
-          const cover = coverUrl(g.cover_path);
-          return (
+  const all = data ?? [];
+  const myGroups = all.filter((g) => g.joined);
+  const otherGroups = all.filter((g) => !g.joined);
+
+  // One card renderer for both sections. The whole card is the link: a title
+  // that is the only clickable thing in a 168px card is a small target
+  // surrounded by dead space that looks clickable and is not.
+  function card(g: (typeof all)[number]) {
+    const cover = coverUrl(g.cover_path);
+    return (
             // The cover fills the card and the content sits on top of it. A
             // scrim carries the text rather than trusting the photograph:
             // covers are member-supplied, so a bright or busy image would
             // otherwise make the name unreadable. Cards keep a minimum height
             // so a group without a cover still matches the grid.
-            <div
+            <Link
               key={g.id}
-              className="relative isolate flex min-h-[168px] flex-col justify-end overflow-hidden rounded-2xl border border-line bg-surface p-4"
+              to={`/groups/${g.id}`}
+              className="relative isolate flex min-h-[168px] flex-col justify-end overflow-hidden rounded-2xl border border-line bg-surface p-4 transition-colors hover:border-magenta"
             >
               {cover && (
                 <>
@@ -106,12 +110,7 @@ export function Groups() {
 
               <div className="flex items-end justify-between gap-3">
                 <div className="min-w-0">
-                  <Link
-                    to={`/groups/${g.id}`}
-                    className="font-semibold text-heading hover:text-magenta-text hover:underline"
-                  >
-                    {g.name}
-                  </Link>
+                  <div className="font-semibold text-heading">{g.name}</div>
                   <div className="text-xs text-faint">{g.memberCount} members</div>
                   {g.description && (
                     <p className="mt-1.5 line-clamp-2 text-sm text-muted">
@@ -119,19 +118,61 @@ export function Groups() {
                     </p>
                   )}
                 </div>
-                <button
-                  onClick={() => toggle.mutate({ id: g.id, joined: g.joined })}
-                  className={`shrink-0 rounded-full px-3 py-1 text-sm font-medium ${
-                    g.joined ? 'bg-surface-2 text-heading' : 'bg-magenta text-white'
-                  }`}
-                >
-                  {g.joined ? 'Joined' : 'Join'}
-                </button>
+                {/* Join stays a one-click action from the list. Leaving does
+                    not: it lives on the group page behind a confirm, because
+                    a stray click on a card should never quietly remove
+                    someone from a support group. */}
+                {g.joined ? (
+                  <span className="shrink-0 rounded-full bg-surface-2 px-3 py-1 text-sm font-medium text-heading">
+                    Joined
+                  </span>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      // The card is a link now; joining must not navigate.
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggle.mutate({ id: g.id, joined: false });
+                    }}
+                    className="shrink-0 rounded-full bg-magenta px-3 py-1 text-sm font-medium text-white transition-colors hover:bg-magenta-hi"
+                  >
+                    Join
+                  </button>
+                )}
               </div>
-            </div>
-          );
-        })}
-      </div>
+            </Link>
+    );
+  }
+
+  return (
+    <div>
+      <PageTitle>Groups</PageTitle>
+
+      {myGroups.length > 0 && (
+        <section className="mb-8">
+          <h2 className="mb-3 font-sans text-sm font-semibold text-magenta-text">
+            My groups
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">{myGroups.map(card)}</div>
+        </section>
+      )}
+
+      {otherGroups.length > 0 && (
+        <section>
+          {/* Only worth a heading once there is something above it to
+              distinguish from. A member of nothing just sees "Groups". */}
+          {myGroups.length > 0 && (
+            <h2 className="mb-3 font-sans text-sm font-semibold text-magenta-text">
+              Groups you can join
+            </h2>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">{otherGroups.map(card)}</div>
+        </section>
+      )}
+
+      {all.length === 0 && (
+        <p className="text-muted">No groups yet.</p>
+      )}
     </div>
   );
 }

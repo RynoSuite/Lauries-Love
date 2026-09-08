@@ -19,6 +19,7 @@ type Post = {
   like_count: number;
   visibility: string;
   image_path: string | null;
+  group: { id: string; name: string } | null;
   author: {
     id: string;
     first_name: string | null;
@@ -31,7 +32,7 @@ async function fetchPost(id: string): Promise<Post | null> {
   const { data } = await supabase
     .from('posts')
     .select(
-      'id, body, created_at, edited_at, like_count, visibility, image_path, author:profiles!posts_author_id_fkey(id, first_name, display_name, avatar_path)',
+      'id, body, created_at, edited_at, like_count, visibility, image_path, group:groups(id, name), author:profiles!posts_author_id_fkey(id, first_name, display_name, avatar_path)',
     )
     .eq('id', id)
     .maybeSingle();
@@ -89,7 +90,19 @@ export function PostDetail() {
             <div className="text-xs text-faint">
               {new Date(data.created_at).toLocaleString()}
               {data.edited_at && ' · edited'}
-              {data.visibility === 'group' && ' · group'}
+              {data.group ? (
+                <>
+                  {' · '}
+                  <Link
+                    to={`/groups/${data.group.id}`}
+                    className="text-magenta-text hover:underline"
+                  >
+                    {data.group.name}
+                  </Link>
+                </>
+              ) : (
+                data.visibility === 'group' && ' · group'
+              )}
             </div>
           </div>
           <div className="ml-auto">
