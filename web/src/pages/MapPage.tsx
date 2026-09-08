@@ -116,20 +116,58 @@ function LocateOnFirstLoad({ onResolved }: { onResolved: (ok: boolean) => void }
   return null;
 }
 
+// One choice per filter. Nobody looks for "breast cancer OR leukaemia"; they
+// look for people like them. Multi-select added a mental model without adding
+// a use case.
 type Filters = {
-  roles: string[];
-  diagnoses: string[];
+  role: string;
+  diagnosis: string;
   gender: string;
   ageRange: string;
 };
 
-const EMPTY_FILTERS: Filters = { roles: [], diagnoses: [], gender: '', ageRange: '' };
+const EMPTY_FILTERS: Filters = { role: '', diagnosis: '', gender: '', ageRange: '' };
+
+const selectClass =
+  'w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta';
+
+// One row of four selects, always visible. A toggle that expanded a panel
+// pushed the map down and hid the controls behind a click, for something
+// people want in front of them while they pan.
+//
+// Defined at module scope on purpose: a component declared inside the render
+// is a new type every render, so React remounts it and the select loses focus
+// mid-interaction.
+function Filter({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs font-medium text-muted">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className={selectClass}>
+        <option value="">Anyone</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
 
 export function MapPage() {
   const { isEnabled } = useFeatureFlags();
   const [markers, setMarkers] = useState<Marker[]>([]);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const [showFilters, setShowFilters] = useState(false);
   const [located, setLocated] = useState<boolean | null>(null);
 
   const { data: defs } = useQuery({
@@ -163,12 +201,9 @@ export function MapPage() {
   const visible = useMemo(
     () =>
       markers.filter((m) => {
-        if (filters.roles.length && (!m.role_id || !filters.roles.includes(m.role_id)))
+        if (filters.role && m.role_id !== filters.role) return false;
+        if (filters.diagnosis && !(m.diagnosis_type_ids ?? []).includes(filters.diagnosis))
           return false;
-        if (filters.diagnoses.length) {
-          const mine = m.diagnosis_type_ids ?? [];
-          if (!filters.diagnoses.some((d) => mine.includes(d))) return false;
-        }
         if (filters.gender && m.gender !== filters.gender) return false;
         if (filters.ageRange && m.age_range !== filters.ageRange) return false;
         return true;
@@ -176,131 +211,64 @@ export function MapPage() {
     [markers, filters],
   );
 
-  const activeCount =
-    filters.roles.length +
-    filters.diagnoses.length +
-    (filters.gender ? 1 : 0) +
-    (filters.ageRange ? 1 : 0);
-
-  const toggle = (key: 'roles' | 'diagnoses', id: string) =>
-    setFilters((f) => ({
-      ...f,
-      [key]: f[key].includes(id) ? f[key].filter((x) => x !== id) : [...f[key], id],
-    }));
+  const activeCount = Object.values(filters).filter(Boolean).length;
 
   if (!isEnabled('community_map'))
     return <p className="text-muted">The community map is turned off.</p>;
 
-  const chip = (on: boolean) =>
-    'rounded-full border px-3 py-1 text-sm transition-colors ' +
-    (on
-      ? 'border-magenta bg-magenta text-white'
-      : 'border-line text-body hover:border-magenta hover:text-magenta-text');
-
-  const selectClass =
-    'rounded-lg border border-line-strong px-3 py-1.5 text-sm outline-none focus:border-magenta';
 
   return (
     <div>
-      <PageTitle
-        actions={
+      <PageTitle>Community map</PageTitle>
+
+      <div className="mb-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Filter
+          label="Looking for"
+          value={filters.role}
+          onChange={(v) => setFilters((f) => ({ ...f, role: v }))}
+          options={roleOptions.map((r) => ({ value: r.id, label: r.description }))}
+        />
+        <Filter
+          label="Diagnosis"
+          value={filters.diagnosis}
+          onChange={(v) => setFilters((f) => ({ ...f, diagnosis: v }))}
+          options={diagnosisOptions.map((d) => ({ value: d.id, label: d.description }))}
+        />
+        <Filter
+          label="Gender"
+          value={filters.gender}
+          onChange={(v) => setFilters((f) => ({ ...f, gender: v }))}
+          options={genderOptions.map((g) => ({ value: g, label: g }))}
+        />
+        <Filter
+          label="Age"
+          value={filters.ageRange}
+          onChange={(v) => setFilters((f) => ({ ...f, ageRange: v }))}
+          options={ageOptions.map((a) => ({ value: a, label: a }))}
+        />
+      </div>
+
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+        <span className="text-muted">
+          Showing <span className="font-semibold text-heading">{visible.length}</span> of{' '}
+          <span className="font-semibold text-heading">{markers.length}</span> member
+          {markers.length === 1 ? '' : 's'} in view
+        </span>
+        {activeCount > 0 && (
           <button
-            onClick={() => setShowFilters((v) => !v)}
-            className={
-              'rounded-lg border px-3 py-2 text-sm transition-colors ' +
-              (activeCount
-                ? 'border-magenta text-magenta-text'
-                : 'border-line text-body hover:border-magenta')
-            }
+            onClick={() => setFilters(EMPTY_FILTERS)}
+            className="text-magenta-text hover:underline"
           >
-            Filters{activeCount > 0 && ` (${activeCount})`}
+            Clear filters
           </button>
-        }
-      >
-        Community map
-      </PageTitle>
+        )}
+      </div>
 
-      {showFilters && (
-        <div className="mb-3 space-y-4 rounded-2xl border border-line bg-surface p-4">
-          <div>
-            <div className="mb-2 text-sm font-semibold text-heading">I am looking for</div>
-            <div className="flex flex-wrap gap-2">
-              {roleOptions.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => toggle('roles', r.id)}
-                  className={chip(filters.roles.includes(r.id))}
-                >
-                  {r.description}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-2 text-sm font-semibold text-heading">Diagnosis</div>
-            <div className="flex flex-wrap gap-2">
-              {diagnosisOptions.map((d) => (
-                <button
-                  key={d.id}
-                  onClick={() => toggle('diagnoses', d.id)}
-                  className={chip(filters.diagnoses.includes(d.id))}
-                >
-                  {d.description}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-end gap-4">
-            {genderOptions.length > 0 && (
-              <label className="block">
-                <span className="mb-1 block text-sm font-semibold text-heading">Gender</span>
-                <select
-                  value={filters.gender}
-                  onChange={(e) => setFilters((f) => ({ ...f, gender: e.target.value }))}
-                  className={selectClass}
-                >
-                  <option value="">Any</option>
-                  {genderOptions.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            {ageOptions.length > 0 && (
-              <label className="block">
-                <span className="mb-1 block text-sm font-semibold text-heading">Age</span>
-                <select
-                  value={filters.ageRange}
-                  onChange={(e) => setFilters((f) => ({ ...f, ageRange: e.target.value }))}
-                  className={selectClass}
-                >
-                  <option value="">Any</option>
-                  {ageOptions.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            {activeCount > 0 && (
-              <button
-                onClick={() => setFilters(EMPTY_FILTERS)}
-                className="pb-1.5 text-sm text-magenta-text hover:underline"
-              >
-                Clear all
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
+      {/* isolate: Leaflet panes and controls carry z-index values up to 1000,
+          which beat the sticky header and painted the map over the account
+          menu. A stacking context here keeps all of that contained. */}
       <div
-        className="overflow-hidden rounded-2xl border border-line"
+        className="relative isolate overflow-hidden rounded-2xl border border-line"
         style={{ height: '70vh' }}
       >
         <MapContainer

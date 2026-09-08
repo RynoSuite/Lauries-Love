@@ -82,7 +82,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-ground">
-      <header className="sticky top-0 z-20 bg-harbor/95 backdrop-blur">
+      <header className="sticky top-0 z-[1100] bg-harbor/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1500px] items-center gap-6 px-4 py-2 sm:px-6">
           {/* Mark only. The wordmark and tagline are carried by the logo's own
               lockup elsewhere; repeating them here crowded the bar. appName
