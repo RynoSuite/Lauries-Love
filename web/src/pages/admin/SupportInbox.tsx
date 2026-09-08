@@ -25,8 +25,20 @@ async function fetchTickets(): Promise<Ticket[]> {
   return data ?? [];
 }
 
-// Must match Jeremy's support_tickets CHECK constraint.
-const STATUSES = ['open', 'in_progress', 'closed'];
+// A ticket is either waiting on us or it is done. "In progress" sounds useful
+// and in practice becomes a third state nobody updates, so it is not offered.
+// The database CHECK still permits it, so any existing in_progress row is
+// shown correctly and moves to open or closed on the next change.
+const STATUSES = [
+  { value: 'open', label: 'Open' },
+  { value: 'closed', label: 'Closed' },
+];
+
+const STATUS_LABEL: Record<string, string> = {
+  open: 'Open',
+  in_progress: 'In progress',
+  closed: 'Closed',
+};
 
 export function AdminSupportInbox() {
   const qc = useQueryClient();
@@ -87,9 +99,15 @@ export function AdminSupportInbox() {
                 }
                 className="rounded border border-line-strong px-2 py-1 text-xs"
               >
+                {/* A legacy in_progress row would otherwise have no matching
+                    option and the select would show blank, so keep it listed
+                    until it is moved off. */}
+                {t.status === 'in_progress' && (
+                  <option value="in_progress">{STATUS_LABEL.in_progress}</option>
+                )}
                 {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
+                  <option key={s.value} value={s.value}>
+                    {s.label}
                   </option>
                 ))}
               </select>

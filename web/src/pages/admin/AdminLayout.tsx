@@ -18,7 +18,7 @@ export function AdminLayout() {
   const { signOut } = useAuth();
   return (
     <div className="min-h-screen bg-ground">
-      <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6">
+      <div className="mx-auto flex max-w-[1500px] gap-6 px-4 py-6">
         <aside className="w-56 shrink-0">
           <Link to="/" className="mb-4 flex items-center gap-2.5">
             <img
