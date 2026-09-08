@@ -6,6 +6,7 @@ import { useFeatureFlags } from '../lib/featureFlags';
 import { PageTitle } from '../components/PageTitle';
 import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
 import { Avatar } from '../components/Avatar';
+import { Comments } from '../components/Comments';
 
 type FeedPost = {
   id: string;
@@ -13,6 +14,7 @@ type FeedPost = {
   created_at: string;
   like_count: number;
   visibility: string;
+  image_path: string | null;
   author: {
     id: string;
     first_name: string | null;
@@ -35,7 +37,7 @@ async function fetchFeed(): Promise<FeedData> {
   const { data, error } = await supabase
     .from('posts')
     .select(
-      'id, body, created_at, like_count, visibility, author:profiles!posts_author_id_fkey(id, first_name, display_name, avatar_path), comments(count)',
+      'id, body, created_at, like_count, visibility, image_path, author:profiles!posts_author_id_fkey(id, first_name, display_name, avatar_path), comments(count)',
     )
     .order('created_at', { ascending: false })
     .limit(30);
@@ -65,28 +67,90 @@ export function Feed() {
   const qc = useQueryClient();
   const [body, setBody] = useState('');
   const [commentFor, setCommentFor] = useState<string | null>(null);
-  const [commentBody, setCommentBody] = useState('');
   const [reportFor, setReportFor] = useState<string | null>(null);
   const [reportReason, setReportReason] = useState('');
   const [reportedIds, setReportedIds] = useState<Set<string>>(new Set());
+  const [imagePath, setImagePath] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['feed'],
     queryFn: fetchFeed,
   });
 
+  // Images are downscaled in the browser before upload. A phone photo is
+  // routinely 4-8MB and the feed renders it a few hundred pixels wide, so
+  // shipping the original wastes the member's data for no visible gain.
+  async function pickImage(file: File) {
+    setImageError(null);
+    if (!file.type.startsWith('image/')) {
+      setImageError('Please choose an image file.');
+      return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      setImageError('That image is over 15MB, please pick a smaller one.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const me = await currentUserId();
+      if (!me) throw new Error('Not signed in');
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Could not prepare the image');
+      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close?.();
+      const blob = await new Promise<Blob | null>((r) =>
+        canvas.toBlob(r, 'image/jpeg', 0.85),
+      );
+      if (!blob) throw new Error('Could not prepare the image');
+
+      // Storage policy requires the first path segment to be the uploader's
+      // uid. No upsert: the timestamp makes collisions impossible, and upsert
+      // would be evaluated against the bucket's UPDATE policy too.
+      const path = `${me}/${Date.now()}.jpg`;
+      const { error } = await supabase.storage
+        .from('post-images')
+        .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+      if (error) throw error;
+      setImagePath(path);
+      setImagePreview(URL.createObjectURL(blob));
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Could not add the image.');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function clearImage() {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(null);
+    setImagePath(null);
+    setImageError(null);
+  }
+
   const createPost = useMutation({
     mutationFn: async (text: string) => {
       const me = await currentUserId();
       if (!me) throw new Error('Not signed in');
       // visibility 'all' is the DB check-constraint value for a public post.
-      const { error } = await supabase
-        .from('posts')
-        .insert({ author_id: me, body: text.trim(), visibility: 'all' });
+      const { error } = await supabase.from('posts').insert({
+        author_id: me,
+        body: text.trim(),
+        image_path: imagePath,
+        visibility: 'all',
+      });
       if (error) throw error;
     },
     onSuccess: () => {
       setBody('');
+      clearImage();
       qc.invalidateQueries({ queryKey: ['feed'] });
     },
   });
@@ -115,22 +179,6 @@ export function Feed() {
       }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['feed'] }),
-  });
-
-  const addComment = useMutation({
-    mutationFn: async (v: { postId: string; text: string }) => {
-      const me = await currentUserId();
-      if (!me) throw new Error('Not signed in');
-      const { error } = await supabase
-        .from('comments')
-        .insert({ post_id: v.postId, author_id: me, body: v.text.trim() });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setCommentBody('');
-      setCommentFor(null);
-      qc.invalidateQueries({ queryKey: ['feed'] });
-    },
   });
 
   // Report a post -> moderation_queue via the report_content RPC (SECURITY
@@ -171,10 +219,44 @@ export function Feed() {
           rows={3}
           className="w-full resize-none rounded-lg border border-line p-3 text-sm outline-none focus:border-magenta"
         />
-        <div className="mt-2 flex justify-end">
+
+        {imagePreview && (
+          <div className="relative mt-3 inline-block">
+            <img
+              src={imagePreview}
+              alt=""
+              className="max-h-56 rounded-lg border border-line object-contain"
+            />
+            <button
+              onClick={clearImage}
+              aria-label="Remove image"
+              className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-ground/80 text-sm text-heading hover:bg-ground"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {imageError && <p className="mt-2 text-sm text-danger">{imageError}</p>}
+
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <label className="cursor-pointer rounded-lg border border-line px-3 py-2 text-sm text-muted transition-colors hover:border-magenta hover:text-magenta-text">
+            {uploading ? 'Adding…' : 'Add a photo'}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={uploading}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                e.target.value = '';
+                if (f) void pickImage(f);
+              }}
+            />
+          </label>
           <button
             onClick={() => createPost.mutate(body)}
-            disabled={!body.trim() || createPost.isPending}
+            disabled={(!body.trim() && !imagePath) || createPost.isPending || uploading}
             className="rounded-lg bg-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
           >
             {createPost.isPending ? 'Posting…' : 'Post'}
@@ -215,6 +297,17 @@ export function Feed() {
                 </div>
               </div>
             </header>
+            {p.image_path && (
+              <img
+                src={
+                  supabase.storage.from('post-images').getPublicUrl(p.image_path).data
+                    .publicUrl
+                }
+                alt=""
+                loading="lazy"
+                className="mb-3 max-h-[520px] w-full rounded-xl border border-line object-cover"
+              />
+            )}
             <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
               {p.body}
             </p>
@@ -254,25 +347,7 @@ export function Feed() {
               )}
             </footer>
 
-            {commentFor === p.id && (
-              <div className="mt-3 flex gap-2">
-                <input
-                  value={commentBody}
-                  onChange={(e) => setCommentBody(e.target.value)}
-                  placeholder="Write a comment…"
-                  className="flex-1 rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
-                />
-                <button
-                  onClick={() =>
-                    addComment.mutate({ postId: p.id, text: commentBody })
-                  }
-                  disabled={!commentBody.trim() || addComment.isPending}
-                  className="rounded-lg bg-magenta px-3 py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
-                >
-                  Send
-                </button>
-              </div>
-            )}
+            {commentFor === p.id && <Comments postId={p.id} />}
 
             {reportFor === p.id && (
               <div className="mt-3 flex gap-2">
