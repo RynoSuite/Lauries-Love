@@ -6,6 +6,9 @@ import { useFeatureFlags } from '../lib/featureFlags';
 import { MessageAttachment } from '../components/MessageAttachment';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { IconPencil, IconTrash } from '../components/Icons';
+import { NewGroupThread } from '../components/NewGroupThread';
+import { ThreadHeader } from '../components/ThreadHeader';
+import { Avatar } from '../components/Avatar';
 
 // Supabase storage caps a standard upload at 50MB; 25 keeps well inside that
 // and keeps a member on mobile data from sending something enormous by accident.
@@ -14,10 +17,20 @@ const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024;
 type Conversation = {
   id: string;
   is_group: boolean;
+  // Set when the thread belongs to a community group, in which case its
+  // membership follows the group and cannot be edited from here.
+  group_id: string | null;
   name: string | null;
   last_message_body: string | null;
   last_message_at: string | null;
-  members: { profile: { id: string; display_name: string | null; first_name: string | null } }[];
+  members: {
+    profile: {
+      id: string;
+      display_name: string | null;
+      first_name: string | null;
+      avatar_path: string | null;
+    };
+  }[];
 };
 type Message = {
   id: string;
@@ -78,20 +91,26 @@ async function fetchConversations(): Promise<Conversation[]> {
   const { data } = await supabase
     .from('conversations')
     .select(
-      'id, is_group, name, last_message_body, last_message_at, members:conversation_members(profile:profiles(id, display_name, first_name))',
+      'id, is_group, group_id, name, last_message_body, last_message_at, members:conversation_members(profile:profiles(id, display_name, first_name, avatar_path))',
     )
     .in('id', ids)
     .order('last_message_at', { ascending: false, nullsFirst: false });
   return (data ?? []) as unknown as Conversation[];
 }
 
+function othersOf(c: Conversation, meId: string | null) {
+  return c.members.map((m) => m.profile).filter((p) => p.id !== meId);
+}
+
+// A named group uses its name. An unnamed one is named by the people in it,
+// which is what makes it recognisable at a glance — but four full names do not
+// fit a 16rem rail, so past two the rest become a count.
 function convTitle(c: Conversation, meId: string | null) {
   if (c.name) return c.name;
-  const others = c.members
-    .map((m) => m.profile)
-    .filter((p) => p.id !== meId)
-    .map((p) => p.display_name || p.first_name || 'Member');
-  return others.join(', ') || 'Conversation';
+  const names = othersOf(c, meId).map((p) => p.display_name || p.first_name || 'Member');
+  if (names.length === 0) return 'Conversation';
+  if (names.length <= 2) return names.join(', ');
+  return `${names.slice(0, 2).join(', ')} +${names.length - 2}`;
 }
 
 export function Messages() {
@@ -106,6 +125,8 @@ export function Messages() {
 
   // New-conversation composer state.
   const [composing, setComposing] = useState(false);
+  // 'direct' searches every member; 'group' picks from your connections.
+  const [composeMode, setComposeMode] = useState<'direct' | 'group'>('direct');
   const [search, setSearch] = useState('');
   const [hits, setHits] = useState<MemberHit[]>([]);
   const [starting, setStarting] = useState(false);
@@ -195,6 +216,12 @@ export function Messages() {
       .rpc('mark_conversation_read', { p_conversation_id: active })
       .then(() => qc.invalidateQueries({ queryKey: ['unread'] }));
   }, [active, msgs.length, qc]);
+
+  // The open conversation, for the header and for sender attribution.
+  const activeConv = (convos.data ?? []).find((c) => c.id === active) ?? null;
+  const senderById = new Map(
+    (activeConv?.members ?? []).map((m) => [m.profile.id, m.profile]),
+  );
 
   async function send() {
     if (!text.trim() || !active) return;
@@ -324,6 +351,36 @@ export function Messages() {
         </div>
 
         {composing && (
+          <div className="flex gap-1 border-b border-line px-3 pt-3">
+            {(['direct', 'group'] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setComposeMode(m)}
+                className={`rounded-t-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                  composeMode === m
+                    ? 'bg-surface-2 text-heading'
+                    : 'text-muted hover:text-heading'
+                }`}
+              >
+                {m === 'direct' ? 'One person' : 'Group'}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {composing && composeMode === 'group' && (
+          <NewGroupThread
+            onCancel={() => setComposing(false)}
+            onCreated={(id) => {
+              setComposing(false);
+              setActive(id);
+              setSearchParams({ c: id });
+              qc.invalidateQueries({ queryKey: ['conversations'] });
+            }}
+          />
+        )}
+
+        {composing && composeMode === 'direct' && (
           <div className="border-b p-3">
             <input
               autoFocus
@@ -350,20 +407,44 @@ export function Messages() {
           </div>
         )}
 
-        {(convos.data ?? []).map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setActive(c.id)}
-            className={`block w-full border-b px-3 py-2 text-left text-sm ${
-              active === c.id ? 'bg-surface-2' : ''
-            }`}
-          >
-            <div className="font-medium">{convTitle(c, meId)}</div>
-            <div className="truncate text-xs text-faint">
-              {c.last_message_body ?? 'No messages yet'}
-            </div>
-          </button>
-        ))}
+        {(convos.data ?? []).map((c) => {
+          const others = othersOf(c, meId);
+          return (
+            <button
+              key={c.id}
+              onClick={() => setActive(c.id)}
+              className={`flex w-full items-center gap-2.5 border-b border-line px-3 py-2 text-left text-sm ${
+                active === c.id ? 'bg-surface-2' : ''
+              }`}
+            >
+              {/* Two overlapping avatars stand in for a group: enough to read
+                  as "more than one person" at a glance without pretending to
+                  show the whole roster. */}
+              <div className="relative shrink-0" style={{ width: c.is_group ? 34 : 28, height: 28 }}>
+                <Avatar
+                  path={others[0]?.avatar_path}
+                  name={others[0]?.display_name || others[0]?.first_name || 'Member'}
+                  size={c.is_group ? 22 : 28}
+                />
+                {c.is_group && others.length > 1 && (
+                  <span className="absolute bottom-0 right-0 rounded-full ring-2 ring-surface">
+                    <Avatar
+                      path={others[1]?.avatar_path}
+                      name={others[1]?.display_name || others[1]?.first_name || 'Member'}
+                      size={18}
+                    />
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-medium">{convTitle(c, meId)}</div>
+                <div className="truncate text-xs text-faint">
+                  {c.last_message_body ?? 'No messages yet'}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </aside>
 
       <section className="flex flex-1 flex-col rounded-2xl border border-line bg-surface">
@@ -373,6 +454,25 @@ export function Messages() {
           </div>
         ) : (
           <>
+            {activeConv && (
+              <ThreadHeader
+                conversationId={activeConv.id}
+                title={convTitle(activeConv, meId)}
+                isGroup={activeConv.is_group}
+                isCommunityGroup={activeConv.group_id !== null}
+                meId={meId}
+                members={othersOf(activeConv, meId).concat(
+                  activeConv.members
+                    .map((m) => m.profile)
+                    .filter((p) => p.id === meId),
+                )}
+                onLeft={() => {
+                  setActive(null);
+                  setSearchParams({});
+                  qc.invalidateQueries({ queryKey: ['conversations'] });
+                }}
+              />
+            )}
             <div className="flex-1 space-y-2 overflow-y-auto p-4">
               {msgs.map((m, i) => {
                 const mine = m.sender_id === meId;
@@ -380,6 +480,14 @@ export function Messages() {
                 // spans weeks does not read as one continuous conversation.
                 const showDate =
                   i === 0 || !sameDay(msgs[i - 1].created_at, m.created_at);
+                // In a group, "who said that" is a real question. Attribute an
+                // incoming message whenever the sender changes, or after a
+                // date break; a run from one person stays uncluttered.
+                const sender = senderById.get(m.sender_id);
+                const showSender =
+                  !!activeConv?.is_group &&
+                  !mine &&
+                  (showDate || i === 0 || msgs[i - 1].sender_id !== m.sender_id);
                 return (
                   <div key={m.id}>
                     {showDate && (
@@ -389,6 +497,19 @@ export function Messages() {
                           {dayLabel(m.created_at)}
                         </span>
                         <span className="h-px flex-1 bg-line" />
+                      </div>
+                    )}
+
+                    {showSender && (
+                      <div className="mb-0.5 ml-1 flex items-center gap-1.5">
+                        <Avatar
+                          path={sender?.avatar_path}
+                          name={sender?.display_name || sender?.first_name || 'Member'}
+                          size={18}
+                        />
+                        <span className="text-[11px] text-faint">
+                          {sender?.display_name || sender?.first_name || 'Member'}
+                        </span>
                       </div>
                     )}
 

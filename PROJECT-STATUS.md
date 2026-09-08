@@ -75,6 +75,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908180000_comment_replies_v1` | Threaded comment replies |
 | `20260908200000_edit_delete_v1` | Post/message/comment edit + delete, unread counts |
 | `20260908220000_moderation_resolve_v1` | Moderation actually removes content; queue returns `post_id` |
+| `20260908240000_group_messages_v1` | Ad-hoc group threads: create/add/leave/rename + group-aware notifications |
 
 > `20260908220000` was amended after it was first run: `moderation_queue_detailed()`
 > now also returns `post_id` so the queue can deep-link to the reported post.
@@ -138,10 +139,26 @@ column shell, real logo, Fraunces/Figtree.
 
 ### Known gaps / next up
 
-- **Group messages** (client request, NEXT UP). A normal thread with several
-  members, Facebook-style: truncated names in the list, full member list when
-  opened. `conversations.is_group` and `conversation_members` already support
-  it; the work is UI plus a create-group-thread flow.
+- **Group messages** — done. Ad-hoc threads with several members. Composer has
+  One person / Group tabs; the group tab picks from accepted connections only.
+  List rows show stacked avatars and truncate the roster ("Sarah, Mike +3");
+  the open thread has a header with the member list, add, rename and leave;
+  incoming messages are attributed when the sender changes.
+
+  Decisions worth knowing: **members must be accepted connections** of whoever
+  adds them, so nobody is pulled into a thread by a stranger. **Any member can
+  add**, not just the creator, or a thread freezes when its creator goes quiet.
+  **Nobody can be removed by anyone else** — in a support community that is a
+  harm vector with no moderator inside a private thread to appeal to; you can
+  only leave yourself. **Minimum two others**, because one other person is a
+  direct message and those are already kept unique by `direct_key`. Ceiling of
+  50. Leaving keeps your messages in place rather than rewriting the thread for
+  everyone still in it.
+
+  Membership is written only by SECURITY DEFINER RPCs
+  (`create_group_conversation`, `add_conversation_member`,
+  `leave_conversation`, `rename_conversation`, `my_connections`) because
+  `conv_members_insert` is deliberately self-insert only.
 - **Bilingual EN/ES** (client request, blocked on the OpenAI key for post
   translation, though the UI layer needs no key). Two separate jobs: static UI
   strings via i18next — mobile already has the scaffolding at
