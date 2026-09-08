@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { useBranding } from '../lib/branding';
 import { useUnread } from '../lib/useUnread';
+import { TaraStory } from './TaraStory';
 import { UserMenu } from './UserMenu';
 import {
   IconArrowRight,
@@ -98,7 +99,10 @@ export function Layout() {
             )}
           </Link>
 
-          <nav className="ml-auto flex items-center gap-1 overflow-x-auto">
+          {/* No overflow-x-auto: it drew a horizontal scrollbar under the menu
+              on browsers that always show one. The nav is icon-only below lg,
+              so it fits without scrolling. */}
+          <nav className="ml-auto flex items-center gap-1">
             {NAV.map(({ to, label, Icon, end, iconOnly, badge }) => {
               const count = badge ? (unread?.[badge] ?? 0) : 0;
               return (
@@ -208,6 +212,10 @@ export function Layout() {
         {/* Right rail */}
         <aside className={wide ? 'hidden' : 'hidden xl:block'}>
           <div className="sticky top-[92px] space-y-4">
+            {/* First in the rail: it is the origin story of the platform, so a
+                new member should meet it before the housekeeping cards. */}
+            <TaraStory />
+
             <RailCard
               Icon={IconHeart}
               title="Community guidelines"

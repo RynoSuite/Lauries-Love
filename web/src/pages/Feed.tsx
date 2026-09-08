@@ -308,6 +308,14 @@ export function Feed() {
                 />
               </div>
             </header>
+            {/* Text first: the post is what someone wrote, and the photo
+                illustrates it. Leading with the image pushed the words below
+                the fold on anything tall. */}
+            {p.body && (
+              <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
+                {p.body}
+              </p>
+            )}
             {p.image_path && (
               <img
                 src={
@@ -316,12 +324,9 @@ export function Feed() {
                 }
                 alt=""
                 loading="lazy"
-                className="mb-3 max-h-[520px] w-full rounded-xl border border-line object-cover"
+                className="mt-3 max-h-[390px] w-full rounded-xl border border-line object-cover"
               />
             )}
-            <p className="whitespace-pre-wrap text-[15px] leading-relaxed">
-              {p.body}
-            </p>
             <footer className="mt-3 flex gap-4 text-sm text-muted">
               <button
                 onClick={() => toggleLike.mutate({ id: p.id, liked })}
