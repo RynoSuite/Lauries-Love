@@ -77,6 +77,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908220000_moderation_resolve_v1` | Moderation actually removes content; queue returns `post_id` |
 | `20260908240000_group_messages_v1` | Ad-hoc group threads: create/add/leave/rename + group-aware notifications |
 | `20260908260000_location_precision_v1` | **Privacy.** Rounds every stored location to ~0.7mi + backfills existing rows |
+| `20260908280000_location_precision_v2` | **Privacy.** Coarsens further to a ~3.5mi grid; map no longer re-rounds |
 
 > `20260908220000` was amended after it was first run: `moderation_queue_detailed()`
 > now also returns `post_id` so the queue can deep-link to the reported post.

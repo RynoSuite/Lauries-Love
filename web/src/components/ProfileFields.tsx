@@ -80,10 +80,13 @@ export function profileUpdatePayload(f: ProfileForm) {
   };
 }
 
-// ~0.7 miles of latitude. Matches the database trigger and what the map
-// returns, so a member's pin is the same wherever it is read from.
+// Snap onto the same ~3.5 mile grid the database trigger uses, so a member's
+// pin is identical wherever it is read from. Kept in step with
+// location_grid_degrees() in 20260908280000_location_precision_v2.sql.
+const LOCATION_GRID_DEGREES = 0.05;
+
 function coarsen(n: number) {
-  return Math.round(n * 100) / 100;
+  return Math.round(n / LOCATION_GRID_DEGREES) * LOCATION_GRID_DEGREES;
 }
 
 const inputClass =
@@ -313,10 +316,11 @@ export function ProfileFields({
           Where you are
         </h2>
         <p className="mb-3 text-xs leading-relaxed text-faint">
-          This puts you on the member map so people nearby can find you. Your
-          exact position is never stored: it is rounded to about half a mile
-          before it is saved, so neither we nor other members can see where you
-          actually live. Your zip code is never shown to other members.
+          This puts you on the member map so people in your area can find you.
+          Your exact position is never stored: it is snapped to a grid of a few
+          miles before it is saved, so neither we nor other members can see
+          where you actually live. Your zip code is never shown to other
+          members.
         </p>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block sm:col-span-2">
