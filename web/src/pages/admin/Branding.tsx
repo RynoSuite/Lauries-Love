@@ -102,7 +102,19 @@ export function AdminBranding() {
         },
         { onConflict: 'org_id' },
       );
-      if (error) throw error;
+      if (error) {
+        // The most likely failure by far is that the branding migration has
+        // not been run on this environment. PostgREST reports that as a
+        // schema-cache miss, which reads as gibberish to anyone who is not a
+        // developer — so say what it actually means.
+        if (/theme/i.test(error.message) || error.code === 'PGRST204') {
+          throw new Error(
+            'the database is missing the theme column. Run the branding migration ' +
+              '(supabase/migrations/20260908120000_branding_theme_v1.sql) on this project, then try again.',
+          );
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       setDirty(false);
@@ -316,6 +328,18 @@ export function AdminBranding() {
           ))}
         </div>
       </section>
+
+      {/* The save button is repeated at the bottom, so the failure has to be
+          repeated with it — otherwise a save that errors at the top of a long
+          page just looks like nothing happened. */}
+      {save.isError && (
+        <p className="mb-3 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+          Could not save: {(save.error as Error).message}
+        </p>
+      )}
+      {save.isSuccess && !dirty && (
+        <p className="mb-3 text-sm text-success">Saved. Members will see this now.</p>
+      )}
 
       <div className="flex items-center gap-3 pb-10">
         <button
