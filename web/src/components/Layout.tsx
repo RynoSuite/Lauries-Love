@@ -4,6 +4,7 @@ import { useBranding } from '../lib/branding';
 import { useUnread } from '../lib/useUnread';
 import { TaraStory } from './TaraStory';
 import { CompleteProfileBanner } from './CompleteProfileBanner';
+import { UpdateBanner } from './UpdateBanner';
 import { UserMenu } from './UserMenu';
 import {
   IconArrowRight,
@@ -208,6 +209,7 @@ export function Layout() {
 
         <main className="min-w-0">
           <CompleteProfileBanner />
+          <UpdateBanner />
           <Outlet />
         </main>
 
