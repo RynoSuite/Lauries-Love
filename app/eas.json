@@ -1,6 +1,7 @@
 {
   "cli": {
-    "appVersionSource": "local"
+    "appVersionSource": "local",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "production": {
@@ -22,11 +23,7 @@
       },
       "distribution": "internal",
       "android": {
-        "resourceClass": "large",
         "buildType": "apk"
-      },
-      "ios": {
-        "resourceClass": "large"
       }
     }
   }

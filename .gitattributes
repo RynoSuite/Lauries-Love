@@ -1,0 +1,15 @@
+# This repo is developed on Windows but its iOS and Android builds run on
+# macOS and Linux. Git was converting these files to CRLF on checkout, and a
+# carriage return is not whitespace to `sh`: ios/.xcode.env failed an EAS
+# build with "line 5: : command not found", because the blank line had become
+# a command named \r.
+#
+# Anything a shell sources or executes must stay LF, whatever the platform.
+* text=auto
+
+*.sh        text eol=lf
+.xcode.env  text eol=lf
+Podfile     text eol=lf
+gradlew     text eol=lf
+*.pbxproj   text eol=lf
+*.plist     text eol=lf

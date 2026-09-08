@@ -190,7 +190,34 @@ column shell, real logo, Fraunces/Figtree.
 
 ---
 
-## 5. Mobile app: not started
+## 5. Mobile app: builds now running
+
+Dependencies installed (yarn classic; `yarn` is not on PATH, use
+`npx yarn@1.22.22`). Getting a build onto a phone turned up four things worth
+keeping:
+
+- **EAS project repointed.** `app.json` pointed at `owner: lauries-love`, an
+  Expo account we have no access to. Now `rynosuite`, project
+  `3dce34f7-098c-4c93-84c8-5c2542b31d2b`. **Handoff item:** it should end up in a
+  client-owned Expo organisation, not a personal account. Expo supports
+  transferring a project, and Expo permissions are per-account, so anyone
+  invited to reach this project can see every other project in that account.
+- **Bundle identifier.** The native project said `com.aaronpilk.laurieslove`,
+  registered to Aaron's personal Apple team, so the client's team could not
+  claim it. Now `org.laurieslove.staging` with `DEVELOPMENT_TEAM = 49HFHLWS47`
+  (Love Laurie's, Inc). **At cutover** both `app.json` and
+  `ios/*.xcodeproj/project.pbxproj` must change to the live app's
+  `com.SMv587dd8da82c.app`. Note the native value wins over `app.json` whenever
+  an `ios/` directory exists.
+- **CRLF broke the build.** `ios/.xcode.env` is sourced by `sh` on the macOS
+  builder, where a carriage return is not whitespace, so a blank line became a
+  command named : "line 5: : command not found". `Podfile` and
+  `android/gradlew` were damaged the same way. Fixed, and `.gitattributes` now
+  pins LF for anything a shell runs. Do not remove it.
+- **Free Expo plan.** `resourceClass: large` needs a paid plan; removed from the
+  staging profile only.
+
+## 6. Mobile app: what Aaron built (not yet reviewed)
 
 Aaron built it; nobody on this side has run it. `app/node_modules` is not even
 installed.

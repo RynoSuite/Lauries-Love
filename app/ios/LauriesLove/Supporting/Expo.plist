@@ -3,18 +3,12 @@
 <plist version="1.0">
   <dict>
     <key>EXUpdatesCheckOnLaunch</key>
-    <string>NEVER</string>
-    <!-- Rebuild: expo-updates DISABLED for local dev. With the placeholder
-         update URL it was serving its own cached JS snapshot instead of the
-         Metro dev server, so code changes never reliably reached the phone.
-         Re-enable with a real EAS project when OTA updates are set up. -->
+    <string>ALWAYS</string>
     <key>EXUpdatesEnabled</key>
     <false/>
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>0</integer>
     <key>EXUpdatesRuntimeVersion</key>
     <string>1.0.0</string>
-    <key>EXUpdatesURL</key>
-    <string>https://u.expo.dev/YOUR_EAS_PROJECT_ID</string>
   </dict>
 </plist>

@@ -91,10 +91,14 @@ export function Layout() {
               stays as the accessible name so the link is still announced. */}
           <Link to="/" className="flex shrink-0 items-center" aria-label={appName}>
             {logoUrl ? (
+              // Height-constrained, width free. A square box forced whatever
+              // an admin uploads into 56x56: a wide lockup shrank to nothing
+              // and a tall one sat cramped against the bar. The branding
+              // console accepts any shape, so the header has to take any shape.
               <img
                 src={logoUrl}
                 alt=""
-                className="h-14 w-14 shrink-0 object-contain"
+                className="h-12 w-auto max-w-[220px] shrink-0 object-contain"
               />
             ) : (
               <IconRibbon className="h-10 w-10 text-magenta-text" />

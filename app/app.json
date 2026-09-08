@@ -18,7 +18,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.SMv587dd8da82c.app",
+      "bundleIdentifier": "org.laurieslove.staging",
       "buildNumber": "154",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
@@ -165,9 +165,9 @@
     "runtimeVersion": "1.0.0",
     "extra": {
       "eas": {
-        "projectId": "0a4266dd-1475-48c3-ad2d-a94b03fcddbc"
+        "projectId": "3dce34f7-098c-4c93-84c8-5c2542b31d2b"
       }
     },
-    "owner": "lauries-love"
+    "owner": "rynosuite"
   }
 }
