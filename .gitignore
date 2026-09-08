@@ -43,3 +43,10 @@ _handoff-assets/
 
 # TypeScript incremental build cache — a build artifact, not source
 web/tsconfig.tsbuildinfo
+
+# Database dumps — legacy migration exports contain patient PII
+*.sql
+!supabase/migrations/*.sql
+!api/libs/database/src/migrations/*.sql
+ll.sql
+users.tsv
