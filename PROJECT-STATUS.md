@@ -76,6 +76,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908200000_edit_delete_v1` | Post/message/comment edit + delete, unread counts |
 | `20260908220000_moderation_resolve_v1` | Moderation actually removes content; queue returns `post_id` |
 | `20260908240000_group_messages_v1` | Ad-hoc group threads: create/add/leave/rename + group-aware notifications |
+| `20260908260000_location_precision_v1` | **Privacy.** Rounds every stored location to ~0.7mi + backfills existing rows |
 
 > `20260908220000` was amended after it was first run: `moderation_queue_detailed()`
 > now also returns `post_id` so the queue can deep-link to the reported post.
@@ -167,6 +168,14 @@ column shell, real logo, Fraunces/Figtree.
   registration, which needs a column on `profiles`.
 - **Groups have no visibility flag.** Every group is live the moment it is
   created; no draft or archive state.
+- **Column-level lock on coordinates is still pending.** Locations are now
+  rounded on write, so the exact value no longer exists anywhere. The remaining
+  hardening is `revoke select (latitude, longitude) on public.profiles from
+  authenticated` so coordinates can only be read via the SECURITY DEFINER
+  `users_in_bbox`. Blocked on mobile: `app/src/services/supabase/supabase.api.ts`
+  reads profiles with `select('*')`, and a revoked column makes a wildcard
+  select fail outright. Sequence: name the columns explicitly in that query,
+  ship the build, then revoke.
 - **Agents can read all member PII.** `profiles_private` (email, phone, zip,
   DOB) is readable by any support agent, not just owners. Flagged in the August
   audit and never resolved. Worth a deliberate decision.

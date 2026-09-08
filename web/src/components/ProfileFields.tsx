@@ -80,6 +80,12 @@ export function profileUpdatePayload(f: ProfileForm) {
   };
 }
 
+// ~0.7 miles of latitude. Matches the database trigger and what the map
+// returns, so a member's pin is the same wherever it is read from.
+function coarsen(n: number) {
+  return Math.round(n * 100) / 100;
+}
+
 const inputClass =
   'w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta';
 
@@ -116,10 +122,13 @@ export function ProfileFields({
     setLocating(true);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        // Coarsened here as well as by the database trigger. The precise fix
+        // should not travel over the network or sit in a request log on its
+        // way to being rounded at the far end.
         setForm((f) => ({
           ...f,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
+          latitude: coarsen(pos.coords.latitude),
+          longitude: coarsen(pos.coords.longitude),
         }));
         setLocating(false);
       },
@@ -305,8 +314,9 @@ export function ProfileFields({
         </h2>
         <p className="mb-3 text-xs leading-relaxed text-faint">
           This puts you on the member map so people nearby can find you. Your
-          pin is deliberately approximate, to about half a mile, and your zip
-          code is never shown to other members.
+          exact position is never stored: it is rounded to about half a mile
+          before it is saved, so neither we nor other members can see where you
+          actually live. Your zip code is never shown to other members.
         </p>
         <div className="grid gap-4 sm:grid-cols-3">
           <label className="block sm:col-span-2">

@@ -23,6 +23,8 @@ type PublicProfile = {
   diagnosis_type_ids: string[] | null;
   diagnosis_subtype_ids: string[] | null;
   diagnosis_year: string | null;
+  // Rounded to ~0.7mi at write time by a database trigger, so what arrives
+  // here is already an area, not an address.
   latitude: number | null;
   longitude: number | null;
   postCount: number;
