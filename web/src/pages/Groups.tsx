@@ -9,13 +9,23 @@ type Group = {
   name: string;
   description: string | null;
   tags: string[] | null;
+  cover_path: string | null;
 };
+
+// Covers live in the public 'avatars' bucket under the uploader's uid prefix,
+// the same convention admin/Groups.tsx writes and create_group's p_cover_path
+// expects.
+function coverUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl ?? null;
+}
 
 async function fetchGroups() {
   const me = await currentUserId();
   const [{ data: groups, error }, { data: counts }, { data: mine }] =
     await Promise.all([
-      supabase.from('groups').select('id, name, description, tags').order('name'),
+      supabase.from('groups').select('id, name, description, tags, cover_path').order('name'),
       supabase.rpc('group_member_counts'),
       me
         ? supabase.from('group_members').select('group_id').eq('profile_id', me)
@@ -67,31 +77,60 @@ export function Groups() {
     <div>
       <PageTitle>Groups</PageTitle>
       <div className="grid gap-3 sm:grid-cols-2">
-        {(data ?? []).map((g) => (
-          <div key={g.id} className="rounded-2xl border border-line bg-surface p-4">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <Link to={`/groups/${g.id}`} className="font-semibold hover:text-magenta-text hover:underline">
-                  {g.name}
-                </Link>
-                <div className="text-xs text-faint">{g.memberCount} members</div>
+        {(data ?? []).map((g) => {
+          const cover = coverUrl(g.cover_path);
+          return (
+            // The cover fills the card and the content sits on top of it. A
+            // scrim carries the text rather than trusting the photograph:
+            // covers are member-supplied, so a bright or busy image would
+            // otherwise make the name unreadable. Cards keep a minimum height
+            // so a group without a cover still matches the grid.
+            <div
+              key={g.id}
+              className="relative isolate flex min-h-[168px] flex-col justify-end overflow-hidden rounded-2xl border border-line bg-surface p-4"
+            >
+              {cover && (
+                <>
+                  <img
+                    src={cover}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 -z-10 h-full w-full object-cover"
+                  />
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 -z-10 bg-gradient-to-t from-ground via-ground/80 to-ground/35"
+                  />
+                </>
+              )}
+
+              <div className="flex items-end justify-between gap-3">
+                <div className="min-w-0">
+                  <Link
+                    to={`/groups/${g.id}`}
+                    className="font-semibold text-heading hover:text-magenta-text hover:underline"
+                  >
+                    {g.name}
+                  </Link>
+                  <div className="text-xs text-faint">{g.memberCount} members</div>
+                  {g.description && (
+                    <p className="mt-1.5 line-clamp-2 text-sm text-muted">
+                      {g.description}
+                    </p>
+                  )}
+                </div>
+                <button
+                  onClick={() => toggle.mutate({ id: g.id, joined: g.joined })}
+                  className={`shrink-0 rounded-full px-3 py-1 text-sm font-medium ${
+                    g.joined ? 'bg-surface-2 text-heading' : 'bg-magenta text-white'
+                  }`}
+                >
+                  {g.joined ? 'Joined' : 'Join'}
+                </button>
               </div>
-              <button
-                onClick={() => toggle.mutate({ id: g.id, joined: g.joined })}
-                className={`rounded-full px-3 py-1 text-sm font-medium ${
-                  g.joined
-                    ? 'bg-surface-2 text-heading'
-                    : 'bg-magenta text-white'
-                }`}
-              >
-                {g.joined ? 'Joined' : 'Join'}
-              </button>
             </div>
-            {g.description && (
-              <p className="mt-2 text-sm text-muted">{g.description}</p>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

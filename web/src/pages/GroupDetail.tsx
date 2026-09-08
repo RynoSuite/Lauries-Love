@@ -6,6 +6,14 @@ import { useFeatureFlags } from '../lib/featureFlags';
 import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
 import { Avatar } from '../components/Avatar';
 
+// Covers live in the public 'avatars' bucket under the uploader's uid prefix.
+function coverUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl ?? null;
+}
+
+
 // A single group: info, members, and a group-scoped feed (visibility='group').
 // RLS shows group posts only to members; the composer is shown only to members.
 type Member = { id: string; display_name: string | null; first_name: string | null; avatar_path: string | null };
@@ -21,7 +29,7 @@ type GroupPost = {
 async function fetchGroup(id: string) {
   const me = await currentUserId();
   const [{ data: group, error }, members, mine] = await Promise.all([
-    supabase.from('groups').select('id, name, description').eq('id', id).maybeSingle(),
+    supabase.from('groups').select('id, name, description, cover_path').eq('id', id).maybeSingle(),
     supabase
       .from('group_members')
       .select('profile:profiles(id, display_name, first_name, avatar_path)')
@@ -155,23 +163,42 @@ export function GroupDetail() {
         ← All groups
       </Link>
 
-      <div className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
-        <div className="flex items-start justify-between gap-2">
-          <div>
+      {/* Same treatment as the group cards: the cover fills the header and a
+          scrim carries the text, since covers are member-supplied and a bright
+          image would otherwise swallow the name. */}
+      <div className="relative isolate flex min-h-[190px] flex-col justify-end overflow-hidden rounded-2xl border border-line bg-surface p-4 shadow-sm">
+        {coverUrl(group.cover_path) && (
+          <>
+            <img
+              src={coverUrl(group.cover_path) ?? undefined}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 -z-10 h-full w-full object-cover"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 -z-10 bg-gradient-to-t from-ground via-ground/80 to-ground/35"
+            />
+          </>
+        )}
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
             <h1 className="text-xl font-bold text-heading">{group.name}</h1>
             <div className="text-xs text-faint">{group.members.length} members</div>
+            {group.description && (
+              <p className="mt-1.5 text-sm text-muted">{group.description}</p>
+            )}
           </div>
           <button
             onClick={() => toggleJoin.mutate(group.joined)}
             disabled={toggleJoin.isPending}
-            className={`rounded-full px-4 py-1 text-sm font-medium ${
+            className={`shrink-0 rounded-full px-4 py-1 text-sm font-medium ${
               group.joined ? 'bg-surface-2 text-heading' : 'bg-magenta text-white'
             }`}
           >
             {group.joined ? 'Joined' : 'Join'}
           </button>
         </div>
-        {group.description && <p className="mt-2 text-sm text-muted">{group.description}</p>}
 
         {group.members.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
