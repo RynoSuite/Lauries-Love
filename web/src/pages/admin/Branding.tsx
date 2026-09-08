@@ -10,6 +10,7 @@ import {
   THEME_GROUPS,
   applyTheme,
   contrastRatio,
+  deriveBrandFamily,
 } from '../../lib/theme';
 
 // Branding console. Owners can set the app's name and copy, upload a logo, and
@@ -48,10 +49,20 @@ export function AdminBranding() {
   const [dirty, setDirty] = useState(false);
   const [uploadErr, setUploadErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [advanced, setAdvanced] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Load the saved values into the form ONCE.
+  //
+  // This used to depend on `data`, which React Query hands back as a fresh
+  // object on every refetch — including background ones. That silently reset
+  // in-progress edits to whatever was in the database, so by the time Save was
+  // pressed the form matched the defaults again and wrote an empty theme. The
+  // preview looked correct because it was seen before the refetch landed.
+  const loadedRef = useRef(false);
   useEffect(() => {
-    if (!data) return;
+    if (!data || loadedRef.current) return;
+    loadedRef.current = true;
     setText({
       app_name: data.app_name ?? '',
       tagline: data.tagline ?? '',
@@ -61,16 +72,22 @@ export function AdminBranding() {
     setTheme({ ...DEFAULT_THEME, ...(data.theme ?? {}) });
   }, [data]);
 
-  // Live preview. On unmount, drop back to whatever is saved so an abandoned
-  // edit does not leave the rest of the admin console repainted.
+  // Live preview.
   useEffect(() => {
     if (dirty) applyTheme(theme);
   }, [theme, dirty]);
+
+  // On unmount, drop back to whatever is saved so an abandoned edit does not
+  // leave the rest of the admin console repainted. Reads the saved theme from
+  // a ref rather than depending on `data` — depending on it made this cleanup
+  // fire on every refetch, repainting mid-edit with the stale value.
+  const savedThemeRef = useRef<Record<string, string> | null>(null);
+  savedThemeRef.current = data?.theme ?? null;
   useEffect(
     () => () => {
-      applyTheme(data?.theme ?? null);
+      applyTheme(savedThemeRef.current);
     },
-    [data],
+    [],
   );
 
   const setToken = (key: string, hex: string) => {
@@ -307,26 +324,63 @@ export function AdminBranding() {
           </p>
         ) : null}
 
-        <div className="space-y-6">
-          {THEME_GROUPS.map((group) => (
-            <div key={group.title}>
-              <h3 className="text-sm font-semibold text-heading">{group.title}</h3>
-              <p className="mb-1 text-xs text-faint">{group.blurb}</p>
-              <div className="divide-y divide-line">
-                {group.tokens.map((token) => (
-                  <ColorField
-                    key={token.key}
-                    label={token.label}
-                    hint={token.hint}
-                    value={theme[token.key] ?? token.default}
-                    defaultValue={token.default}
-                    onChange={(hex) => setToken(token.key, hex)}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+        {/* One control that drives the whole brand family. Setting the fill
+            alone left links and module titles on the old colour, which read as
+            "it didn't save" rather than "that is a different token". */}
+        <div className="mb-5 rounded-xl border border-line bg-surface-2/40 p-4">
+          <ColorField
+            label="Brand colour"
+            hint="Sets buttons, links, module titles, avatars and icon plates together. The lighter text shade is worked out for you so it stays readable."
+            value={theme['magenta'] ?? DEFAULT_THEME['magenta']}
+            defaultValue={DEFAULT_THEME['magenta']}
+            onChange={(hex) => {
+              setDirty(true);
+              setTheme((t) => ({ ...t, ...deriveBrandFamily(hex) }));
+            }}
+          />
+          <div className="mt-2 flex flex-wrap items-center gap-2 pl-12">
+            {(['magenta', 'magenta-hi', 'magenta-text', 'magenta-plate'] as const).map((k) => (
+              <span key={k} className="flex items-center gap-1.5">
+                <span
+                  className="h-4 w-4 rounded border border-line"
+                  style={{ background: theme[k] }}
+                />
+                <span className="font-mono text-[10px] text-faint">{theme[k]}</span>
+              </span>
+            ))}
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setAdvanced((v) => !v)}
+          className="mb-3 text-sm text-magenta-text hover:underline"
+        >
+          {advanced ? 'Hide individual colours' : 'Adjust individual colours'}
+        </button>
+
+        {advanced && (
+          <div className="space-y-6">
+            {THEME_GROUPS.map((group) => (
+              <div key={group.title}>
+                <h3 className="text-sm font-semibold text-heading">{group.title}</h3>
+                <p className="mb-1 text-xs text-faint">{group.blurb}</p>
+                <div className="divide-y divide-line">
+                  {group.tokens.map((token) => (
+                    <ColorField
+                      key={token.key}
+                      label={token.label}
+                      hint={token.hint}
+                      value={theme[token.key] ?? token.default}
+                      defaultValue={token.default}
+                      onChange={(hex) => setToken(token.key, hex)}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* The save button is repeated at the bottom, so the failure has to be

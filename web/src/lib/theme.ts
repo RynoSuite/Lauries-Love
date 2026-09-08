@@ -148,6 +148,78 @@ export function applyTheme(theme: Record<string, string> | null | undefined) {
   }
 }
 
+// ── Brand family derivation ────────────────────────────────────────────────
+//
+// The brand is four tokens: the fill, its hover, the on-dark text stop, and
+// the icon plate. Expecting anyone to set those independently — and to know
+// that "module titles" means `magenta-text` rather than `magenta` — is a bad
+// deal. Picking ONE brand colour derives the other three, and each can still
+// be overridden by hand afterwards.
+
+function hexToHsl(hex: string): [number, number, number] | null {
+  const ch = hexToChannels(hex);
+  if (!ch) return null;
+  const [r, g, b] = ch.split(' ').map((v) => Number(v) / 255);
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return [0, 0, l];
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h: number;
+  if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+  else if (max === g) h = ((b - r) / d + 2) / 6;
+  else h = ((r - g) / d + 4) / 6;
+  return [h, s, l];
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+  [h, s, l] = [((h % 1) + 1) % 1, clamp(s), clamp(l)];
+  const f = (n: number) => {
+    const k = (n + h * 12) % 12;
+    const a = s * Math.min(l, 1 - l);
+    const v = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(v * 255);
+  };
+  return (
+    '#' + [f(0), f(8), f(4)].map((v) => v.toString(16).padStart(2, '0')).join('').toUpperCase()
+  );
+}
+
+/** The dark card these colours sit on; used to check the text stop is legible. */
+const CARD_FOR_CONTRAST = '#0A2A2D';
+
+/**
+ * Given one brand colour, produce the whole family:
+ *   fill  — as chosen
+ *   hover — a little lighter
+ *   text  — lightened until it clears 4.5:1 on the card, so links and titles
+ *           stay readable no matter how dark a colour someone picks
+ *   plate — pulled down dark for the icon discs
+ */
+export function deriveBrandFamily(baseHex: string): Record<string, string> {
+  const hsl = hexToHsl(baseHex);
+  if (!hsl) return {};
+  const [h, s, l] = hsl;
+
+  let text = hslToHex(h, Math.min(1, s * 0.92), Math.max(l, 0.55));
+  // Walk it lighter until it is actually readable, rather than trusting a
+  // fixed offset that fails for very dark or very desaturated picks.
+  for (let i = 0; i < 20; i++) {
+    const ratio = contrastRatio(text, CARD_FOR_CONTRAST);
+    if (ratio !== null && ratio >= 4.5) break;
+    text = hslToHex(h, Math.min(1, s * 0.92), Math.min(0.92, 0.55 + i * 0.02 + 0.02));
+  }
+
+  return {
+    magenta: baseHex.toUpperCase(),
+    'magenta-hi': hslToHex(h, s, Math.min(0.72, l + 0.08)),
+    'magenta-text': text,
+    'magenta-plate': hslToHex(h, Math.min(1, s * 0.85), Math.max(0.1, l * 0.62)),
+  };
+}
+
 /** Relative luminance contrast, for warning when text would be unreadable. */
 export function contrastRatio(a: string, b: string): number | null {
   const lum = (hex: string) => {
