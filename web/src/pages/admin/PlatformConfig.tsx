@@ -95,7 +95,7 @@ export function AdminPlatformConfig() {
           value={newKey}
           onChange={(e) => setNewKey(e.target.value)}
           placeholder="new_setting_key"
-          className="w-64 rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
+          className="w-64 rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta"
         />
         <button
           onClick={addKey}

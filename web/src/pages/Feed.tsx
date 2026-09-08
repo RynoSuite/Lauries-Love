@@ -185,7 +185,7 @@ export function Feed() {
       {isLoading && <p className="text-heading">Loading the feed…</p>}
       {error && <p className="text-danger">Couldn’t load the feed.</p>}
       {!isLoading && !error && posts.length === 0 && (
-        <p className="text-muted">It’s quiet here — be the first to post.</p>
+        <p className="text-muted">It’s quiet here, be the first to post.</p>
       )}
 
       {posts.map((p) => {

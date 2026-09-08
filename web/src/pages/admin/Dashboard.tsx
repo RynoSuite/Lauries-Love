@@ -38,14 +38,14 @@ export function AdminDashboard() {
         PostHog integration.
       </p>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Card label="Members" value={data?.profiles ?? '—'} />
-        <Card label="Posts" value={data?.posts ?? '—'} />
-        <Card label="Groups" value={data?.groups ?? '—'} />
-        <Card label="Conversations" value={data?.conversations ?? '—'} />
-        <Card label="DAU" value="—" />
-        <Card label="MAU" value="—" />
-        <Card label="D7 retention" value="—" />
-        <Card label="Avg session" value="—" />
+        <Card label="Members" value={data?.profiles ?? ', '} />
+        <Card label="Posts" value={data?.posts ?? ', '} />
+        <Card label="Groups" value={data?.groups ?? ', '} />
+        <Card label="Conversations" value={data?.conversations ?? ', '} />
+        <Card label="DAU" value=", " />
+        <Card label="MAU" value=", " />
+        <Card label="D7 retention" value=", " />
+        <Card label="Avg session" value=", " />
       </div>
     </div>
   );

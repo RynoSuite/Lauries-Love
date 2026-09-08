@@ -42,9 +42,9 @@ export function Donate() {
         window.location.href = url;
         return;
       }
-      setStatus('Donations aren’t connected yet — Stripe setup is pending.');
+      setStatus('Donations aren’t connected yet, Stripe setup is pending.');
     } catch {
-      setStatus('Donations aren’t connected yet — Stripe setup is pending.');
+      setStatus('Donations aren’t connected yet, Stripe setup is pending.');
     } finally {
       setLoading(false);
     }

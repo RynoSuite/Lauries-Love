@@ -71,7 +71,7 @@ export function MapPage() {
               Deliberately keyless: CARTO's dark basemap now watermarks
               "API KEY REQUIRED", and Stadia/Mapbox also need a registered key,
               so any hosted dark style would block the client review on someone
-              signing up. If a key is obtained later this is a one-line swap —
+              signing up. If a key is obtained later this is a one-line swap , 
               the filter below is the only other thing to remove. */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

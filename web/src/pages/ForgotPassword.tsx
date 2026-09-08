@@ -35,7 +35,7 @@ export function ForgotPassword() {
     } catch (err) {
       setError(
         err instanceof Error
-          ? 'Too many attempts just now — please wait a minute and try again.'
+          ? 'Too many attempts just now, please wait a minute and try again.'
           : 'Something went wrong.',
       );
     } finally {

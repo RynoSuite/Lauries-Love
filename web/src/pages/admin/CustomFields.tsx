@@ -135,7 +135,7 @@ export function AdminCustomFields() {
               value={form.label}
               onChange={(e) => setForm({ ...form, label: e.target.value })}
               placeholder="e.g. Favorite quote"
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
+              className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="block text-sm">
@@ -146,7 +146,7 @@ export function AdminCustomFields() {
               value={form.field_key}
               onChange={(e) => setForm({ ...form, field_key: e.target.value })}
               placeholder="favorite_quote"
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
+              className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
           <label className="block text-sm">
@@ -156,7 +156,7 @@ export function AdminCustomFields() {
               onChange={(e) =>
                 setForm({ ...form, field_type: e.target.value as FieldType })
               }
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
+              className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
             >
               {FIELD_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -173,7 +173,7 @@ export function AdminCustomFields() {
               onChange={(e) =>
                 setForm({ ...form, position: Number(e.target.value) || 0 })
               }
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
+              className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
         </div>
@@ -184,7 +184,7 @@ export function AdminCustomFields() {
               value={form.options}
               onChange={(e) => setForm({ ...form, options: e.target.value })}
               placeholder="Option A, Option B, Option C"
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
+              className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
             />
           </label>
         )}
@@ -197,7 +197,7 @@ export function AdminCustomFields() {
           <span className="text-muted">Enabled (visible to members)</span>
         </label>
         {upsert.isError && (
-          <p className="mt-2 text-sm text-danger">Couldn’t save — a key may already exist.</p>
+          <p className="mt-2 text-sm text-danger">Couldn’t save, a key may already exist.</p>
         )}
         <div className="mt-3 flex gap-2">
           <button

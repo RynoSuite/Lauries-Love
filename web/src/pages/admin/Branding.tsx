@@ -166,7 +166,7 @@ export function AdminBranding() {
     } catch (err) {
       setUploadErr(
         err instanceof Error
-          ? `${err.message} — if this mentions a missing bucket, the branding migration has not been applied yet.`
+          ? `${err.message}, if this mentions a missing bucket, the branding migration has not been applied yet.`
           : 'Upload failed.',
       );
     } finally {
@@ -275,7 +275,7 @@ export function AdminBranding() {
                   setDirty(true);
                   setText((t) => ({ ...t, logo_url: '' }));
                 }}
-                className="rounded-lg border border-line px-3 py-2 text-sm text-muted transition-colors hover:text-danger"
+                className="rounded-lg border border-line-strong px-3 py-2 text-sm text-muted transition-colors hover:text-danger"
               >
                 Use the default
               </button>
@@ -384,7 +384,7 @@ export function AdminBranding() {
       </section>
 
       {/* The save button is repeated at the bottom, so the failure has to be
-          repeated with it — otherwise a save that errors at the top of a long
+          repeated with it, otherwise a save that errors at the top of a long
           page just looks like nothing happened. */}
       {save.isError && (
         <p className="mb-3 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">

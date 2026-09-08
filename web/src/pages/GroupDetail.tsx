@@ -215,7 +215,7 @@ export function GroupDetail() {
 
       {posts.length === 0 && (
         <p className="text-sm text-muted">
-          {group.joined ? 'No posts yet — start the conversation.' : 'Join to see and share posts in this group.'}
+          {group.joined ? 'No posts yet, start the conversation.' : 'Join to see and share posts in this group.'}
         </p>
       )}
 

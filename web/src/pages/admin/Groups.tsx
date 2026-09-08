@@ -56,10 +56,10 @@ export function AdminGroups() {
   const { data, isLoading } = useQuery({ queryKey: ['admin-groups'], queryFn: fetchGroups });
 
   const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   async function handleCoverFile(file: File) {
-    setUploadError(false);
+    setUploadError(null);
     setUploading(true);
     try {
       const me = await currentUserId();
@@ -71,8 +71,13 @@ export function AdminGroups() {
         .upload(path, file, { upsert: true, contentType: file.type || undefined });
       if (error) throw error;
       setForm((prev) => ({ ...prev, cover_path: path }));
-    } catch {
-      setUploadError(true);
+    } catch (err) {
+      // Was `catch {}` with a generic "try again", which hid the only useful
+      // information. The upload path and storage policy are both fine when
+      // tested directly, so whatever fails here is worth reading.
+      setUploadError(
+        err instanceof Error ? err.message : 'Upload failed for an unknown reason.',
+      );
     } finally {
       setUploading(false);
     }
@@ -134,13 +139,13 @@ export function AdminGroups() {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Group name"
-            className="rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
+            className="rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta"
           />
           <input
             value={form.tags}
             onChange={(e) => setForm({ ...form, tags: e.target.value })}
             placeholder="Tags (comma separated)"
-            className="rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
+            className="rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta"
           />
         </div>
         <textarea
@@ -148,7 +153,7 @@ export function AdminGroups() {
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           placeholder="Description"
           rows={2}
-          className="mt-3 w-full resize-none rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
+          className="mt-3 w-full resize-none rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta"
         />
 
         <div className="mt-3">
@@ -161,7 +166,7 @@ export function AdminGroups() {
                 className="h-14 w-24 rounded-lg object-cover"
               />
             )}
-            <label className="cursor-pointer rounded-lg border border-line bg-surface px-3 py-2 text-sm text-heading hover:border-magenta">
+            <label className="cursor-pointer rounded-lg border border-line-strong bg-surface px-3 py-2 text-sm text-heading hover:border-magenta">
               {uploading ? 'Uploading…' : form.cover_path ? 'Replace image' : 'Upload image'}
               <input
                 type="file"
@@ -186,12 +191,12 @@ export function AdminGroups() {
             )}
           </div>
           {uploadError && (
-            <p className="mt-1 text-sm text-danger">Couldn’t upload — try again.</p>
+            <p className="mt-1 text-sm text-danger">Could not upload: {uploadError}</p>
           )}
         </div>
 
         {upsert.isError && (
-          <p className="mt-2 text-sm text-danger">Couldn’t save — try again.</p>
+          <p className="mt-2 text-sm text-danger">Couldn’t save, try again.</p>
         )}
         <div className="mt-3 flex gap-2">
           <button

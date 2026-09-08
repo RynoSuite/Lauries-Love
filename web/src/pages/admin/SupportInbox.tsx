@@ -85,7 +85,7 @@ export function AdminSupportInbox() {
                 onChange={(e) =>
                   setStatus.mutate({ id: t.id, status: e.target.value })
                 }
-                className="rounded border border-line px-2 py-1 text-xs"
+                className="rounded border border-line-strong px-2 py-1 text-xs"
               >
                 {STATUSES.map((s) => (
                   <option key={s} value={s}>

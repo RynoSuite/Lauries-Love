@@ -84,7 +84,7 @@ export function AdminMembers() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search by name…"
-        className="mb-4 w-full max-w-sm rounded-lg border border-line px-3 py-2 text-sm outline-none focus:border-magenta"
+        className="mb-4 w-full max-w-sm rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta"
       />
       {members.isLoading && <p className="text-heading">Loading…</p>}
       <table className="w-full text-sm">
@@ -131,7 +131,7 @@ export function AdminMembers() {
                           role: (e.target.value || null) as 'owner' | 'agent' | null,
                         })
                       }
-                      className="rounded border border-line px-2 py-1 text-xs"
+                      className="rounded border border-line-strong px-2 py-1 text-xs"
                     >
                       <option value="">member</option>
                       <option value="agent">agent</option>

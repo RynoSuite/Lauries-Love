@@ -113,7 +113,7 @@ export function Support() {
           />
         </label>
         {submit.isError && (
-          <p className="mb-3 text-sm text-danger">Couldn’t send — please try again.</p>
+          <p className="mb-3 text-sm text-danger">Couldn’t send, please try again.</p>
         )}
         <button
           onClick={() => submit.mutate()}

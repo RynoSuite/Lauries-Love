@@ -27,7 +27,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
   {
     title: 'Brand',
     blurb:
-      'The colours people recognise. Magenta leads the interface — buttons, links, active tabs.',
+      'The colours people recognise. Magenta leads the interface, buttons, links, active tabs.',
     tokens: [
       {
         key: 'magenta',
@@ -37,7 +37,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
       },
       {
         key: 'magenta-hi',
-        label: 'Brand fill — hover',
+        label: 'Brand fill, hover',
         hint: 'The brand fill when a button is hovered. Usually a touch lighter.',
         default: '#B01D7D',
       },
@@ -63,7 +63,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
   },
   {
     title: 'Surfaces',
-    blurb: 'The page itself — what everything else sits on.',
+    blurb: 'The page itself, what everything else sits on.',
     tokens: [
       { key: 'ground', label: 'Page background', hint: 'Behind everything.', default: '#051A1D' },
       { key: 'surface', label: 'Card background', hint: 'Posts, panels, the sidebar cards.', default: '#0A2A2D' },
@@ -74,7 +74,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
         default: '#0E383C',
       },
       { key: 'line', label: 'Borders', hint: 'Card edges and dividers.', default: '#1E3B3E' },
-      { key: 'line-strong', label: 'Borders — strong', hint: 'Emphasised dividers.', default: '#2C4244' },
+      { key: 'line-strong', label: 'Borders, strong', hint: 'Emphasised dividers.', default: '#2C4244' },
       { key: 'harbor', label: 'Header background', hint: 'The top navigation bar.', default: '#082729' },
     ],
   },
@@ -93,7 +93,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
     blurb: 'Errors, confirmations and warnings.',
     tokens: [
       { key: 'danger', label: 'Error', hint: 'Error messages and destructive buttons.', default: '#E8686B' },
-      { key: 'danger-hi', label: 'Error — hover', hint: '', default: '#F28184' },
+      { key: 'danger-hi', label: 'Error, hover', hint: '', default: '#F28184' },
       { key: 'success', label: 'Success', hint: 'Confirmations.', default: '#5FC98B' },
       { key: 'warn', label: 'Warning', hint: 'Cautions.', default: '#E2B857' },
     ],
@@ -103,7 +103,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
     blurb: 'Kept from the original palette. Rarely needs changing.',
     tokens: [
       { key: 'lagoon', label: 'Teal', hint: 'Secondary accent.', default: '#1789A8' },
-      { key: 'lagoon-hi', label: 'Teal — hover', hint: '', default: '#22A6C7' },
+      { key: 'lagoon-hi', label: 'Teal, hover', hint: '', default: '#22A6C7' },
       { key: 'deepwater', label: 'Deepwater', hint: 'Original brand teal.', default: '#0F474C' },
       { key: 'seamist', label: 'Sea mist', hint: 'The brand light.', default: '#EAF2F2' },
       { key: 'ink', label: 'Ink', hint: 'The deepest ground.', default: '#051A1D' },

@@ -57,7 +57,7 @@ export function AvatarUpload({
       return;
     }
     if (file.size > MAX_SOURCE_BYTES) {
-      setError('That image is over 12MB — please pick a smaller one.');
+      setError('That image is over 12MB, please pick a smaller one.');
       return;
     }
 

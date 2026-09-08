@@ -191,7 +191,7 @@ h5 {
   select {
     background-color: rgb(var(--c-surface-2)); /* surface-2 */
     color: rgb(var(--c-heading)); /* Sea Mist */
-    border-color: rgb(var(--c-line));
+    border-color: rgb(var(--c-line-strong));
   }
   input:disabled,
   textarea:disabled,

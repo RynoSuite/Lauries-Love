@@ -239,7 +239,7 @@ export function Profile() {
             onChange={(e) => setFieldValue(field.id, e.target.value)}
             className={inputClass}
           >
-            <option value="">—</option>
+            <option value="">, </option>
             {field.options.map((o) => (
               <option key={o} value={o}>
                 {o}
@@ -338,7 +338,7 @@ export function Profile() {
           )}
 
           {save.isError && (
-            <p className="mb-3 text-sm text-danger">Couldn’t save — try again.</p>
+            <p className="mb-3 text-sm text-danger">Couldn’t save, try again.</p>
           )}
           <div className="flex gap-2">
             <button
