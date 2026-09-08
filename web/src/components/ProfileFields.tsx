@@ -98,6 +98,24 @@ const chip = (on: boolean) =>
     ? 'border-magenta bg-magenta text-white'
     : 'border-line text-body hover:border-magenta hover:text-magenta-text');
 
+// Whether a role means the member has a diagnosis of their own.
+//
+// Matched on the label rather than an id because the roles live in
+// value_definitions and an admin can rename or add to them; the ids are
+// per-environment. Same test the mobile app uses in the DiagnosedYear screen,
+// so the two stay consistent.
+//
+// An unknown or unset role shows the section. Asking someone a question they
+// can skip is a smaller failure than silently hiding the field that makes
+// them findable.
+function roleHasOwnDiagnosis(roleLabel: string | null | undefined) {
+  if (!roleLabel) return true;
+  const r = roleLabel.toLowerCase();
+  return (
+    r.includes('warrior') || r.includes('patient') || r.includes('survivor')
+  );
+}
+
 export function ProfileFields({
   form,
   setForm,
@@ -109,6 +127,13 @@ export function ProfileFields({
 }) {
   const { roles, diagnoses, subtypes } = useDefinitions();
   const [locating, setLocating] = useState(false);
+
+  // Caregivers, family members and friends do not have a diagnosis of their
+  // own. Mobile learned this the hard way: everyone was made to pick a cancer
+  // type and a year, so a friend supporting someone had to invent an answer,
+  // and that answer then showed on their profile as though it were theirs.
+  const selectedRole = roles.find((r) => r.id === form.role_id);
+  const showDiagnosis = roleHasOwnDiagnosis(selectedRole?.description);
 
   function toggleId(key: 'diagnosis_type_ids' | 'diagnosis_subtype_ids', id: string) {
     setForm((f) => ({
@@ -204,7 +229,24 @@ export function ProfileFields({
               key={r.id}
               type="button"
               onClick={() =>
-                setForm((f) => ({ ...f, role_id: f.role_id === r.id ? '' : r.id }))
+                setForm((f) => {
+                  const role_id = f.role_id === r.id ? '' : r.id;
+                  // Switching to a role without a diagnosis of its own clears
+                  // the answers, so a caregiver who first picked Warrior does
+                  // not keep a cancer type showing on their profile as if it
+                  // were theirs.
+                  const next = roles.find((x) => x.id === role_id);
+                  if (role_id && !roleHasOwnDiagnosis(next?.description)) {
+                    return {
+                      ...f,
+                      role_id,
+                      diagnosis_type_ids: [],
+                      diagnosis_subtype_ids: [],
+                      diagnosis_year: '',
+                    };
+                  }
+                  return { ...f, role_id };
+                })
               }
               className={chip(form.role_id === r.id)}
             >
@@ -214,12 +256,13 @@ export function ProfileFields({
         </div>
       </section>
 
+      {showDiagnosis && (
       <section className="rounded-2xl border border-line bg-surface p-5">
         <h2 className="mb-1 font-sans text-sm font-semibold text-magenta-text">
           Diagnosis
         </h2>
         <p className="mb-3 text-xs text-faint">
-          Choose any that apply, to you or to the person you care for.
+          Choose any that apply.
         </p>
         <div className="flex flex-wrap gap-2">
           {diagnoses.map((d) => (
@@ -272,6 +315,7 @@ export function ProfileFields({
           </select>
         </label>
       </section>
+      )}
 
       <section className="rounded-2xl border border-line bg-surface p-5">
         <h2 className="mb-3 font-sans text-sm font-semibold text-magenta-text">

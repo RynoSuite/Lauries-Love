@@ -108,7 +108,23 @@ export function NewGroupThread({
 
       {err && <p className="mt-2 text-xs text-danger">{err}</p>}
 
-      <div className="mt-3 flex items-center gap-2">
+      {/* The hint gets its own line. Inline beside the buttons it collided
+          with Cancel in the 16rem rail. */}
+      {(connections ?? []).length === 1 ? (
+        <p className="mt-3 text-[11px] leading-relaxed text-faint">
+          A group needs at least three people. You have one connection so far,
+          so this is a direct message for now.
+        </p>
+      ) : (
+        picked.size < 2 && (
+          <p className="mt-3 text-[11px] leading-relaxed text-faint">
+            Pick {picked.size === 1 ? 'one more person' : 'at least two people'}.
+            With one, use the One person tab instead.
+          </p>
+        )
+      )}
+
+      <div className="mt-2 flex items-center gap-3">
         <button
           onClick={create}
           // Two others minimum: with one other person this is a direct
@@ -121,9 +137,6 @@ export function NewGroupThread({
         <button onClick={onCancel} className="text-xs text-muted hover:text-heading">
           Cancel
         </button>
-        {picked.size === 1 && (
-          <span className="text-[11px] text-faint">Pick one more for a group</span>
-        )}
       </div>
     </div>
   );
