@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { AvatarUpload } from '../components/AvatarUpload';
+import { useDefinitions } from '../lib/useDefinitions';
+import {
+  ProfileFields,
+  EMPTY_PROFILE_FORM,
+  PROFILE_COLUMNS,
+  profileUpdatePayload,
+  type ProfileForm,
+} from '../components/ProfileFields';
 
 type MyProfile = {
   id: string;
@@ -10,12 +18,21 @@ type MyProfile = {
   display_name: string | null;
   description: string | null;
   avatar_path: string | null;
+  role_id: string | null;
+  diagnosis_type_ids: string[] | null;
+  diagnosis_subtype_ids: string[] | null;
+  diagnosis_year: string | null;
+  age_range: string | null;
+  gender: string | null;
   city: string | null;
   state: string | null;
   country: string | null;
+  latitude: number | null;
+  longitude: number | null;
   created_at: string | null;
   email: string | null;
   phone: string | null;
+  zip_code: string | null;
   postCount: number;
   friendCount: number;
 };
@@ -28,14 +45,12 @@ async function fetchMyProfile(): Promise<MyProfile | null> {
   const [{ data: profile }, { data: priv }, posts, friends] = await Promise.all([
     supabase
       .from('profiles')
-      .select(
-        'id, first_name, last_name, display_name, description, avatar_path, city, state, country, created_at',
-      )
+      .select(`id, avatar_path, country, created_at, ${PROFILE_COLUMNS}`)
       .eq('id', me)
       .single(),
     supabase
       .from('profiles_private')
-      .select('email, phone_number')
+      .select('email, phone_number, zip_code')
       .eq('profile_id', me)
       .maybeSingle(),
     supabase.from('posts').select('id', { count: 'exact', head: true }).eq('author_id', me),
@@ -46,9 +61,13 @@ async function fetchMyProfile(): Promise<MyProfile | null> {
       .eq('status', 'accepted'),
   ]);
   return {
-    ...(profile as Omit<MyProfile, 'email' | 'phone' | 'postCount' | 'friendCount'>),
+    ...(profile as Omit<
+      MyProfile,
+      'email' | 'phone' | 'zip_code' | 'postCount' | 'friendCount'
+    >),
     email: priv?.email ?? null,
     phone: priv?.phone_number ?? null,
+    zip_code: (priv as { zip_code?: string | null } | null)?.zip_code ?? null,
     postCount: posts.count ?? 0,
     friendCount: friends.count ?? 0,
   };
@@ -105,12 +124,14 @@ function formatFieldValue(field: CustomField, value: string): string {
   return value;
 }
 
-type EditForm = {
-  display_name: string;
-  description: string;
+// Everything ProfileFields edits, plus the contact details that live in the
+// owner-only profiles_private table.
+type EditForm = ProfileForm & {
   email: string;
   phone: string;
 };
+
+const EMPTY_EDIT: EditForm = { ...EMPTY_PROFILE_FORM, email: '', phone: '' };
 
 export function Profile() {
   const qc = useQueryClient();
@@ -123,20 +144,29 @@ export function Profile() {
     queryKey: ['profile-field-values'],
     queryFn: fetchMyFieldValues,
   });
+  const { label, labels } = useDefinitions();
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState<EditForm>({
-    display_name: '',
-    description: '',
-    email: '',
-    phone: '',
-  });
+  const [form, setForm] = useState<EditForm>(EMPTY_EDIT);
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (data) {
       setForm({
+        first_name: data.first_name ?? '',
+        last_name: data.last_name ?? '',
         display_name: data.display_name ?? '',
         description: data.description ?? '',
+        role_id: data.role_id ?? '',
+        diagnosis_type_ids: data.diagnosis_type_ids ?? [],
+        diagnosis_subtype_ids: data.diagnosis_subtype_ids ?? [],
+        diagnosis_year: data.diagnosis_year ?? '',
+        age_range: data.age_range ?? '',
+        gender: data.gender ?? '',
+        city: data.city ?? '',
+        state: data.state ?? '',
+        zip_code: data.zip_code ?? '',
+        latitude: data.latitude ?? null,
+        longitude: data.longitude ?? null,
         email: data.email ?? '',
         phone: data.phone ?? '',
       });
@@ -157,10 +187,7 @@ export function Profile() {
       const { form: f, values } = payload;
       const { error: pErr } = await supabase
         .from('profiles')
-        .update({
-          display_name: f.display_name.trim() || null,
-          description: f.description.trim() || null,
-        })
+        .update(profileUpdatePayload(f))
         .eq('id', me);
       if (pErr) throw pErr;
       const { error: privErr } = await supabase
@@ -170,6 +197,7 @@ export function Profile() {
             profile_id: me,
             email: f.email.trim() || null,
             phone_number: f.phone.trim() || null,
+            zip_code: f.zip_code.trim() || null,
           },
           { onConflict: 'profile_id' },
         );
@@ -239,7 +267,7 @@ export function Profile() {
             onChange={(e) => setFieldValue(field.id, e.target.value)}
             className={inputClass}
           >
-            <option value="">, </option>
+            <option value="">Not set</option>
             {field.options.map((o) => (
               <option key={o} value={o}>
                 {o}
@@ -285,46 +313,50 @@ export function Profile() {
 
   if (editing) {
     return (
-      <div className="mx-auto max-w-md">
-        <div className="rounded-2xl border border-line bg-surface p-6 shadow-sm">
-          <h1 className="mb-4 text-xl font-bold text-heading">Edit profile</h1>
-          <label className="mb-3 block text-sm">
-            <span className="mb-1 block text-muted">Display name</span>
-            <input
-              value={form.display_name}
-              onChange={(e) => setForm({ ...form, display_name: e.target.value })}
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
-            />
-          </label>
-          <label className="mb-3 block text-sm">
-            <span className="mb-1 block text-muted">Bio</span>
-            <textarea
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              rows={3}
-              className="w-full resize-none rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
-            />
-          </label>
-          <label className="mb-3 block text-sm">
-            <span className="mb-1 block text-muted">Email</span>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
-            />
-          </label>
-          <label className="mb-4 block text-sm">
-            <span className="mb-1 block text-muted">Phone</span>
-            <input
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              className="w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta"
-            />
-          </label>
+      <div className="mx-auto max-w-2xl pb-12">
+        <h1 className="mb-4 text-xl font-bold text-heading">Edit profile</h1>
 
+        {/* The same fields onboarding asks for. They used to be answerable
+            only once, at signup: this form offered display name, bio, email
+            and phone, so a member could not correct their own name, let alone
+            their diagnosis or location. */}
+        <ProfileFields
+          form={form}
+          setForm={setForm as Dispatch<SetStateAction<ProfileForm>>}
+        />
+
+        <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
+          <h2 className="mb-1 font-sans text-sm font-semibold text-magenta-text">
+            Contact details
+          </h2>
+          <p className="mb-3 text-xs text-faint">
+            Only ever visible to you and to support staff. Other members never
+            see these.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm">
+              <span className="mb-1 block font-medium text-heading">Email</span>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="mb-1 block font-medium text-heading">Phone</span>
+              <input
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="w-full rounded-lg border border-line-strong px-3 py-2 outline-none focus:border-magenta"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
           {(fields ?? []).length > 0 && (
-            <div className="mb-4 border-t pt-4">
+            <div className="mb-4">
               <div className="mb-2 text-xs font-semibold tracking-wide text-faint">
                 More about you
               </div>
@@ -386,7 +418,60 @@ export function Profile() {
           </div>
         </div>
 
-        <div className="mt-6 space-y-1 border-t pt-4 text-left text-sm">
+        {/* The same block a visitor sees on your profile, so you can check
+            what you are showing people rather than guessing. */}
+        {(label(data.role_id) ||
+          labels(data.diagnosis_type_ids).length > 0 ||
+          data.diagnosis_year) && (
+          <dl className="mt-5 space-y-2 border-t border-line pt-4 text-left text-sm">
+            {label(data.role_id) && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Role</dt>
+                <dd className="text-body">{label(data.role_id)}</dd>
+              </div>
+            )}
+            {labels(data.diagnosis_type_ids).length > 0 && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Diagnosis</dt>
+                <dd className="text-body">{labels(data.diagnosis_type_ids).join(', ')}</dd>
+              </div>
+            )}
+            {labels(data.diagnosis_subtype_ids).length > 0 && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Stage</dt>
+                <dd className="text-body">
+                  {labels(data.diagnosis_subtype_ids).join(', ')}
+                </dd>
+              </div>
+            )}
+            {data.diagnosis_year && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Diagnosed</dt>
+                <dd className="text-body">{data.diagnosis_year}</dd>
+              </div>
+            )}
+            {data.age_range && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Age</dt>
+                <dd className="text-body">{data.age_range}</dd>
+              </div>
+            )}
+            {data.gender && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Gender</dt>
+                <dd className="text-body">{data.gender}</dd>
+              </div>
+            )}
+            <div className="flex gap-2">
+              <dt className="w-28 shrink-0 text-faint">On the map</dt>
+              <dd className="text-body">
+                {data.latitude != null ? 'Yes' : 'Not shown'}
+              </dd>
+            </div>
+          </dl>
+        )}
+
+        <div className="mt-6 space-y-1 border-t border-line pt-4 text-left text-sm">
           {data.email && (
             <div>
               <span className="text-faint">Email: </span>

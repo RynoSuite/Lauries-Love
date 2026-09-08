@@ -2,8 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
-import { useDefinitions } from '../lib/useDefinitions';
 import { PageTitle } from '../components/PageTitle';
+import {
+  ProfileFields,
+  EMPTY_PROFILE_FORM,
+  PROFILE_COLUMNS,
+  profileUpdatePayload,
+  type ProfileForm,
+} from '../components/ProfileFields';
 
 // Finish setting up a profile.
 //
@@ -21,49 +27,14 @@ import { PageTitle } from '../components/PageTitle';
 // completeness, and that gate is exactly what locked members out in August —
 // a profile missing one field bounced people back to onboarding forever. A
 // nudge is worth more than a wall.
-
-const AGE_RANGES = ['18-29', '30-39', '40-49', '50-59', '60-69', '70+'];
-const GENDERS = ['Female', 'Male', 'Non-binary', 'Prefer not to say'];
-
-const THIS_YEAR = new Date().getFullYear();
-// Far enough back to cover long survivorship without an endless list.
-const YEARS = Array.from({ length: 61 }, (_, i) => String(THIS_YEAR - i));
-
-type Form = {
-  role_id: string;
-  diagnosis_type_ids: string[];
-  diagnosis_subtype_ids: string[];
-  diagnosis_year: string;
-  age_range: string;
-  gender: string;
-  city: string;
-  state: string;
-  zip_code: string;
-  latitude: number | null;
-  longitude: number | null;
-};
-
-const EMPTY: Form = {
-  role_id: '',
-  diagnosis_type_ids: [],
-  diagnosis_subtype_ids: [],
-  diagnosis_year: '',
-  age_range: '',
-  gender: '',
-  city: '',
-  state: '',
-  zip_code: '',
-  latitude: null,
-  longitude: null,
-};
-
+//
+// The fields themselves live in ProfileFields, shared with the profile editor
+// so that the two can never drift apart.
 export function Onboarding() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { roles, diagnoses, subtypes } = useDefinitions();
-  const [form, setForm] = useState<Form>(EMPTY);
+  const [form, setForm] = useState<ProfileForm>(EMPTY_PROFILE_FORM);
   const [busy, setBusy] = useState(false);
-  const [locating, setLocating] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   // Prefill from whatever is already on the profile, so someone returning to
@@ -73,19 +44,21 @@ export function Onboarding() {
       const me = await currentUserId();
       if (!me) return;
       const [{ data: pub }, { data: priv }] = await Promise.all([
+        supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', me).maybeSingle(),
         supabase
-          .from('profiles')
-          .select(
-            'role_id, diagnosis_type_ids, diagnosis_subtype_ids, diagnosis_year, age_range, gender, city, state, latitude, longitude',
-          )
-          .eq('id', me)
+          .from('profiles_private')
+          .select('zip_code')
+          .eq('profile_id', me)
           .maybeSingle(),
-        supabase.from('profiles_private').select('zip_code').eq('profile_id', me).maybeSingle(),
       ]);
       if (!pub) return;
-      const p = pub as Partial<Form>;
+      const p = pub as Partial<ProfileForm>;
       setForm((f) => ({
         ...f,
+        first_name: p.first_name ?? '',
+        last_name: p.last_name ?? '',
+        display_name: p.display_name ?? '',
+        description: p.description ?? '',
         role_id: p.role_id ?? '',
         diagnosis_type_ids: p.diagnosis_type_ids ?? [],
         diagnosis_subtype_ids: p.diagnosis_subtype_ids ?? [],
@@ -101,36 +74,6 @@ export function Onboarding() {
     })();
   }, []);
 
-  function toggleId(key: 'diagnosis_type_ids' | 'diagnosis_subtype_ids', id: string) {
-    setForm((f) => ({
-      ...f,
-      [key]: f[key].includes(id) ? f[key].filter((x) => x !== id) : [...f[key], id],
-    }));
-  }
-
-  function useMyLocation() {
-    if (!navigator.geolocation) {
-      setErr('This browser cannot share a location.');
-      return;
-    }
-    setLocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setForm((f) => ({
-          ...f,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-        }));
-        setLocating(false);
-      },
-      () => {
-        setErr('Could not get your location. You can still fill in your city.');
-        setLocating(false);
-      },
-      { enableHighAccuracy: false, timeout: 8000 },
-    );
-  }
-
   async function save(skip = false) {
     setBusy(true);
     setErr(null);
@@ -141,18 +84,7 @@ export function Onboarding() {
       if (!skip) {
         const { error } = await supabase
           .from('profiles')
-          .update({
-            role_id: form.role_id || null,
-            diagnosis_type_ids: form.diagnosis_type_ids,
-            diagnosis_subtype_ids: form.diagnosis_subtype_ids,
-            diagnosis_year: form.diagnosis_year || null,
-            age_range: form.age_range || null,
-            gender: form.gender || null,
-            city: form.city.trim() || null,
-            state: form.state.trim() || null,
-            latitude: form.latitude,
-            longitude: form.longitude,
-          })
+          .update(profileUpdatePayload(form))
           .eq('id', me);
         if (error) throw error;
 
@@ -187,14 +119,6 @@ export function Onboarding() {
     }
   }
 
-  const inputClass =
-    'w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta';
-  const chip = (on: boolean) =>
-    'rounded-full border px-3 py-1.5 text-sm transition-colors ' +
-    (on
-      ? 'border-magenta bg-magenta text-white'
-      : 'border-line text-body hover:border-magenta hover:text-magenta-text');
-
   return (
     <div className="mx-auto max-w-2xl pb-12">
       <PageTitle>Tell us about you</PageTitle>
@@ -203,176 +127,7 @@ export function Onboarding() {
         here is optional, and you can change any of it later from your profile.
       </p>
 
-      <div className="space-y-6">
-        <section className="rounded-2xl border border-line bg-surface p-5">
-          <h2 className="mb-1 font-sans text-sm font-semibold text-magenta-text">
-            Which describes you?
-          </h2>
-          <p className="mb-3 text-xs text-faint">
-            Members search by this when looking for someone who understands.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {roles.map((r) => (
-              <button
-                key={r.id}
-                onClick={() =>
-                  setForm((f) => ({ ...f, role_id: f.role_id === r.id ? '' : r.id }))
-                }
-                className={chip(form.role_id === r.id)}
-              >
-                {r.description}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-line bg-surface p-5">
-          <h2 className="mb-1 font-sans text-sm font-semibold text-magenta-text">
-            Diagnosis
-          </h2>
-          <p className="mb-3 text-xs text-faint">
-            Choose any that apply, to you or to the person you care for.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {diagnoses.map((d) => (
-              <button
-                key={d.id}
-                onClick={() => toggleId('diagnosis_type_ids', d.id)}
-                className={chip(form.diagnosis_type_ids.includes(d.id))}
-              >
-                {d.description}
-              </button>
-            ))}
-          </div>
-
-          {form.diagnosis_type_ids.length > 0 && subtypes.length > 0 && (
-            <>
-              <h3 className="mb-2 mt-4 text-sm font-medium text-heading">
-                Stage or detail
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {subtypes.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => toggleId('diagnosis_subtype_ids', s.id)}
-                    className={chip(form.diagnosis_subtype_ids.includes(s.id))}
-                  >
-                    {s.description}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          <label className="mt-4 block max-w-[200px]">
-            <span className="mb-1 block text-sm font-medium text-heading">
-              Year of diagnosis
-            </span>
-            <select
-              value={form.diagnosis_year}
-              onChange={(e) => setForm((f) => ({ ...f, diagnosis_year: e.target.value }))}
-              className={inputClass}
-            >
-              <option value="">Prefer not to say</option>
-              {YEARS.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </select>
-          </label>
-        </section>
-
-        <section className="rounded-2xl border border-line bg-surface p-5">
-          <h2 className="mb-3 font-sans text-sm font-semibold text-magenta-text">
-            About you
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-heading">Age</span>
-              <select
-                value={form.age_range}
-                onChange={(e) => setForm((f) => ({ ...f, age_range: e.target.value }))}
-                className={inputClass}
-              >
-                <option value="">Prefer not to say</option>
-                {AGE_RANGES.map((a) => (
-                  <option key={a} value={a}>
-                    {a}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-heading">Gender</span>
-              <select
-                value={form.gender}
-                onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
-                className={inputClass}
-              >
-                <option value="">Prefer not to say</option>
-                {GENDERS.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        </section>
-
-        <section className="rounded-2xl border border-line bg-surface p-5">
-          <h2 className="mb-1 font-sans text-sm font-semibold text-magenta-text">
-            Where you are
-          </h2>
-          <p className="mb-3 text-xs leading-relaxed text-faint">
-            This puts you on the member map so people nearby can find you. Your
-            pin is deliberately approximate, to about half a mile, and your zip
-            code is never shown to other members.
-          </p>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <label className="block sm:col-span-2">
-              <span className="mb-1 block text-sm font-medium text-heading">City</span>
-              <input
-                value={form.city}
-                onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-                className={inputClass}
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-heading">State</span>
-              <input
-                value={form.state}
-                onChange={(e) => setForm((f) => ({ ...f, state: e.target.value }))}
-                className={inputClass}
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-heading">Zip code</span>
-              <input
-                value={form.zip_code}
-                onChange={(e) => setForm((f) => ({ ...f, zip_code: e.target.value }))}
-                className={inputClass}
-              />
-            </label>
-          </div>
-
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <button
-              onClick={useMyLocation}
-              disabled={locating}
-              className="rounded-lg border border-line px-3 py-2 text-sm text-body transition-colors hover:border-magenta hover:text-magenta-text disabled:opacity-50"
-            >
-              {locating ? 'Finding you…' : 'Use my current location'}
-            </button>
-            {form.latitude != null && (
-              <span className="text-sm text-success">
-                Location set. You will appear on the map.
-              </span>
-            )}
-          </div>
-        </section>
-      </div>
+      <ProfileFields form={form} setForm={setForm} onLocationError={setErr} />
 
       {err && <p className="mt-4 text-sm text-danger">{err}</p>}
 
