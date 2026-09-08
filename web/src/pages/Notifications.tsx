@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
@@ -52,8 +53,12 @@ function targetFor(n: Note): string | null {
       return n.sender_id ? `/users/${n.sender_id}` : null;
     case 'POST_REACTION':
     case 'POST_COMMENT':
-    case 'NEW_MENTION':
-      return '/';
+    case 'NEW_MENTION': {
+      // The triggers store postId (and commentId for a comment like). Fall
+      // back to the feed for older rows written before permalinks existed.
+      const p = n.meta?.postId;
+      return typeof p === 'string' ? `/posts/${p}` : '/';
+    }
     default:
       return null;
   }
@@ -72,8 +77,36 @@ export function Notifications() {
         .update({ read_at: new Date().toISOString() })
         .eq('id', id);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+      // Without this the bell badge kept its count until the 60s poll.
+      qc.invalidateQueries({ queryKey: ['unread'] });
+    },
   });
+
+  // Opening this page IS reading the notifications, so the bell clears here
+  // rather than only when each row is clicked. Messages deliberately do not
+  // work this way: a thread is only read when you open that thread.
+  //
+  // The ids that were unread on arrival are remembered so the highlight
+  // survives the write. Clearing the badge should not also erase the visual
+  // answer to "what is new since last time" while you are still looking at it.
+  // State, not a ref: the highlight has to survive into a render, and a ref
+  // written in an effect never triggers one.
+  const [wasUnread, setWasUnread] = useState<Set<string> | null>(null);
+  const cleared = useRef(false);
+  useEffect(() => {
+    if (!data || cleared.current) return;
+    cleared.current = true;
+    const ids = data.filter((n) => !n.read_at).map((n) => n.id);
+    setWasUnread(new Set(ids));
+    if (ids.length === 0) return;
+    void supabase
+      .from('notifications')
+      .update({ read_at: new Date().toISOString() })
+      .in('id', ids)
+      .then(() => qc.invalidateQueries({ queryKey: ['unread'] }));
+  }, [data, qc]);
 
   function open(n: Note) {
     if (!n.read_at) markRead.mutate(n.id);
@@ -97,7 +130,9 @@ export function Notifications() {
             key={n.id}
             onClick={() => open(n)}
             className={`block w-full rounded-xl border p-3 text-left text-sm ${
-              n.read_at ? 'border-line bg-surface' : 'border-line bg-surface-2'
+              wasUnread?.has(n.id)
+                ? 'border-line bg-surface-2'
+                : 'border-line bg-surface'
             }`}
           >
             <div className="font-medium text-heading">
