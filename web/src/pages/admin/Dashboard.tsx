@@ -25,6 +25,12 @@ import {
 // event tracking and are not faked; what replaces them are figures the
 // database can actually answer.
 
+// The two platforms the app ships on. Always rendered, even at zero.
+const PLATFORMS = [
+  { key: 'ios', label: 'iOS' },
+  { key: 'android', label: 'Android' },
+] as const;
+
 type Week = { week: string; count: number };
 type Stats = {
   members_total: number;
@@ -42,6 +48,7 @@ type Stats = {
   tickets_open: number;
   moderation_pending: number;
   push_enabled: number;
+  app_users: number;
   devices: Record<string, number>;
   signups_by_week: Week[];
   posts_by_week: Week[];
@@ -201,7 +208,13 @@ export function AdminDashboard() {
   const s = data;
   if (!s) return <p className="text-muted">No data.</p>;
 
-  const deviceEntries = Object.entries(s.devices ?? {}).sort((a, b) => b[1] - a[1]);
+  const deviceCounts = s.devices ?? {};
+  const appUsers = s.app_users ?? 0;
+  // Anything the app reported that is not ios/android, so an unexpected value
+  // is visible rather than silently dropped.
+  const otherDevices = Object.entries(deviceCounts).filter(
+    ([k]) => !PLATFORMS.some((p) => p.key === k),
+  );
   const pushPct = s.members_total
     ? Math.round((s.push_enabled / s.members_total) * 100)
     : 0;
@@ -304,40 +317,69 @@ export function AdminDashboard() {
         />
       </div>
 
-      {deviceEntries.length > 0 && (
-        <section className="rounded-2xl border border-line bg-surface p-5">
-          <h2 className="font-sans text-sm font-semibold text-magenta-text">
-            Devices
-          </h2>
-          <p className="mb-3 text-xs text-faint">
-            Recorded when a member signs in on mobile. Members who have only used
-            the web app show as unknown.
+      <section className="rounded-2xl border border-line bg-surface p-5">
+        <h2 className="font-sans text-sm font-semibold text-magenta-text">
+          Mobile app
+        </h2>
+        <p className="mb-3 text-xs text-faint">
+          Recorded when a member signs in on the iOS or Android app. Using the
+          site in a phone browser is not counted.
+        </p>
+
+        {appUsers === 0 ? (
+          <p className="text-sm text-muted">
+            No one has signed in on the mobile app yet.
           </p>
+        ) : (
           <div className="space-y-2">
-            {deviceEntries.map(([name, n]) => {
-              const pct = s.members_total
-                ? Math.round((n / s.members_total) * 100)
-                : 0;
+            {/* iOS and Android are always shown, at zero if need be. A platform
+                missing from the chart reads as a data problem; a platform at
+                zero is an answer. */}
+            {PLATFORMS.map(({ key, label }) => {
+              const n = deviceCounts[key] ?? 0;
+              const pct = appUsers ? Math.round((n / appUsers) * 100) : 0;
+              return (
+                <div key={key} className="flex items-center gap-3">
+                  <span className="w-20 shrink-0 text-sm text-body">{label}</span>
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
+                    <div
+                      className="h-full rounded-full bg-magenta"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="w-20 shrink-0 text-right text-sm text-muted">
+                    {n} ({pct}%)
+                  </span>
+                </div>
+              );
+            })}
+            {otherDevices.map(([name, n]) => {
+              const pct = appUsers ? Math.round((n / appUsers) * 100) : 0;
               return (
                 <div key={name} className="flex items-center gap-3">
-                  <span className="w-20 shrink-0 text-sm capitalize text-body">
+                  <span className="w-20 shrink-0 truncate text-sm capitalize text-body">
                     {name}
                   </span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
                     <div
-                      className="h-full rounded-full bg-magenta"
-                      style={{ width: `${Math.max(2, pct)}%` }}
+                      className="h-full rounded-full bg-magenta/50"
+                      style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="w-16 shrink-0 text-right text-sm text-muted">
+                  <span className="w-20 shrink-0 text-right text-sm text-muted">
                     {n} ({pct}%)
                   </span>
                 </div>
               );
             })}
           </div>
-        </section>
-      )}
+        )}
+
+        <p className="mt-3 border-t border-line pt-3 text-xs text-faint">
+          {appUsers} of {s.members_total} members have used the app.{' '}
+          {s.members_total - appUsers} have only used the website.
+        </p>
+      </section>
 
       <p className="mt-6 text-xs leading-relaxed text-faint">
         Engagement counts members who posted or commented, so it undercounts

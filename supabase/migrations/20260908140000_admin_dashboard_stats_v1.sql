@@ -21,7 +21,7 @@ declare
   result json;
 begin
   -- Staff only. SECURITY DEFINER bypasses RLS, so the gate has to be explicit.
-  if not public.is_staff() then
+  if not public.is_support_staff() then
     raise exception 'staff access required';
   end if;
 
@@ -69,10 +69,21 @@ begin
     -- From the owner-only table; counts only.
     'push_enabled', (select count(*) from public.profiles_private
                       where push_active is true),
+
+    -- device_type is written ONLY by the mobile app, as part of its push
+    -- registration. The web app never sets it, so someone on a phone browser
+    -- can never be counted as iOS or Android. Rows with no value are members
+    -- who have not installed the app, reported separately rather than mixed in
+    -- as a third "unknown" device, which buried the split the client cares
+    -- about.
+    'app_users', (select count(*) from public.profiles_private
+                   where nullif(trim(device_type), '') is not null),
     'devices', (
       select coalesce(json_object_agg(d, n), '{}'::json) from (
-        select coalesce(nullif(lower(device_type), ''), 'unknown') as d, count(*) as n
-        from public.profiles_private group by 1
+        select lower(trim(device_type)) as d, count(*) as n
+        from public.profiles_private
+        where nullif(trim(device_type), '') is not null
+        group by 1
       ) x
     ),
 
