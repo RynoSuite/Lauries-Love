@@ -74,7 +74,13 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908160000_support_ticket_replies_v1` | Staff can reply to tickets |
 | `20260908180000_comment_replies_v1` | Threaded comment replies |
 | `20260908200000_edit_delete_v1` | Post/message/comment edit + delete, unread counts |
-| `20260908220000_moderation_resolve_v1` | Moderation actually removes content |
+| `20260908220000_moderation_resolve_v1` | Moderation actually removes content; queue returns `post_id` |
+
+> `20260908220000` was amended after it was first run: `moderation_queue_detailed()`
+> now also returns `post_id` so the queue can deep-link to the reported post.
+> The return type changed, so the file drops the function before recreating it.
+> **Re-run that file anywhere it was already applied**, or the moderation page's
+> "view post" link will not appear.
 
 **Two gotchas learned the hard way:**
 
@@ -106,6 +112,17 @@ column shell, real logo, Fraunces/Figtree.
 - **Map** — role/diagnosis/gender/age filters, centres on the member's location
 - **Password reset** — `/forgot-password` and `/reset-password`, link or 6-digit
   code, matching the mobile flow
+- **Onboarding** (`/welcome`) — role, diagnosis types and subtypes, diagnosis
+  year, age range, gender, city/state/zip, geolocation. Web signup collected
+  only name/email/password, so web-joined members were invisible on the map and
+  unmatched to groups. New signups land here; existing incomplete profiles get a
+  dismissible banner keyed on `role_id`. **Skippable on purpose** — the August
+  lockout was a hard completeness gate that bounced members back forever.
+- **Member profiles** — role, diagnosis, stage and diagnosis year, plus Message,
+  Add friend and View-on-map, matching what the current app shows.
+- **Post permalinks** (`/posts/:id`) — feed timestamps link here, and the
+  moderation queue opens the reported post (or, for a reported comment, the post
+  it hangs under) in a new tab.
 
 ### Known gaps / next up
 
