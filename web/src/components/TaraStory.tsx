@@ -67,7 +67,7 @@ export function TaraStory() {
           />
           <span className="absolute inset-0 grid place-items-center bg-ground/25 transition-colors group-hover:bg-ground/10">
             <span className="grid h-11 w-11 place-items-center rounded-full bg-magenta text-white shadow-lg">
-              {/* Play triangle, nudged right so it looks centred in the circle */}
+              {/* Play triangle, nudged right so it looks centered in the circle */}
               <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5" fill="currentColor">
                 <path d="M8 5.5v13l11-6.5z" />
               </svg>

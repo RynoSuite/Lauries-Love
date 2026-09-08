@@ -27,7 +27,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
   {
     title: 'Brand',
     blurb:
-      'The colours people recognise. Magenta leads the interface, buttons, links, active tabs.',
+      'The colors people recognize. Magenta leads the interface, buttons, links, active tabs.',
     tokens: [
       {
         key: 'magenta',

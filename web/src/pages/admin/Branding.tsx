@@ -98,7 +98,7 @@ export function AdminBranding() {
   const save = useMutation({
     mutationFn: async () => {
       const orgId = await currentOrgId();
-      if (!orgId) throw new Error('No organisation found');
+      if (!orgId) throw new Error('No organization found');
       // Store only what differs from the defaults. Keeps the row small and
       // means a future change to a default reaches orgs that never touched it.
       const overrides: Record<string, string> = {};
@@ -292,10 +292,10 @@ export function AdminBranding() {
         {uploadErr && <p className="mt-3 text-sm text-danger">{uploadErr}</p>}
       </section>
 
-      {/* ── Colours ──────────────────────────────────────────────── */}
+      {/* ── Colors ──────────────────────────────────────────────── */}
       <section className="mb-6 rounded-2xl border border-line bg-surface p-5">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-sans text-sm font-semibold text-magenta-text">Colours</h2>
+          <h2 className="font-sans text-sm font-semibold text-magenta-text">Colors</h2>
           <button
             type="button"
             onClick={() => {
@@ -325,11 +325,11 @@ export function AdminBranding() {
         ) : null}
 
         {/* One control that drives the whole brand family. Setting the fill
-            alone left links and module titles on the old colour, which read as
+            alone left links and module titles on the old color, which read as
             "it didn't save" rather than "that is a different token". */}
         <div className="mb-5 rounded-xl border border-line bg-surface-2/40 p-4">
           <ColorField
-            label="Brand colour"
+            label="Brand color"
             hint="Sets buttons, links, module titles, avatars and icon plates together. The lighter text shade is worked out for you so it stays readable."
             value={theme['magenta'] ?? DEFAULT_THEME['magenta']}
             defaultValue={DEFAULT_THEME['magenta']}
@@ -356,7 +356,7 @@ export function AdminBranding() {
           onClick={() => setAdvanced((v) => !v)}
           className="mb-3 text-sm text-magenta-text hover:underline"
         >
-          {advanced ? 'Hide individual colours' : 'Adjust individual colours'}
+          {advanced ? 'Hide individual colors' : 'Adjust individual colors'}
         </button>
 
         {advanced && (
