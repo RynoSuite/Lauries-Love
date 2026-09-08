@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { useBranding } from '../lib/branding';
+import { useUnread } from '../lib/useUnread';
 import { UserMenu } from './UserMenu';
 import {
   IconArrowRight,
@@ -36,10 +37,10 @@ import {
 const NAV = [
   { to: '/', label: 'Community', Icon: IconCommunity, end: true, iconOnly: false },
   { to: '/groups', label: 'Groups', Icon: IconGroups, iconOnly: false },
-  { to: '/messages', label: 'Messages', Icon: IconMessages, iconOnly: false },
+  { to: '/messages', label: 'Messages', Icon: IconMessages, iconOnly: false, badge: 'messages' as const },
   { to: '/map', label: 'Map', Icon: IconMap, iconOnly: false },
   { to: '/donate', label: 'Donate', Icon: IconHeart, iconOnly: false },
-  { to: '/notifications', label: 'Notifications', Icon: IconBell, iconOnly: true },
+  { to: '/notifications', label: 'Notifications', Icon: IconBell, iconOnly: true, badge: 'notifications' as const },
 ];
 
 // The left rail repeats the primary destinations at a comfortable reading
@@ -73,6 +74,7 @@ const WIDE_ROUTES = ['/groups', '/messages', '/map'];
 export function Layout() {
   const { appName, logoUrl } = useBranding();
   const { pathname } = useLocation();
+  const { data: unread } = useUnread();
   const wide = WIDE_ROUTES.some(
     (r) => pathname === r || pathname.startsWith(r + '/'),
   );
@@ -97,19 +99,38 @@ export function Layout() {
           </Link>
 
           <nav className="ml-auto flex items-center gap-1 overflow-x-auto">
-            {NAV.map(({ to, label, Icon, end, iconOnly }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={end}
-                aria-label={iconOnly ? label : undefined}
-                title={iconOnly ? label : undefined}
-                className={({ isActive }) => navClass(isActive)}
-              >
-                <Icon className={iconOnly ? 'h-[22px] w-[22px]' : undefined} />
-                {!iconOnly && <span className="hidden lg:inline">{label}</span>}
-              </NavLink>
-            ))}
+            {NAV.map(({ to, label, Icon, end, iconOnly, badge }) => {
+              const count = badge ? (unread?.[badge] ?? 0) : 0;
+              return (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  aria-label={
+                    count > 0
+                      ? `${label}, ${count} unread`
+                      : iconOnly
+                        ? label
+                        : undefined
+                  }
+                  title={iconOnly ? label : undefined}
+                  className={({ isActive }) => navClass(isActive) + ' relative'}
+                >
+                  <Icon className={iconOnly ? 'h-[22px] w-[22px]' : undefined} />
+                  {!iconOnly && <span className="hidden lg:inline">{label}</span>}
+                  {count > 0 && (
+                    // Capped at 9+: an exact count past that tells nobody
+                    // anything and stretches the bar.
+                    <span
+                      aria-hidden="true"
+                      className="absolute -right-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-magenta px-1 text-[10px] font-semibold leading-[18px] text-white"
+                    >
+                      {count > 9 ? '9+' : count}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
           </nav>
 
           <UserMenu />

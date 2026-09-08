@@ -134,6 +134,29 @@ export function IconRibbon({ className = 'h-[18px] w-[18px]' }: IconProps) {
     </svg>
   );
 }
+export function IconMore({ className = 'h-[18px] w-[18px]' }: IconProps) {
+  return (
+    <svg {...base} className={className} strokeWidth={2.2} strokeLinecap="round">
+      <path d="M6 12h.01M12 12h.01M18 12h.01" />
+    </svg>
+  );
+}
+export function IconPencil({ className = 'h-4 w-4' }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 20h4L18.5 9.5a2 2 0 0 0-2.83-2.83L5 17.5V20Z" />
+      <path d="M14.5 6.5 17.5 9.5" />
+    </svg>
+  );
+}
+export function IconTrash({ className = 'h-4 w-4' }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M5 7h14M10 7V5.5A1.5 1.5 0 0 1 11.5 4h1A1.5 1.5 0 0 1 14 5.5V7" />
+      <path d="M6.5 7l.8 11a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4L17.5 7" />
+    </svg>
+  );
+}
 export function IconArrowRight({ className = 'h-4 w-4' }: IconProps) {
   return (
     <svg {...base} className={className}>

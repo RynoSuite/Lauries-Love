@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
 import { useFeatureFlags } from '../lib/featureFlags';
 import { MessageAttachment } from '../components/MessageAttachment';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { IconPencil, IconTrash } from '../components/Icons';
 
 // Supabase storage caps a standard upload at 50MB; 25 keeps well inside that
 // and keeps a member on mobile data from sending something enormous by accident.
@@ -23,12 +25,46 @@ type Message = {
   sender_id: string;
   created_at: string;
   attachment_path: string | null;
+  edited_at: string | null;
 };
 type MemberHit = {
   id: string;
   display_name: string | null;
   first_name: string | null;
 };
+
+// Date separators and timestamps. A thread spanning weeks reads as one
+// continuous conversation without them, and "when did they say that" is the
+// question people actually ask of a chat history.
+function sameDay(a: string, b: string) {
+  const x = new Date(a);
+  const y = new Date(b);
+  return x.toDateString() === y.toDateString();
+}
+
+function dayLabel(iso: string) {
+  const d = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return 'Today';
+  if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  const withinAWeek = Date.now() - d.getTime() < 7 * 86400000;
+  return d.toLocaleDateString(undefined, {
+    weekday: withinAWeek ? 'long' : undefined,
+    month: withinAWeek ? undefined : 'short',
+    day: withinAWeek ? undefined : 'numeric',
+    year:
+      d.getFullYear() === today.getFullYear() || withinAWeek ? undefined : 'numeric',
+  });
+}
+
+function timeLabel(iso: string) {
+  return new Date(iso).toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
 
 async function fetchConversations(): Promise<Conversation[]> {
   const me = await currentUserId();
@@ -75,6 +111,10 @@ export function Messages() {
   const [starting, setStarting] = useState(false);
   const [attaching, setAttaching] = useState(false);
   const [attachError, setAttachError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [rowBusy, setRowBusy] = useState(false);
 
   useEffect(() => {
     currentUserId().then(setMeId);
@@ -120,7 +160,7 @@ export function Messages() {
     let cancelled = false;
     supabase
       .from('messages')
-      .select('id, body, sender_id, created_at, attachment_path')
+      .select('id, body, sender_id, created_at, attachment_path, edited_at')
       .eq('conversation_id', active)
       .order('created_at', { ascending: true })
       .limit(100)
@@ -144,6 +184,17 @@ export function Messages() {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [msgs]);
+
+  // Opening a conversation marks it read, which is what clears the nav badge.
+  // conversation_members has no update policy, so a member cannot move their
+  // own read marker directly; the RPC does it for them. Runs on every message
+  // change so a reply arriving while the thread is open does not re-badge it.
+  useEffect(() => {
+    if (!active) return;
+    void supabase
+      .rpc('mark_conversation_read', { p_conversation_id: active })
+      .then(() => qc.invalidateQueries({ queryKey: ['unread'] }));
+  }, [active, msgs.length, qc]);
 
   async function send() {
     if (!text.trim() || !active) return;
@@ -196,6 +247,48 @@ export function Messages() {
     } finally {
       setAttaching(false);
     }
+  }
+
+  async function saveEdit(id: string) {
+    const body = editDraft.trim();
+    if (!body) return;
+    setEditingId(null);
+    const { error } = await supabase
+      .from('messages')
+      .update({ body, edited_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) {
+      setAttachError(
+        /edited_at|policy/i.test(error.message)
+          ? 'Editing needs the edit/delete migration on this project (20260908200000_edit_delete_v1.sql).'
+          : error.message,
+      );
+      return;
+    }
+    setMsgs((prev) =>
+      prev.map((m) =>
+        m.id === id ? { ...m, body, edited_at: new Date().toISOString() } : m,
+      ),
+    );
+    qc.invalidateQueries({ queryKey: ['conversations'] });
+  }
+
+  async function deleteMessage(id: string) {
+    setRowBusy(true);
+    const { error } = await supabase.from('messages').delete().eq('id', id);
+    setRowBusy(false);
+    setDeletingId(null);
+    if (error) {
+      setAttachError(
+        /policy/i.test(error.message)
+          ? 'Deleting needs the edit/delete migration on this project (20260908200000_edit_delete_v1.sql).'
+          : error.message,
+      );
+      return;
+    }
+    setMsgs((prev) => prev.filter((m) => m.id !== id));
+    qc.invalidateQueries({ queryKey: ['conversations'] });
+    qc.invalidateQueries({ queryKey: ['unread'] });
   }
 
   async function startWith(profileId: string) {
@@ -281,19 +374,99 @@ export function Messages() {
         ) : (
           <>
             <div className="flex-1 space-y-2 overflow-y-auto p-4">
-              {msgs.map((m) => {
+              {msgs.map((m, i) => {
                 const mine = m.sender_id === meId;
+                // A date separator whenever the day changes, so a thread that
+                // spans weeks does not read as one continuous conversation.
+                const showDate =
+                  i === 0 || !sameDay(msgs[i - 1].created_at, m.created_at);
                 return (
-                  <div
-                    key={m.id}
-                    className={`max-w-[75%] space-y-1.5 rounded-2xl px-3 py-2 text-sm ${
-                      mine ? 'ml-auto bg-magenta text-white' : 'bg-surface-2'
-                    }`}
-                  >
-                    {m.attachment_path && (
-                      <MessageAttachment path={m.attachment_path} mine={mine} />
+                  <div key={m.id}>
+                    {showDate && (
+                      <div className="my-3 flex items-center gap-3">
+                        <span className="h-px flex-1 bg-line" />
+                        <span className="text-[11px] text-faint">
+                          {dayLabel(m.created_at)}
+                        </span>
+                        <span className="h-px flex-1 bg-line" />
+                      </div>
                     )}
-                    {m.body && <p className="whitespace-pre-wrap">{m.body}</p>}
+
+                    <div className={'group flex items-end gap-1.5 ' + (mine ? 'justify-end' : '')}>
+                      {/* Controls sit outside the bubble and appear on hover,
+                          so they never cover the message text. */}
+                      {mine && editingId !== m.id && (
+                        <div className="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                          {m.body && (
+                            <button
+                              onClick={() => {
+                                setEditingId(m.id);
+                                setEditDraft(m.body ?? '');
+                              }}
+                              aria-label="Edit message"
+                              className="grid h-7 w-7 place-items-center rounded-full text-faint hover:bg-surface-2 hover:text-heading"
+                            >
+                              <IconPencil className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setDeletingId(m.id)}
+                            aria-label="Delete message"
+                            className="grid h-7 w-7 place-items-center rounded-full text-faint hover:bg-surface-2 hover:text-danger"
+                          >
+                            <IconTrash className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      )}
+
+                      <div
+                        className={`max-w-[75%] space-y-1.5 rounded-2xl px-3 py-2 text-sm ${
+                          mine ? 'bg-magenta text-white' : 'bg-surface-2'
+                        }`}
+                      >
+                        {m.attachment_path && (
+                          <MessageAttachment path={m.attachment_path} mine={mine} />
+                        )}
+
+                        {editingId === m.id ? (
+                          <div className="space-y-1.5">
+                            <textarea
+                              autoFocus
+                              value={editDraft}
+                              onChange={(e) => setEditDraft(e.target.value)}
+                              rows={2}
+                              className="w-full resize-none rounded-lg border border-line-strong bg-surface px-2 py-1 text-sm text-heading outline-none"
+                            />
+                            <div className="flex justify-end gap-2 text-xs">
+                              <button
+                                onClick={() => setEditingId(null)}
+                                className={mine ? 'text-white/80 hover:text-white' : 'text-muted'}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={() => saveEdit(m.id)}
+                                disabled={!editDraft.trim()}
+                                className="font-semibold disabled:opacity-50"
+                              >
+                                Save
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          m.body && <p className="whitespace-pre-wrap">{m.body}</p>
+                        )}
+
+                        <div
+                          className={
+                            'text-[10px] ' + (mine ? 'text-white/60' : 'text-faint')
+                          }
+                        >
+                          {timeLabel(m.created_at)}
+                          {m.edited_at && ' · edited'}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -343,6 +516,17 @@ export function Messages() {
           </>
         )}
       </section>
+
+      <ConfirmDialog
+        open={deletingId !== null}
+        title="Delete this message?"
+        body="It will be removed for everyone in the conversation. This cannot be undone."
+        confirmLabel="Delete"
+        destructive
+        busy={rowBusy}
+        onConfirm={() => deletingId && deleteMessage(deletingId)}
+        onCancel={() => setDeletingId(null)}
+      />
     </div>
   );
 }
