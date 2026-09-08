@@ -120,13 +120,25 @@ column shell, real logo, Fraunces/Figtree.
   lockout was a hard completeness gate that bounced members back forever.
 - **Member profiles** — role, diagnosis, stage and diagnosis year, plus Message,
   Add friend and View-on-map, matching what the current app shows.
+- **Notifications** — opening the page clears the bell. Marking one read now
+  refreshes the badge instead of waiting for the 60s poll. Rows that were unread
+  on arrival stay highlighted for that visit so clearing the count does not also
+  erase what is new. Likes and comments deep-link to the post. **Messages are
+  deliberately different**: a thread is read only when that thread is opened.
+- **Stale-build reload** — an open tab fetches the JS bundle once, so a deploy
+  was invisible until a hard reload; this was reported as a caching bug. Vite
+  stamps a build id into the bundle and into `dist/version.json`
+  (`web/src/lib/useBuildVersion.ts`); the app compares them on navigation and on
+  window focus, reloads on the first navigation after a deploy, and otherwise
+  shows a refresh pill. `web/public/_headers` keeps `index.html` and
+  `version.json` uncached and `/assets/*` immutable for a year.
 - **Post permalinks** (`/posts/:id`) — feed timestamps link here, and the
   moderation queue opens the reported post (or, for a reported comment, the post
   it hangs under) in a new tab.
 
 ### Known gaps / next up
 
-- **Group messages** (client request, not started). A normal thread with several
+- **Group messages** (client request, NEXT UP). A normal thread with several
   members, Facebook-style: truncated names in the list, full member list when
   opened. `conversations.is_group` and `conversation_members` already support
   it; the work is UI plus a create-group-thread flow.
