@@ -91,7 +91,8 @@ returns table (
   entity_id uuid,
   reason text,
   score numeric,
-  flagged_by uuid,
+  -- 'ai' | 'user' — who raised it, not a profile id.
+  flagged_by text,
   status text,
   created_at timestamptz,
   content text,
@@ -107,15 +108,19 @@ as $$
   select q.id, q.entity_type, q.entity_id, q.reason, q.score, q.flagged_by,
          q.status, q.created_at,
          coalesce(p.body, c.body)                              as content,
-         coalesce(p.author_id, c.author_id)                    as author_id,
+         -- The queue stores author_id at flag time; fall back to it so a
+         -- deleted post still shows who wrote it.
+         coalesce(p.author_id, c.author_id, q.author_id)        as author_id,
          coalesce(pa.display_name, pa.first_name,
-                  ca.display_name, ca.first_name)              as author_name,
+                  ca.display_name, ca.first_name,
+                  qa.display_name, qa.first_name)              as author_name,
          (p.id is not null or c.id is not null)                as content_exists
     from public.moderation_queue q
     left join public.posts    p  on q.entity_type = 'post'    and p.id = q.entity_id
     left join public.comments c  on q.entity_type = 'comment' and c.id = q.entity_id
     left join public.profiles pa on pa.id = p.author_id
     left join public.profiles ca on ca.id = c.author_id
+    left join public.profiles qa on qa.id = q.author_id
    where public.is_support_staff()
      and q.status = 'pending'
    order by q.created_at desc
