@@ -162,7 +162,7 @@ export function PostActions({
           aria-haspopup="menu"
           aria-expanded={menuOpen}
           aria-label="Post options"
-          className="grid h-8 w-8 place-items-center rounded-full text-faint transition-colors hover:bg-surface-2 hover:text-heading"
+          className="grid h-8 w-8 place-items-center rounded-full bg-surface-2 text-muted transition-colors hover:bg-magenta/20 hover:text-magenta-text"
         >
           <IconMore />
         </button>

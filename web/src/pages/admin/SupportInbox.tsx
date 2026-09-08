@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../../lib/supabase';
 import { PageTitle } from '../../components/PageTitle';
 import { Avatar } from '../../components/Avatar';
@@ -35,16 +35,57 @@ type Msg = {
   created_at: string;
 };
 
-async function fetchTickets(): Promise<Ticket[]> {
-  const { data, error } = await supabase
+const PAGE_SIZE = 50;
+
+const TICKET_SELECT =
+  'id, user_id, category, subject, description, status, created_at, conversation_id, author:profiles!support_tickets_user_id_fkey(display_name, first_name, avatar_path)';
+
+// Search runs in Postgres, not over the loaded page. Filtering what happens to
+// be on screen looks like search and is worse than none: a ticket you have not
+// scrolled to yet simply would not exist.
+//
+// Member names live in another table, so a name search resolves to profile ids
+// first and folds them into the same OR. Two round trips, but it means "Maria"
+// finds Maria's tickets rather than only tickets with "Maria" in the text.
+async function fetchTicketPage({
+  pageParam = 0,
+  q,
+}: {
+  pageParam?: number;
+  q: string;
+}): Promise<{ rows: Ticket[]; nextPage: number | null }> {
+  const term = q.trim();
+  let query = supabase
     .from('support_tickets')
-    .select(
-      'id, user_id, category, subject, description, status, created_at, conversation_id, author:profiles!support_tickets_user_id_fkey(display_name, first_name, avatar_path)',
-    )
+    .select(TICKET_SELECT)
     .order('created_at', { ascending: false })
-    .limit(100);
+    .range(pageParam * PAGE_SIZE, pageParam * PAGE_SIZE + PAGE_SIZE - 1);
+
+  if (term) {
+    const like = `%${term}%`;
+    const filters = [
+      `subject.ilike.${like}`,
+      `description.ilike.${like}`,
+      `category.ilike.${like}`,
+    ];
+    const { data: people } = await supabase
+      .from('profiles')
+      .select('id')
+      .or(`display_name.ilike.${like},first_name.ilike.${like},last_name.ilike.${like}`)
+      .limit(200);
+    const ids = (people ?? []).map((p: { id: string }) => p.id);
+    if (ids.length) filters.push(`user_id.in.(${ids.join(',')})`);
+    query = query.or(filters.join(','));
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
-  return (data ?? []) as unknown as Ticket[];
+  const rows = (data ?? []) as unknown as Ticket[];
+  return {
+    rows,
+    // A short page means there is nothing after it.
+    nextPage: rows.length === PAGE_SIZE ? pageParam + 1 : null,
+  };
 }
 
 async function fetchThread(conversationId: string): Promise<Msg[]> {
@@ -107,8 +148,49 @@ export function AdminSupportInbox() {
   const qc = useQueryClient();
   const [openId, setOpenId] = useState<string | null>(null);
   const [reply, setReply] = useState('');
-  const { data, isLoading, error } = useQuery({ queryKey: ['tickets'], queryFn: fetchTickets });
+  const [search, setSearch] = useState('');
+  const [debounced, setDebounced] = useState('');
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  // Debounced so typing does not fire a query per keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['tickets', debounced],
+    queryFn: ({ pageParam }) => fetchTicketPage({ pageParam, q: debounced }),
+    initialPageParam: 0,
+    getNextPageParam: (last) => last.nextPage,
+  });
+
   const { data: meId } = useQuery({ queryKey: ['me-id'], queryFn: currentUserId });
+
+  // Load the next page when the sentinel scrolls into view. rootMargin pulls
+  // the next batch in slightly before the bottom, so scrolling stays smooth
+  // rather than stalling at the end of each page.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasNextPage) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage) void fetchNextPage();
+      },
+      { rootMargin: '400px' },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const tickets = data?.pages.flatMap((p) => p.rows) ?? [];
 
   const setStatus = useMutation({
     mutationFn: async (v: { id: string; status: string }) => {
@@ -143,7 +225,7 @@ export function AdminSupportInbox() {
     },
   });
 
-  const openCount = (data ?? []).filter((t) => t.status !== 'closed').length;
+  const openCount = tickets.filter((t) => t.status !== 'closed').length;
 
   return (
     <div className="max-w-3xl pb-10">
@@ -155,14 +237,39 @@ export function AdminSupportInbox() {
         Replies arrive in the member's Messages.
       </p>
 
+      <div className="mb-4">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search tickets by subject, message, category or member name"
+          className="w-full rounded-lg border border-line-strong px-3 py-2 text-sm outline-none focus:border-magenta"
+        />
+        {debounced && (
+          <p className="mt-1 text-xs text-faint">
+            Searching every ticket, not just the ones loaded.{' '}
+            <button
+              onClick={() => setSearch('')}
+              className="text-magenta-text hover:underline"
+            >
+              Clear
+            </button>
+          </p>
+        )}
+      </div>
+
       {error && (
         <p className="text-danger">Could not load tickets (staff access required).</p>
       )}
       {isLoading && <p className="text-heading">Loading…</p>}
-      {data && data.length === 0 && <p className="text-muted">No support tickets.</p>}
+      {!isLoading && !error && tickets.length === 0 && (
+        <p className="text-muted">
+          {debounced ? `No tickets match "${debounced}".` : 'No support tickets.'}
+        </p>
+      )}
+      
 
       <div className="space-y-3">
-        {(data ?? []).map((t) => {
+        {tickets.map((t) => {
           const name = t.author?.display_name || t.author?.first_name || 'Member';
           const expanded = openId === t.id;
           const closed = t.status === 'closed';
@@ -265,6 +372,17 @@ export function AdminSupportInbox() {
           );
         })}
       </div>
+
+      {/* Scrolling past this pulls the next 50. */}
+      <div ref={sentinelRef} className="h-4" />
+      {isFetchingNextPage && (
+        <p className="py-3 text-center text-sm text-muted">Loading more…</p>
+      )}
+      {!hasNextPage && tickets.length > PAGE_SIZE && (
+        <p className="py-3 text-center text-xs text-faint">
+          That is all {tickets.length} tickets.
+        </p>
+      )}
     </div>
   );
 }
