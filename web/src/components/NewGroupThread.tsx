@@ -112,14 +112,14 @@ export function NewGroupThread({
           with Cancel in the 16rem rail. */}
       {(connections ?? []).length === 1 ? (
         <p className="mt-3 text-[11px] leading-relaxed text-faint">
-          A group needs at least three people. You have one connection so far,
-          so use the One person tab for now.
+          A group needs three people: you and two others. You have one
+          connection so far, so use the Direct tab for now.
         </p>
       ) : (
         picked.size < 2 && (
           <p className="mt-3 text-[11px] leading-relaxed text-faint">
-            Pick {picked.size === 1 ? 'one more person' : 'at least two people'}.
-            For one, use the One person tab instead.
+            Pick {picked.size === 1 ? 'one more person' : 'two people'} to make
+            a group of three. For one, use the Direct tab instead.
           </p>
         )
       )}

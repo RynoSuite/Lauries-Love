@@ -362,7 +362,7 @@ export function Messages() {
                     : 'text-muted hover:text-heading'
                 }`}
               >
-                {m === 'direct' ? 'One person' : 'Group'}
+                {m === 'direct' ? 'Direct' : 'Group'}
               </button>
             ))}
           </div>
