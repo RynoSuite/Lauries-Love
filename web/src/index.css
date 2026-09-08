@@ -6,9 +6,10 @@
    Laurie's Love — "Plume, refined" (Skyway Media, Aug 2026)
    Brand guide: https://branding.skyway.media/ll/
 
-   Deepwater leads and owns the surfaces. Lagoon is the only interface colour.
-   Magenta is the equity colour — ONE vivid stroke per view, never two.
-   Gilt is a metal, not a fill: it appears as a hairline, once per view.
+   Magenta leads the interface (client direction, Sept 2026 — this overrides
+   the guide's "one vivid stroke" note in favour of the approved UI comp).
+   Deepwater/Harbor own the surfaces; Ink is the ground. Gilt survives in the
+   logo mark. Every colour below is a token the admin console can repaint.
    Type is Fraunces (titles) + Figtree (subheads bold, body regular),
    sentence case throughout — no uppercase anywhere in the system.
    ────────────────────────────────────────────────────────────────────────── */
@@ -16,22 +17,60 @@
 :root {
   color-scheme: dark;
 
-  /* Runtime-overridable by branding_settings via BrandingProvider. */
-  --brand-primary: #0f474c; /* Deepwater */
-  --brand-secondary: #1789a8; /* Lagoon */
+  /* ── Colour tokens. These are the single source of truth for the whole app:
+     tailwind.config.js resolves every colour utility through them, and the
+     admin console overwrites them at runtime from branding_settings.theme.
 
-  --gilt: #c6a45e; /* warm metal — line only */
-  --ground: #051a1d; /* Ink — the deck's own ground */
-  --surface: #0a2a2d; /* cards, lifted off the ground */
-  --line: rgb(255 255 255 / 0.08); /* faint white hairlines */
+     Values are SPACE-SEPARATED RGB CHANNELS, not hex, because that is the only
+     form that keeps Tailwind's alpha modifiers working (bg-magenta/15 etc).
+     Editing a value here changes the app's default; the admin console changes
+     what a given org sees. */
+
+  --c-deepwater: 15 71 76;
+  --c-harbor: 8 39 41;
+  --c-gilt: 198 164 94;
+  --c-seamist: 234 242 242;
+  --c-ink: 5 26 29;
+
+  --c-lagoon: 23 137 168;
+  --c-lagoon-hi: 34 166 199;
+
+  --c-magenta: 145 23 102;
+  --c-magenta-hi: 176 29 125;
+  --c-magenta-text: 244 95 175;
+  --c-magenta-plate: 88 22 59;
+
+  --c-ground: 5 26 29;
+  --c-surface: 10 42 45;
+  --c-surface-2: 14 56 60;
+  /* Borders read as a faint white veil. Kept as solid channel values (white
+     at 8% / 14% already composited over the card) rather than a live alpha, so
+     Tailwind's own modifiers — border-line/40 — still behave. */
+  --c-line: 30 59 62;
+  --c-line-strong: 44 66 68;
+  --c-heading: 234 242 242;
+  --c-body: 211 227 228;
+  --c-muted: 143 169 172;
+  --c-faint: 110 139 143;
+
+  --c-danger: 232 104 107;
+  --c-danger-hi: 242 129 132;
+  --c-success: 95 201 139;
+  --c-warn: 226 184 87;
+
+  /* Legacy aliases still referenced by hand-written CSS below. */
+  --gilt: rgb(var(--c-gilt));
+  --ground: rgb(var(--c-ground));
+  --surface: rgb(var(--c-surface));
+  --line: rgb(var(--c-line) / 0.08);
 }
 
 body {
   margin: 0;
   font-family: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, Helvetica, Arial, sans-serif;
-  background: var(--ground);
-  color: #d3e3e4;
+  background: rgb(var(--c-ground));
+  color: rgb(var(--c-body));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -44,12 +83,12 @@ h5 {
   font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
   font-weight: 600;
   letter-spacing: -0.01em;
-  color: #eaf2f2; /* Sea Mist */
+  color: rgb(var(--c-heading));
 }
 
 /* Gilt hairline — gold appears as a LINE, never a fill. One moment per view.
    Drawn as a gradient so it catches light the way real gilding does; it
-   flattens to a single warm #C6A45E anywhere a gradient cannot go. */
+   flattens to a single warm rgb(var(--c-gilt)) anywhere a gradient cannot go. */
 .gilt-rule {
   height: 1px;
   border: 0;
@@ -57,37 +96,37 @@ h5 {
     90deg,
     transparent,
     #a8873f 10%,
-    #c6a45e 35%,
+    rgb(var(--c-gilt)) 35%,
     #eadca6 50%,
-    #c6a45e 65%,
+    rgb(var(--c-gilt)) 65%,
     #a8873f 90%,
     transparent
   );
 }
 .gilt-line {
-  border-color: #c6a45e;
+  border-color: rgb(var(--c-gilt));
 }
 
 /* Placeholders sit at the 'faint' step so inputs read as empty, not filled. */
 ::placeholder {
-  color: #6e8b8f;
+  color: rgb(var(--c-faint));
   opacity: 1;
 }
 
 ::selection {
-  background: #911766; /* Magenta */
-  color: #eaf2f2;
+  background: rgb(var(--c-magenta)); /* Magenta */
+  color: rgb(var(--c-heading));
 }
 
 /* Keyboard focus is Lagoon — the interface colour — never magenta or gold. */
 :focus-visible {
-  outline: 2px solid #f45faf;
+  outline: 2px solid rgb(var(--c-magenta-text));
   outline-offset: 2px;
 }
 
 /* Dark scrollbars, so the chrome doesn't punch a light hole in the page. */
 * {
-  scrollbar-color: rgb(255 255 255 / 0.14) transparent;
+  scrollbar-color: rgb(var(--c-line-strong)) transparent;
   scrollbar-width: thin;
 }
 *::-webkit-scrollbar {
@@ -98,17 +137,17 @@ h5 {
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 0.14);
+  background: rgb(var(--c-line-strong));
   border-radius: 999px;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: rgb(255 255 255 / 0.22);
+  background: rgb(var(--c-line-strong));
 }
 
 /* Leaflet renders a white tile pane by default — keep the map on the ground
    colour so it doesn't flash white while tiles load. */
 .leaflet-container {
-  background: #0a2a2d;
+  background: rgb(var(--c-surface));
 }
 
 /* Leaflet ships its own light chrome — tooltips, popups and attribution are
@@ -117,27 +156,27 @@ h5 {
 .leaflet-tooltip,
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
-  background: #0a2a2d;
-  border-color: rgb(255 255 255 / 0.10);
-  color: #d3e3e4;
+  background: rgb(var(--c-surface));
+  border-color: rgb(var(--c-line));
+  color: rgb(var(--c-body));
   box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
 }
 .leaflet-tooltip::before {
-  border-top-color: rgb(255 255 255 / 0.10);
-  border-bottom-color: rgb(255 255 255 / 0.10);
+  border-top-color: rgb(var(--c-line));
+  border-bottom-color: rgb(var(--c-line));
 }
 .leaflet-control-attribution {
-  background: rgb(10 42 45 / 0.85) !important;
-  color: #6e8b8f;
+  background: rgb(var(--c-surface) / 0.85) !important;
+  color: rgb(var(--c-faint));
 }
 .leaflet-control-attribution a {
-  color: #f45faf;
+  color: rgb(var(--c-magenta-text));
 }
 .leaflet-bar a,
 .leaflet-bar a:hover {
-  background: #0a2a2d;
-  color: #eaf2f2;
-  border-bottom-color: rgb(255 255 255 / 0.10);
+  background: rgb(var(--c-surface));
+  color: rgb(var(--c-heading));
+  border-bottom-color: rgb(var(--c-line));
 }
 
 /* Form controls had no background of their own — on the light theme they
@@ -150,14 +189,14 @@ h5 {
   input:not([type='checkbox']):not([type='radio']):not([type='range']),
   textarea,
   select {
-    background-color: #0e383c; /* surface-2 */
-    color: #eaf2f2; /* Sea Mist */
-    border-color: rgb(255 255 255 / 0.10);
+    background-color: rgb(var(--c-surface-2)); /* surface-2 */
+    color: rgb(var(--c-heading)); /* Sea Mist */
+    border-color: rgb(var(--c-line));
   }
   input:disabled,
   textarea:disabled,
   select:disabled {
-    color: #6e8b8f;
+    color: rgb(var(--c-faint));
     opacity: 1;
   }
   /* The native picker glyphs ship as dark SVGs; invert so they stay visible. */
@@ -176,16 +215,16 @@ h5 {
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {
-  background: rgb(145 23 102 / 0.35);
+  background: rgb(var(--c-magenta) / 0.35);
 }
 .marker-cluster-small div,
 .marker-cluster-medium div,
 .marker-cluster-large div {
-  background: #911766;
-  color: #ffffff;
+  background: rgb(var(--c-magenta));
+  color: #fff;
   font-family: 'Figtree', system-ui, sans-serif;
   font-weight: 600;
-  box-shadow: 0 0 0 1px rgb(244 95 175 / 0.55);
+  box-shadow: 0 0 0 1px rgb(var(--c-magenta-text) / 0.55);
 }
 .marker-cluster span {
   line-height: 30px;
@@ -206,11 +245,11 @@ h5 {
 /* Zoom buttons ship white with dark glyphs; the inversion above does not reach
    them because controls sit outside the tile pane. */
 .leaflet-control-zoom a {
-  background: #0a2a2d;
-  color: #eaf2f2;
+  background: rgb(var(--c-surface));
+  color: rgb(var(--c-heading));
   border-color: rgb(255 255 255 / 0.1);
 }
 .leaflet-control-zoom a:hover {
-  background: #0e383c;
-  color: #f45faf;
+  background: rgb(var(--c-surface-2));
+  color: rgb(var(--c-magenta-text));
 }

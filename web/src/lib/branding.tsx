@@ -6,71 +6,70 @@ import {
   type ReactNode,
 } from 'react';
 import { supabase } from './supabase';
+import { applyTheme } from './theme';
 
 // Runtime branding. Loads the single branding_settings row (public read, so it
-// works before sign-in too) and exposes app name / logo / colors. Colors are
-// also pushed to CSS custom properties (--brand-primary / --brand-secondary)
-// so any surface can theme off them. Falls back to Laurie's Love purple.
+// works before sign-in too) and exposes app name / tagline / logo, plus paints
+// the org's colour overrides onto the document as CSS variables.
 type Branding = {
   appName: string;
   tagline: string | null;
-  primaryColor: string;
-  secondaryColor: string;
   logoUrl: string | null;
   supportEmail: string | null;
+  theme: Record<string, string> | null;
+  loaded: boolean;
 };
 
 const DEFAULT_BRANDING: Branding = {
   appName: 'Laurie’s Love',
   tagline: 'So no warrior ever walks alone.',
-  primaryColor: '#0F474C', // Deepwater — the brand's lead colour (header/primary)
-  secondaryColor: '#1789A8', // Lagoon — interface & links
   logoUrl: '/logo.png',
   supportEmail: null,
+  theme: null,
+  loaded: false,
 };
 
 const BrandingContext = createContext<Branding>(DEFAULT_BRANDING);
 export const useBranding = () => useContext(BrandingContext);
 
-function applyCssVars(b: Branding) {
-  const root = document.documentElement;
-  root.style.setProperty('--brand-primary', b.primaryColor);
-  root.style.setProperty('--brand-secondary', b.secondaryColor);
-}
+type Row = {
+  app_name: string | null;
+  tagline: string | null;
+  logo_url: string | null;
+  support_email: string | null;
+  // Present only once 20260908120000_branding_theme_v1 has been applied.
+  theme?: Record<string, string> | null;
+};
 
 export function BrandingProvider({ children }: { children: ReactNode }) {
   const [branding, setBranding] = useState<Branding>(DEFAULT_BRANDING);
 
   useEffect(() => {
-    // Seed the CSS vars immediately with the defaults so first paint is themed.
-    applyCssVars(DEFAULT_BRANDING);
     let active = true;
+    // select('*') rather than a column list: the theme column may not exist on
+    // an environment that has not run the branding migration yet, and naming it
+    // explicitly would make the whole query fail there.
     supabase
       .from('branding_settings')
-      .select('app_name, tagline, primary_color, secondary_color, logo_url, support_email')
+      .select('*')
       .maybeSingle()
       .then(({ data }) => {
-        if (!active || !data) return;
-        const row = data as {
-          app_name: string | null;
-          tagline: string | null;
-          primary_color: string | null;
-          secondary_color: string | null;
-          logo_url: string | null;
-          support_email: string | null;
-        };
+        if (!active || !data) {
+          setBranding((b) => ({ ...b, loaded: true }));
+          return;
+        }
+        const row = data as Row;
         setBranding({
           appName: row.app_name?.trim() || DEFAULT_BRANDING.appName,
           tagline: row.tagline?.trim() || DEFAULT_BRANDING.tagline,
-          primaryColor: row.primary_color?.trim() || DEFAULT_BRANDING.primaryColor,
-          secondaryColor: row.secondary_color?.trim() || DEFAULT_BRANDING.secondaryColor,
           // Fall back to the bundled mark, not null. An org row exists long
-          // before anyone uploads a logo (logo_url is null on staging today),
-          // and `|| null` made DEFAULT_BRANDING.logoUrl unreachable — the
-          // header silently dropped to the placeholder icon instead of the
-          // real gold L♥L mark shipped in /public.
+          // before anyone uploads a logo, and `|| null` previously made
+          // DEFAULT_BRANDING.logoUrl unreachable — the header silently dropped
+          // to a placeholder icon instead of the real gold L♥L mark.
           logoUrl: row.logo_url?.trim() || DEFAULT_BRANDING.logoUrl,
           supportEmail: row.support_email?.trim() || null,
+          theme: row.theme ?? null,
+          loaded: true,
         });
       });
     return () => {
@@ -78,10 +77,15 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // Paint the palette. Runs on every change so the admin console's live
+  // preview and a normal page load go through exactly the same path.
   useEffect(() => {
-    applyCssVars(branding);
+    applyTheme(branding.theme);
+  }, [branding.theme]);
+
+  useEffect(() => {
     document.title = branding.appName;
-  }, [branding]);
+  }, [branding.appName]);
 
   return (
     <BrandingContext.Provider value={branding}>{children}</BrandingContext.Provider>
