@@ -47,7 +47,7 @@ export function NewGroupThread({
     if (error || !data) {
       setErr(
         /function|does not exist/i.test(error?.message ?? '')
-          ? 'Group messages need migration 20260908240000_group_messages_v1.sql on this project.'
+          ? 'Group messages need migrations 20260908240000_group_messages_v1.sql and 20260908300000_group_min_two_v1.sql on this project.'
           : (error?.message ?? 'Could not create the group.'),
       );
       return;
@@ -110,26 +110,20 @@ export function NewGroupThread({
 
       {/* The hint gets its own line. Inline beside the buttons it collided
           with Cancel in the 16rem rail. */}
-      {(connections ?? []).length === 1 ? (
+      {picked.size === 0 && (
         <p className="mt-3 text-[11px] leading-relaxed text-faint">
-          A group needs at least three people. You have one connection so far,
-          so this is a direct message for now.
+          Pick at least one person. A named thread with one other member is
+          kept separate from your direct messages with them.
         </p>
-      ) : (
-        picked.size < 2 && (
-          <p className="mt-3 text-[11px] leading-relaxed text-faint">
-            Pick {picked.size === 1 ? 'one more person' : 'at least two people'}.
-            With one, use the One person tab instead.
-          </p>
-        )
       )}
 
       <div className="mt-2 flex items-center gap-3">
         <button
           onClick={create}
-          // Two others minimum: with one other person this is a direct
-          // message, and those already exist and stay unique.
-          disabled={busy || picked.size < 2}
+          // One other person minimum. A two-person group and a direct message
+          // with the same member are separate threads by design; the hint
+          // above says so, because otherwise a reply can land in the wrong one.
+          disabled={busy || picked.size < 1}
           className="rounded-lg bg-magenta px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-magenta-hi disabled:opacity-50"
         >
           {busy ? 'Creating…' : `Create group (${picked.size})`}

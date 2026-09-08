@@ -78,6 +78,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908240000_group_messages_v1` | Ad-hoc group threads: create/add/leave/rename + group-aware notifications |
 | `20260908260000_location_precision_v1` | **Privacy.** Rounds every stored location to ~0.7mi + backfills existing rows |
 | `20260908280000_location_precision_v2` | **Privacy.** Coarsens further to a ~3.5mi grid; map no longer re-rounds |
+| `20260908300000_group_min_two_v1` | Group threads can be two people, not three |
 
 > `20260908220000` was amended after it was first run: `moderation_queue_detailed()`
 > now also returns `post_id` so the queue can deep-link to the reported post.
@@ -152,9 +153,10 @@ column shell, real logo, Fraunces/Figtree.
   add**, not just the creator, or a thread freezes when its creator goes quiet.
   **Nobody can be removed by anyone else** — in a support community that is a
   harm vector with no moderator inside a private thread to appeal to; you can
-  only leave yourself. **Minimum two others**, because one other person is a
-  direct message and those are already kept unique by `direct_key`. Ceiling of
-  50. Leaving keeps your messages in place rather than rewriting the thread for
+  only leave yourself. **Minimum one other** (client decision, 2026-09-08). A two-person group and a
+  direct message with the same person are therefore separate threads that do
+  not know about each other, so a reply can land in the wrong one; the composer
+  says as much. Ceiling of 50. Leaving keeps your messages in place rather than rewriting the thread for
   everyone still in it.
 
   Membership is written only by SECURITY DEFINER RPCs
