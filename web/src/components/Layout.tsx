@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { useBranding } from '../lib/branding';
 import { useUnread } from '../lib/useUnread';
 import { TaraStory } from './TaraStory';
+import { CompleteProfileBanner } from './CompleteProfileBanner';
 import { UserMenu } from './UserMenu';
 import {
   IconArrowRight,
@@ -206,6 +207,7 @@ export function Layout() {
         </aside>
 
         <main className="min-w-0">
+          <CompleteProfileBanner />
           <Outlet />
         </main>
 

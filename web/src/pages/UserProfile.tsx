@@ -1,7 +1,8 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../lib/supabase';
+import { useDefinitions } from '../lib/useDefinitions';
 import { Avatar } from '../components/Avatar';
 
 // Another member's profile (/users/:id). Shows their public info and the two
@@ -18,6 +19,12 @@ type PublicProfile = {
   state: string | null;
   country: string | null;
   created_at: string | null;
+  role_id: string | null;
+  diagnosis_type_ids: string[] | null;
+  diagnosis_subtype_ids: string[] | null;
+  diagnosis_year: string | null;
+  latitude: number | null;
+  longitude: number | null;
   postCount: number;
   friendCount: number;
 };
@@ -34,7 +41,7 @@ async function fetchPublicProfile(id: string): Promise<PublicProfile | null> {
     supabase
       .from('profiles')
       .select(
-        'id, first_name, display_name, description, avatar_path, city, state, country, created_at',
+        'id, first_name, display_name, description, avatar_path, city, state, country, created_at, role_id, diagnosis_type_ids, diagnosis_subtype_ids, diagnosis_year, latitude, longitude',
       )
       .eq('id', id)
       .maybeSingle(),
@@ -73,6 +80,7 @@ export function UserProfile() {
   const [meId, setMeId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const { label, labels } = useDefinitions();
 
   useEffect(() => {
     currentUserId().then((m) => {
@@ -140,6 +148,9 @@ export function UserProfile() {
   const name = data.display_name || data.first_name || 'Member';
   const place = [data.city, data.state, data.country].filter(Boolean).join(', ');
   const isSelf = meId === data.id;
+  const roleLabel = label(data.role_id);
+  const diagnosisLabels = labels(data.diagnosis_type_ids);
+  const subtypeLabels = labels(data.diagnosis_subtype_ids);
 
   // Friend button reflects the current relationship.
   let friendBtn: { label: string; onClick?: () => void; disabled?: boolean } | null = null;
@@ -175,23 +186,67 @@ export function UserProfile() {
           </div>
         </div>
 
+        {/* What this member is here for. The mobile profile leads with these,
+            and they are the whole reason someone opens a stranger's page in a
+            support community: are you like me? */}
+        {(roleLabel || diagnosisLabels.length > 0 || data.diagnosis_year) && (
+          <dl className="mt-5 space-y-2 border-t border-line pt-4 text-left text-sm">
+            {roleLabel && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Role</dt>
+                <dd className="text-body">{roleLabel}</dd>
+              </div>
+            )}
+            {diagnosisLabels.length > 0 && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Diagnosis</dt>
+                <dd className="text-body">{diagnosisLabels.join(', ')}</dd>
+              </div>
+            )}
+            {subtypeLabels.length > 0 && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Stage</dt>
+                <dd className="text-body">{subtypeLabels.join(', ')}</dd>
+              </div>
+            )}
+            {data.diagnosis_year && (
+              <div className="flex gap-2">
+                <dt className="w-28 shrink-0 text-faint">Diagnosed</dt>
+                <dd className="text-body">{data.diagnosis_year}</dd>
+              </div>
+            )}
+          </dl>
+        )}
+
         {!isSelf && meId && (
-          <div className="mt-6 flex gap-2">
-            <button
-              onClick={message}
-              disabled={busy}
-              className="flex-1 rounded-lg bg-magenta py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
-            >
-              Message
-            </button>
-            {friendBtn && (
+          <div className="mt-6 space-y-2">
+            <div className="flex gap-2">
               <button
-                onClick={friendBtn.onClick}
-                disabled={busy || friendBtn.disabled}
-                className="flex-1 rounded-lg border border-line py-2 text-sm font-semibold text-heading hover:bg-surface-2 disabled:opacity-60"
+                onClick={message}
+                disabled={busy}
+                className="flex-1 rounded-lg bg-magenta py-2 text-sm font-semibold text-white hover:bg-magenta-hi disabled:opacity-50"
               >
-                {friendBtn.label}
+                Message
               </button>
+              {friendBtn && (
+                <button
+                  onClick={friendBtn.onClick}
+                  disabled={busy || friendBtn.disabled}
+                  className="flex-1 rounded-lg border border-line py-2 text-sm font-semibold text-heading hover:bg-surface-2 disabled:opacity-60"
+                >
+                  {friendBtn.label}
+                </button>
+              )}
+            </div>
+            {/* Only offered when there is somewhere to go. The map centres on
+                their approximate area, not an address. */}
+            {data.latitude != null && data.longitude != null && (
+              <Link
+                to={`/map?lat=${data.latitude}&lng=${data.longitude}`}
+                className="block w-full rounded-lg border border-line py-2 text-center text-sm font-semibold text-heading transition-colors hover:border-magenta hover:text-magenta-text"
+              >
+                View on map
+              </Link>
             )}
           </div>
         )}

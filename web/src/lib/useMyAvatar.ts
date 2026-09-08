@@ -10,6 +10,10 @@ type MyAvatar = {
   avatar_path: string | null;
   display_name: string | null;
   first_name: string | null;
+  // Used to tell whether onboarding was ever completed. role_id is the field
+  // mobile asks for first and the one the map and group matching depend on,
+  // so it is the cheapest single marker of a finished profile.
+  role_id: string | null;
 } | null;
 
 export function useMyAvatar() {
@@ -20,7 +24,7 @@ export function useMyAvatar() {
       if (!me) return null;
       const { data } = await supabase
         .from('profiles')
-        .select('avatar_path, display_name, first_name')
+        .select('avatar_path, display_name, first_name, role_id')
         .eq('id', me)
         .maybeSingle();
       return (data as MyAvatar) ?? null;

@@ -26,6 +26,8 @@ type QueueItem = {
   author_id: string | null;
   author_name: string | null;
   content_exists: boolean;
+  // Null on older deployments where the SQL function predates this column.
+  post_id?: string | null;
 };
 
 async function fetchQueue(): Promise<QueueItem[]> {
@@ -148,12 +150,18 @@ export function AdminModeration() {
               >
                 Remove it
               </button>
-              {q.entity_type === 'post' && q.content_exists && (
+              {/* Straight to the post itself, and for a reported comment to
+                  the post it hangs under, so the moderator sees the exchange
+                  in context. Opens in a new tab: judging one report should not
+                  cost you your place in the queue. */}
+              {q.content_exists && q.post_id && (
                 <a
-                  href={`/`}
+                  href={`/posts/${q.post_id}`}
+                  target="_blank"
+                  rel="noreferrer"
                   className="self-center text-sm text-magenta-text hover:underline"
                 >
-                  View in feed
+                  {q.entity_type === 'comment' ? 'View in context' : 'View post'}
                 </a>
               )}
             </div>

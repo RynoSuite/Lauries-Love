@@ -28,7 +28,9 @@ export function Signup() {
     try {
       const { needsConfirmation } = await signUp(email, password, name.trim());
       if (needsConfirmation) setSentConfirmation(true);
-      else navigate('/', { replace: true });
+      // Straight into onboarding: the account exists, and this is the one
+      // moment someone is willing to answer questions about themselves.
+      else navigate('/welcome', { replace: true });
     } catch (err) {
       setError((err as Error).message || 'Could not create your account.');
     } finally {

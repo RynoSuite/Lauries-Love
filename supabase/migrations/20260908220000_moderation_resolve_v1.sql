@@ -84,7 +84,11 @@ comment on function public.moderation_resolve(uuid, text) is
 -- can read posts and comments already, but not in one query joined to the
 -- queue, because the queue stores a polymorphic entity_id with no foreign key.
 -- ------------------------------------------------------------------
-create or replace function public.moderation_queue_detailed(p_limit integer default 100)
+-- Adding post_id below changes the return type, which create-or-replace cannot
+-- do, so drop first. Safe to re-run.
+drop function if exists public.moderation_queue_detailed(integer);
+
+create function public.moderation_queue_detailed(p_limit integer default 100)
 returns table (
   id uuid,
   entity_type text,
@@ -98,7 +102,11 @@ returns table (
   content text,
   author_id uuid,
   author_name text,
-  content_exists boolean
+  content_exists boolean,
+  -- The post to open when reviewing this report. For a reported comment that
+  -- is the post the comment hangs under, so staff land on the conversation in
+  -- context rather than on a comment with no surroundings.
+  post_id uuid
 )
 language sql
 stable
@@ -114,7 +122,8 @@ as $$
          coalesce(pa.display_name, pa.first_name,
                   ca.display_name, ca.first_name,
                   qa.display_name, qa.first_name)              as author_name,
-         (p.id is not null or c.id is not null)                as content_exists
+         (p.id is not null or c.id is not null)                as content_exists,
+         coalesce(p.id, c.post_id)                             as post_id
     from public.moderation_queue q
     left join public.posts    p  on q.entity_type = 'post'    and p.id = q.entity_id
     left join public.comments c  on q.entity_type = 'comment' and c.id = q.entity_id

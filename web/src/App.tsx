@@ -6,12 +6,14 @@ import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
+import { Onboarding } from './pages/Onboarding';
 import { Feed } from './pages/Feed';
 import { Groups } from './pages/Groups';
 import { Messages } from './pages/Messages';
 import { Profile } from './pages/Profile';
 import { MapPage } from './pages/MapPage';
 import { UserProfile } from './pages/UserProfile';
+import { PostDetail } from './pages/PostDetail';
 import { Support } from './pages/Support';
 import { GroupDetail } from './pages/GroupDetail';
 import { Donate } from './pages/Donate';
@@ -53,12 +55,14 @@ export default function App() {
         }
       >
         <Route index element={<Feed />} />
+        <Route path="welcome" element={<Onboarding />} />
         <Route path="groups" element={<Groups />} />
         <Route path="groups/:id" element={<GroupDetail />} />
         <Route path="messages" element={<Messages />} />
         <Route path="profile" element={<Profile />} />
         <Route path="map" element={<MapPage />} />
         <Route path="users/:id" element={<UserProfile />} />
+        <Route path="posts/:id" element={<PostDetail />} />
         <Route path="donate" element={<Donate />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="support" element={<Support />} />
