@@ -27,13 +27,26 @@ type GroupPost = {
   comments: { count: number }[];
 };
 
+// Faces shown before the overflow counter takes over. Five reads as "some of
+// the people here" without the pills wrapping onto a second line on a narrow
+// card.
+const MEMBER_PREVIEW = 5;
+
 async function fetchGroup(id: string) {
   const me = await currentUserId();
-  const [{ data: group, error }, members, mine] = await Promise.all([
+  const [{ data: group, error }, members, count, mine] = await Promise.all([
     supabase.from('groups').select('id, name, description, cover_path').eq('id', id).maybeSingle(),
+    // Only the handful actually rendered. This used to fetch every member row
+    // in the group to draw a dozen chips, which is a few hundred profiles over
+    // the wire for a group that succeeds.
     supabase
       .from('group_members')
       .select('profile:profiles(id, display_name, first_name, avatar_path)')
+      .eq('group_id', id)
+      .limit(MEMBER_PREVIEW),
+    supabase
+      .from('group_members')
+      .select('profile_id', { count: 'exact', head: true })
       .eq('group_id', id),
     me
       ? supabase.from('group_members').select('group_id').eq('group_id', id).eq('profile_id', me).maybeSingle()
@@ -43,7 +56,22 @@ async function fetchGroup(id: string) {
   const memberList = ((members.data ?? []) as unknown as { profile: Member }[]).map(
     (r) => r.profile,
   );
-  return { ...group, members: memberList, joined: !!mine.data };
+  return {
+    ...group,
+    members: memberList,
+    memberCount: count.count ?? memberList.length,
+    joined: !!mine.data,
+  };
+}
+
+// The full roster, loaded only when someone asks for it.
+async function fetchAllMembers(id: string): Promise<Member[]> {
+  const { data } = await supabase
+    .from('group_members')
+    .select('profile:profiles(id, display_name, first_name, avatar_path)')
+    .eq('group_id', id)
+    .limit(500);
+  return ((data ?? []) as unknown as { profile: Member }[]).map((r) => r.profile);
 }
 
 async function fetchGroupPosts(id: string): Promise<{ posts: GroupPost[]; likedIds: Set<string> }> {
@@ -76,6 +104,7 @@ export function GroupDetail() {
   const { id = '' } = useParams();
   const { isEnabled } = useFeatureFlags();
   const [leaving, setLeaving] = useState(false);
+  const [showAllMembers, setShowAllMembers] = useState(false);
   const qc = useQueryClient();
   const [body, setBody] = useState('');
   const [commentFor, setCommentFor] = useState<string | null>(null);
@@ -152,6 +181,12 @@ export function GroupDetail() {
     },
   });
 
+  const allMembers = useQuery({
+    queryKey: ['group-members', id],
+    queryFn: () => fetchAllMembers(id!),
+    enabled: showAllMembers && !!id,
+  });
+
   if (!isEnabled('groups')) return <p className="text-muted">Groups are turned off.</p>;
   if (isLoading) return <p className="text-heading">Loading…</p>;
   if (!group) return <p className="text-muted">Group not found.</p>;
@@ -186,7 +221,7 @@ export function GroupDetail() {
         <div className="flex items-end justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-xl font-bold text-heading">{group.name}</h1>
-            <div className="text-xs text-faint">{group.members.length} members</div>
+            <div className="text-xs text-faint">{group.memberCount} members</div>
             {group.description && (
               <p className="mt-1.5 text-sm text-muted">{group.description}</p>
             )}
@@ -219,21 +254,46 @@ export function GroupDetail() {
           )}
         </div>
 
-        {group.members.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2 border-t pt-3">
-            {group.members.slice(0, 12).map((m) => {
-              const nm = m.display_name || m.first_name || 'Member';
-              return (
-                <Link
-                  key={m.id}
-                  to={`/users/${m.id}`}
-                  className="flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-xs text-heading hover:bg-surface-2"
-                >
-                  <Avatar path={m.avatar_path} name={nm} size={16} />
-                  {nm}
-                </Link>
-              );
-            })}
+        {group.memberCount > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
+            {(showAllMembers ? (allMembers.data ?? group.members) : group.members).map(
+              (m) => {
+                const nm = m.display_name || m.first_name || 'Member';
+                return (
+                  <Link
+                    key={m.id}
+                    to={`/users/${m.id}`}
+                    className="flex items-center gap-1 rounded-full bg-surface-2 px-2 py-1 text-xs text-heading transition-colors hover:text-magenta-text"
+                  >
+                    <Avatar path={m.avatar_path} name={nm} size={16} />
+                    {nm}
+                  </Link>
+                );
+              },
+            )}
+
+            {/* An overflow counter rather than every face. A group with three
+                hundred members would otherwise bury the group itself under a
+                wall of chips. */}
+            {!showAllMembers && group.memberCount > group.members.length && (
+              <button
+                onClick={() => setShowAllMembers(true)}
+                className="rounded-full border border-line px-2 py-1 text-xs text-muted transition-colors hover:border-magenta hover:text-magenta-text"
+              >
+                +{group.memberCount - group.members.length} more
+              </button>
+            )}
+            {showAllMembers && allMembers.isLoading && (
+              <span className="text-xs text-faint">Loading members…</span>
+            )}
+            {showAllMembers && !allMembers.isLoading && (
+              <button
+                onClick={() => setShowAllMembers(false)}
+                className="rounded-full border border-line px-2 py-1 text-xs text-muted transition-colors hover:border-magenta hover:text-magenta-text"
+              >
+                Show fewer
+              </button>
+            )}
           </div>
         )}
       </div>
