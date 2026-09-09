@@ -93,7 +93,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
   const navigationRedirect = useNavigation();
   const { data: usersData } = useGetUsersReq();
   const { showKeyboard } = useKeyboardProvider();
-  const { userDB } = useUserDBProvider();
+  const { userDB, getOnlyUserDBById } = useUserDBProvider();
   const {
     comments: allComments,
     loadingServer,
@@ -479,19 +479,36 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
   };
 
   const goToUserProfile = async (sender: Sender) => {
-    if (!usersData?.data) return;
-    const userFilter = usersData.data.filter(
-      userById => userById.cognitoId === sender?.userId,
-    ) as User[];
+    const authorId = sender?.userId;
+    // The loaded list is a capped page (500 profiles, no ordering), not the
+    // membership. With a community larger than that most authors are absent
+    // from it, and "not in the page I happen to hold" was being reported to
+    // the member as "this account may have been deleted" — about people who
+    // are very much there. The list is only a free first guess; the server
+    // settles it. The old early return on a missing list also meant a tap did
+    // nothing at all before the users query had resolved.
+    let author =
+      (usersData?.data as User[] | undefined)?.find(
+        userById => userById.cognitoId === authorId,
+      ) ?? null;
 
-    if (userFilter.length === 0) {
+    if (!author && authorId) {
+      try {
+        author = (await getOnlyUserDBById(authorId)) as unknown as User | null;
+      } catch (error) {
+        if (__DEV__) console.warn('Error loading post author', error);
+      }
+    }
+
+    if (!author) {
       showToast({
         type: 'error',
-        message:
-          'User profile not available. This account may have been deleted.',
+        message: 'That profile could not be opened. Please try again.',
       });
       return;
     }
+
+    const userFilter = [author];
 
     // A copy, and an empty string rather than a bundled image. This used to
     // assign the required PNG straight onto the shared object: require()
