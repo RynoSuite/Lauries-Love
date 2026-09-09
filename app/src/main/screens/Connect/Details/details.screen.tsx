@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Alert,
   Image,
@@ -12,6 +18,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {
   CommonActions,
   RouteProp,
+  StackActions,
+  useFocusEffect,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
@@ -238,6 +246,20 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
     }
   };
 
+  // A profile opened from another tab is a visitor in the Connect stack. Once
+  // it goes away, put that stack back on the map — otherwise tapping Connect
+  // later lands on whoever was last viewed, with a back arrow that jumps to
+  // the community wall and no route to the map at all.
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        if (route.params?.fromExternal) {
+          navigationProps.dispatch(StackActions.popToTop());
+        }
+      };
+    }, [route.params?.fromExternal, navigationProps]),
+  );
+
   return (
     <LinearGradient
       colors={[colors.ground, colors.surface, colors.deepwater]}
@@ -357,7 +379,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                   onPress={handleMap}
                   style={styles.actionButtonMap}
                 >
-                  <Text style={styles.buttonText}>View in map</Text>
+                  <Text style={styles.buttonText}>View on map</Text>
                   <IconMapPin
                     width={19}
                     height={19}

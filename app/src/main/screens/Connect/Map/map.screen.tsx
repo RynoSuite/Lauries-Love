@@ -304,7 +304,7 @@ export default function MapScreen() {
         //   3) whole-US ONLY as a last resort when we truly have no location
         const TIGHT_DELTA = { latitudeDelta: 0.15, longitudeDelta: 0.15 };
 
-        // A member passed in from "View in map" comes FIRST. GPS used to win
+        // A member passed in from "View on map" comes FIRST. GPS used to win
         // here, so asking to see someone dropped you on your own street
         // instead — the member was only consulted if GPS failed.
         const region: Region = userParams?.user?.geoLocation
@@ -565,7 +565,7 @@ export default function MapScreen() {
   // bubbles progressively split until single members become pins.
   const leafletRef = useRef<LeafletMapHandle>(null);
 
-  // Where a "View in map" wants the map to sit, until it has been applied.
+  // Where a "View on map" wants the map to sit, until it has been applied.
   const pendingFocus = useRef<Region | null>(null);
 
   // Fly to a pending focus if there is one and the map can accept it. Cleared

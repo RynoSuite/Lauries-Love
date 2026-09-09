@@ -524,6 +524,11 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
 
     navigationRedirect.navigate('Connect', {
       screen: 'DetailView',
+      // initial: false puts the Connect tab's own first screen (the map)
+      // underneath this one. Without it the Connect stack becomes just this
+      // profile, so the tab is left stranded on a member with no map beneath
+      // it — and its back arrow leaves the tab entirely.
+      initial: false,
       params: {
         user: userCatch,
         fromExternal: true,
@@ -556,6 +561,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
       if (match) {
         navigationRedirect.navigate('Connect', {
           screen: 'DetailView',
+          initial: false,
           params: { user: match, fromExternal: true },
         });
       }

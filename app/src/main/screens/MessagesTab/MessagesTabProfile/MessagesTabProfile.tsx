@@ -322,7 +322,7 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
                 style={styles.actionButtonMap}
                 onPress={onViewMap}
               >
-                <Text style={styles.buttonText}>View in map</Text>
+                <Text style={styles.buttonText}>View on map</Text>
                 <IconMapPin
                   width={19}
                   height={19}
