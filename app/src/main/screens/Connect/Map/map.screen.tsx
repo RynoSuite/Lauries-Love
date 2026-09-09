@@ -608,6 +608,9 @@ export default function MapScreen() {
   // Marker data crosses to the page over postMessage rather than as React
   // children: rebuilding the page on every change would throw away the pan and
   // zoom the member had set.
+  // Which member the map is singling out: whoever's card is open.
+  const selectedId = user?.id;
+
   const pushMarkersToMap = useCallback(() => {
     const list = (friends ?? [])
       .filter(u => u.geoLocation?.latitude != null && u.geoLocation?.longitude != null)
@@ -615,9 +618,18 @@ export default function MapScreen() {
         id: u.id,
         latitude: u.geoLocation!.latitude,
         longitude: u.geoLocation!.longitude,
+        // The selected member — arrived at from their profile, or tapped — is
+        // singled out and named. Centring on their area is not an answer on a
+        // map this dense: "somewhere in this cluster" still does not say which
+        // pin is them.
+        focus: u.id === selectedId,
+        label:
+          u.id === selectedId
+            ? u.firstName || 'This member'
+            : undefined,
       }));
     leafletRef.current?.setMarkers(list);
-  }, [friends]);
+  }, [friends, selectedId]);
 
   // Keep the page in step as the viewport fetch returns new people.
   useEffect(() => {

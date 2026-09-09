@@ -244,7 +244,7 @@ export function UserProfile() {
                 their approximate area, not an address. */}
             {data.latitude != null && data.longitude != null && (
               <Link
-                to={`/map?lat=${data.latitude}&lng=${data.longitude}`}
+                to={`/map?lat=${data.latitude}&lng=${data.longitude}&member=${data.id}`}
                 className="block w-full rounded-lg border border-line py-2 text-center text-sm font-semibold text-heading transition-colors hover:border-magenta hover:text-magenta-text"
               >
                 View on map

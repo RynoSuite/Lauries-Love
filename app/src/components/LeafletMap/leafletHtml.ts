@@ -79,6 +79,24 @@ export const leafletHtml = `<!doctype html>
     border: 2px solid ${colors.magentaText};
     box-shadow: 0 0 0 4px ${colors.magenta}40;
   }
+  /* The member you asked to see: bigger, brighter, white-ringed, and named. */
+  .ll-pin-focus {
+    width: 26px; height: 26px;
+    background: ${colors.magentaText};
+    border: 3px solid #FFFFFF;
+    box-shadow: 0 0 0 6px ${colors.magentaText}59;
+  }
+  .ll-tip.leaflet-tooltip {
+    background: ${colors.surface2};
+    color: ${colors.magentaText};
+    border: none;
+    border-radius: 8px;
+    padding: 4px 9px;
+    font-weight: 600;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+  }
+  .ll-tip.leaflet-tooltip-top:before { border-top-color: ${colors.surface2}; }
 </style>
 </head>
 <body>
@@ -104,20 +122,46 @@ export const leafletHtml = `<!doctype html>
   });
   map.addLayer(cluster);
 
+  // The selected member is drawn outside the cluster group and kept here so
+  // the next update can remove it. Inside the group a cluster bubble could
+  // swallow it, which defeats the point of singling someone out.
+  var focusMarker = null;
+
   function setMarkers(list) {
     cluster.clearLayers();
+    if (focusMarker) {
+      map.removeLayer(focusMarker);
+      focusMarker = null;
+    }
     (list || []).forEach(function (m) {
       if (m.latitude == null || m.longitude == null) return;
+      var isFocus = !!m.focus;
       var icon = L.divIcon({
         className: '',
-        html: '<div class="ll-pin"></div>',
-        iconSize: [18, 18],
+        html: '<div class="ll-pin' + (isFocus ? ' ll-pin-focus' : '') + '"></div>',
+        iconSize: isFocus ? [26, 26] : [18, 18],
       });
-      var marker = L.marker([m.latitude, m.longitude], { icon: icon });
+      var marker = L.marker([m.latitude, m.longitude], {
+        icon: icon,
+        zIndexOffset: isFocus ? 1000 : 0,
+      });
       marker.on('click', function () {
         send({ type: 'markerPress', id: m.id });
       });
-      cluster.addLayer(marker);
+      if (isFocus) {
+        if (m.label) {
+          marker.bindTooltip(m.label, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -14],
+            className: 'll-tip',
+          });
+        }
+        marker.addTo(map);
+        focusMarker = marker;
+      } else {
+        cluster.addLayer(marker);
+      }
     });
   }
 

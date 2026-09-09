@@ -14,6 +14,10 @@ export type LeafletMarker = {
   id: string;
   latitude: number;
   longitude: number;
+  /** Draw this one outside the cluster group, larger, and named. */
+  focus?: boolean;
+  /** The name shown on the focused pin's permanent label. */
+  label?: string;
 };
 
 export type LeafletBounds = {

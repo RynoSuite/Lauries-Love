@@ -5,6 +5,7 @@ import {
   TileLayer,
   CircleMarker,
   Popup,
+  Tooltip,
   useMap,
   useMapEvents,
 } from 'react-leaflet';
@@ -217,9 +218,32 @@ export function MapPage() {
     [markers],
   );
 
+  const [searchParams] = useSearchParams();
+  const focusMemberId = searchParams.get('member');
+
+  // ?lat/?lng come from a member profile's "View on map".
+  const focus = useMemo(() => {
+    const lat = Number(searchParams.get('lat'));
+    const lng = Number(searchParams.get('lng'));
+    const member = searchParams.get('member');
+    return Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)
+      ? { lat, lng, member }
+      : null;
+  }, [searchParams]);
+
+  // The focused member, once the viewport load has actually returned them.
+  // Until then the pin is drawn from the coordinates in the URL with a
+  // placeholder label, so it is on screen from the first frame.
+  const focused = useMemo(
+    () => (focus?.member ? markers.find((m) => m.id === focus.member) ?? null : null),
+    [markers, focus],
+  );
+
   const visible = useMemo(
     () =>
       markers.filter((m) => {
+        // The focused member is drawn separately, outside the cluster group.
+        if (focusMemberId && m.id === focusMemberId) return false;
         if (filters.role && m.role_id !== filters.role) return false;
         if (filters.diagnosis && !(m.diagnosis_type_ids ?? []).includes(filters.diagnosis))
           return false;
@@ -227,18 +251,8 @@ export function MapPage() {
         if (filters.ageRange && m.age_range !== filters.ageRange) return false;
         return true;
       }),
-    [markers, filters],
+    [markers, filters, focusMemberId],
   );
-
-  // ?lat/?lng come from a member profile's "View on map".
-  const [searchParams] = useSearchParams();
-  const focus = useMemo(() => {
-    const lat = Number(searchParams.get('lat'));
-    const lng = Number(searchParams.get('lng'));
-    return Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)
-      ? { lat, lng }
-      : null;
-  }, [searchParams]);
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
@@ -279,6 +293,19 @@ export function MapPage() {
 
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm">
         <span className="text-muted">
+          {focus?.member && (
+            <>
+              Showing{' '}
+              <span className="font-semibold text-heading">
+                {focused?.display_name || focused?.first_name || 'one member'}
+              </span>
+              {' · '}
+              <Link to="/map" className="text-magenta-text hover:underline">
+                Show everyone
+              </Link>
+              {' · '}
+            </>
+          )}
           Showing <span className="font-semibold text-heading">{visible.length}</span> of{' '}
           <span className="font-semibold text-heading">{markers.length}</span> member
           {markers.length === 1 ? '' : 's'} in view
@@ -320,6 +347,44 @@ export function MapPage() {
             <LocateOnFirstLoad onResolved={setLocated} />
           )}
           <ViewportLoader onData={setMarkers} />
+          {/* The member you asked to see, drawn OUTSIDE the cluster group with
+              a permanent label. Centring alone was not an answer: on a map of
+              two thousand pins, "somewhere in this cluster" still does not
+              tell you which one is them. Outside the group it can never be
+              swallowed by a cluster bubble either. */}
+          {focus?.member && (
+            <CircleMarker
+              center={[
+                focused?.latitude ?? focus.lat,
+                focused?.longitude ?? focus.lng,
+              ]}
+              radius={11}
+              pathOptions={{
+                color: '#FFFFFF',
+                weight: 3,
+                fillColor: '#F45FAF',
+                fillOpacity: 1,
+              }}
+            >
+              <Tooltip permanent direction="top" offset={[0, -10]}>
+                {focused?.display_name || focused?.first_name || 'This member'}
+              </Tooltip>
+              <Popup>
+                <Link
+                  to={`/users/${focus.member}`}
+                  className="font-semibold text-magenta-text hover:underline"
+                >
+                  {focused?.display_name || focused?.first_name || 'Member'}
+                </Link>
+                {(focused?.city || focused?.state) && (
+                  <div className="text-xs text-muted">
+                    {[focused?.city, focused?.state].filter(Boolean).join(', ')}
+                  </div>
+                )}
+                <div className="text-xs text-faint">Approximate area</div>
+              </Popup>
+            </CircleMarker>
+          )}
           <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
             {visible.map((m) => (
               <CircleMarker
