@@ -10,12 +10,13 @@ import {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.quaternary[100],
+    backgroundColor: colors.ground,
   },
   innerContainer: {
     flex: 1,
     gap: 20,
     paddingHorizontal: 16,
+    paddingTop: 30,
   },
   header: {
     flexDirection: 'row',
@@ -27,6 +28,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 32,
+    color: colors.heading,
   },
   filterContainer: {
     flexDirection: 'row',
@@ -40,10 +42,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   allButton: {
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
   },
   selectedButton: {
-    backgroundColor: colors.primary[200],
+    backgroundColor: colors.magenta,
   },
   filterButtonText: {
     fontFamily: FONT_RALEWAY_600,
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: FONT_HANKEN_GROTESK_600,
     fontSize: 18,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   emptyNotificationContainer: {
     flex: 1,
@@ -74,11 +76,11 @@ const styles = StyleSheet.create({
   emptyNotificationText: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   emptyNotificationDescription: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   notificationList: {

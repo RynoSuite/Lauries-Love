@@ -34,12 +34,14 @@ import {
 // styles
 import styles from './ProfileTabSupportStaff.styles';
 import colors from 'styles/colors';
+import { useActionSheet } from 'providers/ActionSheetProvider/ActionSheetProvider';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootProfileTabParamList>;
 };
 
 const ProfileTabSupportStaff: FunctionComponent<Props> = ({ navigation }) => {
+  const { showSheet } = useActionSheet();
   const { showToast } = useToastProvider();
   const [staff, setStaff] = useState<StaffMemberDetailed[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,14 +97,13 @@ const ProfileTabSupportStaff: FunctionComponent<Props> = ({ navigation }) => {
   };
 
   const confirmRemove = (m: StaffMemberDetailed) => {
-    Alert.alert(
-      'Remove staff member',
-      `Remove ${m.name} from the support team?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
+    showSheet({
+      title: 'Remove staff member',
+      message: `Remove ${m.name} from the support team?`,
+      items: [
         {
-          text: 'Remove',
-          style: 'destructive',
+          label: 'Remove',
+          destructive: true,
           onPress: async () => {
             try {
               await removeSupportStaff(m.id);
@@ -117,7 +118,7 @@ const ProfileTabSupportStaff: FunctionComponent<Props> = ({ navigation }) => {
           },
         },
       ],
-    );
+    });
   };
 
   return (

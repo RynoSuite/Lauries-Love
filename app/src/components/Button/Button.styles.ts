@@ -12,7 +12,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   secondaryContainer: {
-    backgroundColor: colors.neutral[100],
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.lineStrong,
   },
   rounded: {
     borderRadius: 40,
@@ -20,12 +22,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   containerPrimary: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
   containerSecondary: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: colors.primary[500],
+    borderColor: colors.lineStrong,
   },
   containerInvalid: {
     backgroundColor: 'transparent',
@@ -33,15 +35,14 @@ const styles = StyleSheet.create({
     borderColor: colors.error[500],
   },
   disabledPrimary: {
-    backgroundColor: colors.neutral[500],
+    backgroundColor: colors.surface2,
   },
   disabledSecondary: {
     backgroundColor: 'transparent',
-    borderColor: colors.neutral[500],
-    backgroundColor: 'transparent',
+    borderColor: colors.line,
   },
   disabledInvalid: {
-    borderColor: colors.neutral[500],
+    borderColor: colors.line,
     backgroundColor: 'transparent',
   },
   title: {
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   },
   secondaryTitle: {
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.body,
   },
   roundedTitle: {
     fontFamily: FONT_RALEWAY_600,

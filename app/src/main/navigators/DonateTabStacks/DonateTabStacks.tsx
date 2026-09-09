@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from 'react';
+import colors from 'styles/colors';
 import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
@@ -20,6 +21,8 @@ const DonateTabStacks: FunctionComponent = () => {
   ): NativeStackNavigationOptions => ({
     headerShown,
     gestureEnabled,
+    // Without this the native stack paints a white card behind every screen.
+    contentStyle: { backgroundColor: colors.ground },
   });
   return (
     <Stack.Navigator initialRouteName={PATHS_DONATE_TAB.donateTabMain}>

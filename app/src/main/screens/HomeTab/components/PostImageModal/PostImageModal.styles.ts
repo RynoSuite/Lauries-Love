@@ -4,7 +4,7 @@ import { FONT_RALEWAY_500, FONT_RALEWAY_600 } from 'styles/fonts';
 
 const styles = StyleSheet.create({
   handleIndicatorStyle: {
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
     width: 36,
     display: 'flex',
   },
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   titleHeader: {
-    color: colors.neutral[700],
+    color: colors.muted,
     fontFamily: FONT_RALEWAY_500,
     fontSize: 20,
     lineHeight: 22,
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.quaternary20070,
   },
   label: {
-    color: colors.neutral[700],
+    color: colors.muted,
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,

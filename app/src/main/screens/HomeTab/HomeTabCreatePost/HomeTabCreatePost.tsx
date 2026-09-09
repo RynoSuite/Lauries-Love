@@ -255,7 +255,7 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
                   ref={inputRef}
                   multiline
                   placeholder="What’s happening?"
-                  placeholderTextColor={colors.neutral[600]}
+                  placeholderTextColor={colors.faint}
                   style={styles.textInput}
                   onFocus={() => setFocused(true)}
                   onBlur={() => setFocused(false)}
@@ -270,10 +270,10 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
                     marginTop: 4,
                     marginLeft: 61,
                     marginRight: 12,
-                    backgroundColor: colors.neutral[100],
+                    backgroundColor: colors.surface,
                     borderRadius: 12,
                     borderWidth: 1,
-                    borderColor: colors.neutral[300],
+                    borderColor: colors.line,
                     overflow: 'hidden',
                   }}
                 >
@@ -285,11 +285,11 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
                         paddingVertical: 10,
                         paddingHorizontal: 14,
                         borderTopWidth: idx === 0 ? 0 : 1,
-                        borderTopColor: colors.neutral[200],
+                        borderTopColor: colors.line,
                       }}
                     >
-                      <Text style={{ color: colors.neutral[900] }}>
-                        <Text style={{ color: colors.primary[600] }}>@</Text>
+                      <Text style={{ color: colors.body }}>
+                        <Text style={{ color: colors.magentaText }}>@</Text>
                         {c.name}
                       </Text>
                     </TouchableOpacity>

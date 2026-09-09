@@ -1,6 +1,18 @@
 import * as Location from 'expo-location';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE, Region } from 'react-native-maps';
+import LeafletMap, {
+  type LeafletMapHandle,
+} from 'components/LeafletMap/LeafletMap';
+
+// The viewport shape this screen has always used, kept identical so nothing
+// downstream changes. Declared here so the file no longer imports
+// react-native-maps at all.
+type Region = {
+  latitude: number;
+  longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
+};
 import {
   RouteProp,
   useIsFocused,
@@ -156,10 +168,17 @@ function buildClusters(users: User[], lngDelta: number): Cluster[] {
   }));
 }
 
+// Leaflet thinks in zoom levels, the rest of this screen in longitude deltas
+// (inherited from react-native-maps). 360 degrees spans the world at zoom 0
+// and halves each level, so this converts between the two.
+function zoomForDelta(longitudeDelta: number) {
+  if (!longitudeDelta || longitudeDelta <= 0) return 11;
+  return Math.min(Math.max(Math.log2(360 / longitudeDelta), 2), 16);
+}
+
 export default function MapScreen() {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const mapRef = useRef<MapView>(null);
   const { userDB } = useUserDBProvider();
   const { isWithinBounds } = useMap();
   const route =
@@ -304,7 +323,7 @@ export default function MapScreen() {
         setInitialRegion(region);
         setCurrentLocation(myRegion);
         setIsCurrentLocation(true);
-        mapRef.current?.animateToRegion(region, 1000);
+        leafletRef.current?.flyTo(region.latitude, region.longitude, zoomForDelta(region.longitudeDelta));
       } catch (error) {
         // Rebuild fix: GPS failure (timeout, airplane mode, simulator) should
         // NOT block the user with an alert. Fall back to their profile
@@ -434,7 +453,7 @@ export default function MapScreen() {
           longitudeDelta: 1.0421,
         };
 
-        mapRef.current?.animateToRegion(region, 1000);
+        leafletRef.current?.flyTo(region.latitude, region.longitude, zoomForDelta(region.longitudeDelta));
         setIsCurrentLocation(false);
       } else {
         throw new Error('Location not found.');
@@ -446,7 +465,7 @@ export default function MapScreen() {
 
   function handleCurrentLocation() {
     if (currentLocation) {
-      mapRef.current?.animateToRegion(currentLocation, 1000);
+      leafletRef.current?.flyTo(currentLocation.latitude, currentLocation.longitude, zoomForDelta(currentLocation.longitudeDelta));
       setIsCurrentLocation(true);
     }
   }
@@ -469,15 +488,19 @@ export default function MapScreen() {
     if (isRegionOutOfThreshold(newRegion)) setIsCurrentLocation(false);
     if (!isZoomedIn) setRegion(newRegion);
     else if (region)
-      mapRef.current?.animateToRegion(
-        {
+      (() => {
+        const target = {
           ...region,
           longitudeDelta: isZoomedIn
             ? MIN_LONGITUDE_DELTA
             : region.longitudeDelta,
-        },
-        1000,
-      );
+        };
+        leafletRef.current?.flyTo(
+          target.latitude,
+          target.longitude,
+          zoomForDelta(target.longitudeDelta),
+        );
+      })();
   }
 
   useEffect(() => {
@@ -497,10 +520,10 @@ export default function MapScreen() {
     // time the map tab was focused. Instead, return to the user's own location
     // (their current location if we have it, otherwise the already-correct
     // initialRegion). Never force the whole-US view.
-    if (isFocused && mapRef.current && Platform.OS === 'android') {
+    if (isFocused && Platform.OS === 'android') {
       const target = currentLocation ?? initialRegion;
       if (target) {
-        mapRef.current.animateToRegion(target, 1000);
+        leafletRef.current?.flyTo(target.latitude, target.longitude, zoomForDelta(target.longitudeDelta));
       }
     }
     // Rebuild fix (P1 perf): no setTracksView(true) here — static image markers
@@ -526,6 +549,51 @@ export default function MapScreen() {
   // Hierarchical clusters (state -> city -> individual) derived from the
   // filtered users at the current zoom. Cell size shrinks as you zoom in, so
   // bubbles progressively split until single members become pins.
+  const leafletRef = useRef<LeafletMapHandle>(null);
+
+  // Marker data crosses to the page over postMessage rather than as React
+  // children: rebuilding the page on every change would throw away the pan and
+  // zoom the member had set.
+  const pushMarkersToMap = useCallback(() => {
+    const list = (friends ?? [])
+      .filter(u => u.geoLocation?.latitude != null && u.geoLocation?.longitude != null)
+      .map(u => ({
+        id: u.id,
+        latitude: u.geoLocation!.latitude,
+        longitude: u.geoLocation!.longitude,
+      }));
+    leafletRef.current?.setMarkers(list);
+  }, [friends]);
+
+  // Keep the page in step as the viewport fetch returns new people.
+  useEffect(() => {
+    pushMarkersToMap();
+  }, [pushMarkersToMap]);
+
+  const handleLeafletMarkerPress = useCallback(
+    (id: string) => {
+      const match = (friends ?? []).find(u => u.id === id);
+      if (match) setUser(match);
+    },
+    [friends],
+  );
+
+  // Leaflet reports a bounding box; the existing fetch wants a centre plus
+  // deltas, so convert rather than change the hook every screen shares.
+  const handleLeafletRegionChange = useCallback(
+    (bounds: { minLat: number; maxLat: number; minLng: number; maxLng: number }) => {
+      const next: Region = {
+        latitude: (bounds.minLat + bounds.maxLat) / 2,
+        longitude: (bounds.minLng + bounds.maxLng) / 2,
+        latitudeDelta: Math.abs(bounds.maxLat - bounds.minLat),
+        longitudeDelta: Math.abs(bounds.maxLng - bounds.minLng),
+      };
+      setViewRegion(next);
+      setRegion(next);
+    },
+    [],
+  );
+
   const clusters = useMemo(() => {
     const lngDelta =
       viewRegion?.longitudeDelta ?? initialRegion.longitudeDelta ?? 50;
@@ -540,107 +608,18 @@ export default function MapScreen() {
       const currentDelta =
         viewRegion?.longitudeDelta ?? initialRegion.longitudeDelta ?? 10;
       const nextDelta = Math.max(currentDelta / 3, MIN_LONGITUDE_DELTA);
-      mapRef.current?.animateToRegion(
-        {
-          latitude: cluster.latitude,
-          longitude: cluster.longitude,
-          latitudeDelta: nextDelta,
-          longitudeDelta: nextDelta,
-        },
-        600,
+      leafletRef.current?.flyTo(
+        cluster.latitude,
+        cluster.longitude,
+        zoomForDelta(nextDelta),
       );
     },
     [viewRegion?.longitudeDelta, initialRegion.longitudeDelta],
   );
 
-  const markers = useMemo(() => {
-    if (!isShowMarkers) return null;
-
-    return clusters.map(cluster => {
-      // Multi-member cell -> a count bubble that zooms in on tap.
-      if (cluster.count > 1) {
-        const size =
-          cluster.count >= 100 ? 56 : cluster.count >= 10 ? 48 : 40;
-        return (
-          <Marker
-            key={`cluster-${cluster.id}-${cluster.count}`}
-            tracksViewChanges={false}
-            coordinate={{
-              latitude: cluster.latitude,
-              longitude: cluster.longitude,
-            }}
-            zIndex={2}
-            style={{ backgroundColor: colors.transparent }}
-            onPress={e => {
-              e.stopPropagation();
-              handleClusterPress(cluster);
-            }}
-          >
-            <View
-              style={{
-                width: size,
-                height: size,
-                borderRadius: size / 2,
-                backgroundColor: colors.primary[500],
-                borderWidth: 2,
-                borderColor: colors.neutral[100],
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text
-                style={{
-                  color: colors.neutral[100],
-                  fontWeight: '700',
-                  fontSize: cluster.count >= 100 ? 14 : 15,
-                }}
-              >
-                {cluster.count >= 1000
-                  ? `${Math.floor(cluster.count / 1000)}k+`
-                  : cluster.count}
-              </Text>
-            </View>
-          </Marker>
-        );
-      }
-
-      // Single member -> the existing user pin (with selection highlight).
-      const friend = cluster.users[0];
-      const isSelected = friend.id === user?.id;
-      return (
-        <Marker
-          key={`${friend.id}-${isSelected ? 'sel' : 'norm'}`}
-          tracksViewChanges={false}
-          coordinate={{
-            latitude:
-              friend.location?.latitude || friend.geoLocation?.latitude || 0,
-            longitude:
-              friend.location?.longitude || friend.geoLocation?.longitude || 0,
-          }}
-          zIndex={isSelected ? 999 : 1}
-          style={{ opacity: 1, backgroundColor: colors.transparent }}
-          onPress={e => {
-            e.stopPropagation();
-            setUser(friend);
-          }}
-        >
-          {isSelected ? (
-            <View style={styles.selectedPinWrap}>
-              <Image
-                source={require('../../../../assets/images/user-pin.png')}
-                style={styles.selectedPin}
-              />
-            </View>
-          ) : (
-            <Image
-              source={require('../../../../assets/images/user-pin.png')}
-              style={styles.pin}
-            />
-          )}
-        </Marker>
-      );
-    });
-  }, [isShowMarkers, clusters, user?.id, handleClusterPress]);
+  // The native <Marker> tree lived here. Leaflet renders and clusters the
+  // pins inside the WebView now, fed by pushMarkersToMap, so this is gone
+  // rather than kept as dead JSX.
 
   if (isLoading || !isFocused) {
     // Branded loading screen (user-requested): logo + progress bar instead
@@ -651,21 +630,19 @@ export default function MapScreen() {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={{ flex: 1 }}>
-        <MapView
-          ref={mapRef}
-          // iOS: Apple Maps (no key needed). The Google Maps iOS key is a
-          // stripped placeholder in native code (AppDelegate), so Google
-          // renders blank gray tiles regardless of env values. Revisit only
-          // if a real Google key gets wired natively. Android keeps Google.
-          provider={Platform.OS === 'ios' ? undefined : PROVIDER_GOOGLE}
+        {/* Leaflet in a WebView, not react-native-maps. The native map threw
+            "this.getNativeComponent is not a function" from inside AIRMap on
+            this app's build and took the whole screen with it, and it needed a
+            Google key per platform that the manifest never had. This is the
+            same map the web app ships: same tiles, same green filter, same
+            magenta clusters, identical on iOS and Android, no keys. */}
+        <LeafletMap
+          ref={leafletRef}
           style={styles.map}
-          initialRegion={initialRegion}
-          onRegionChangeComplete={handleRegionChangeComplete}
-          onPress={() => setUser(null)}
-          maxZoomLevel={14.5}
-        >
-          {markers}
-        </MapView>
+          onReady={pushMarkersToMap}
+          onMarkerPress={handleLeafletMarkerPress}
+          onRegionChange={handleLeafletRegionChange}
+        />
         <SafeAreaView style={styles.safeAreaTop}>
           <View style={styles.topContainer}>
             <Searchbar
@@ -681,8 +658,8 @@ export default function MapScreen() {
                     styles.locationButton,
                     {
                       backgroundColor: isCurrentLocation
-                        ? colors.primary[200]
-                        : colors.quaternary[200],
+                        ? colors.magenta
+                        : colors.surface2,
                     },
                   ]}
                   onPress={handleCurrentLocation}
@@ -691,18 +668,14 @@ export default function MapScreen() {
                     width={14}
                     height={14}
                     stroke={
-                      isCurrentLocation
-                        ? colors.primary[600]
-                        : colors.neutral[700]
+                      isCurrentLocation ? colors.white : colors.muted
                     }
                   />
                   <Text
                     style={[
                       styles.locationButtonText,
                       {
-                        color: isCurrentLocation
-                          ? colors.primary[600]
-                          : colors.neutral[700],
+                        color: isCurrentLocation ? colors.white : colors.muted,
                       },
                     ]}
                   >
@@ -715,7 +688,7 @@ export default function MapScreen() {
                     styles.filterButton,
                     {
                       borderColor:
-                        filtersCount > 0 ? colors.primary[300] : 'transparent',
+                        filtersCount > 0 ? colors.magentaText : 'transparent',
                     },
                   ]}
                 >
@@ -723,7 +696,7 @@ export default function MapScreen() {
                   <IconChevronDown
                     width={20}
                     height={20}
-                    stroke={colors.neutral[700]}
+                    stroke={colors.white}
                   />
 
                   {filtersCount > 0 && (
@@ -734,7 +707,11 @@ export default function MapScreen() {
                 </TouchableOpacity>
               </View>
               <TouchableOpacity onPress={() => setIsInfoOpen(!isInfoOpen)}>
-                <IconInformationCircle width={24} height={24} />
+                <IconInformationCircle
+                  width={24}
+                  height={24}
+                  stroke={colors.white}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -748,7 +725,7 @@ export default function MapScreen() {
                 onPress={handleView}
                 style={styles.listViewButton}
               >
-                <IconBars3 width={18} height={18} />
+                <IconBars3 width={18} height={18} stroke={colors.white} />
                 <Text style={styles.listViewText}>List view</Text>
               </TouchableOpacity>
             </View>

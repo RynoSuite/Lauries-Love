@@ -23,15 +23,15 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.neutral[600],
+    color: colors.muted,
   },
   buttonTextSelected: {
-    color: colors.primary[600],
+    color: colors.heading,
   },
   lineContainer: {
     width: '100%',
     height: 2,
-    backgroundColor: colors.neutral[600],
+    backgroundColor: colors.line,
     marginTop: 8,
   },
   line: {

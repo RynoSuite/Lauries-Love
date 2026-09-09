@@ -70,9 +70,14 @@ const LoginScreen: FunctionComponent = () => {
         return;
       } else setErrorMessages(DEFAULT_ERROR_MESSAGES_LOGIN);
 
+      console.log('[LL] calling authAWS for', data.email);
       const user = await authAWS(data.email, data.password);
+      console.log('[LL] authAWS returned:', JSON.stringify(user));
       if (user) setIsAuth(true);
-      if (!user) return;
+      if (!user) {
+        console.log('[LL] authAWS returned falsy — stopping here');
+        return;
+      }
 
       onCapture({
         typeEvent: 'Login',
@@ -118,7 +123,7 @@ const LoginScreen: FunctionComponent = () => {
           <Image source={logo} style={styles.image} resizeMode="cover" />
           <View style={styles.bottomSheet}>
             <LinearGradient
-              colors={[colors.white, colors.blueChalk50, colors.peachOrange]}
+              colors={[colors.ground, colors.surface, colors.surface2]}
               locations={[0, 0.8, 1]}
               style={styles.containerGradient}
               start={{ x: 0, y: 0 }}

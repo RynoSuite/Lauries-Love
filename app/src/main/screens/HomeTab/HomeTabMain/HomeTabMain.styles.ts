@@ -14,6 +14,9 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 12,
     position: 'relative',
+    // The approved design is a dark ground. Without this the screen stays
+    // white behind the cards.
+    backgroundColor: colors.ground,
   },
   contentContainer: {
     gap: 12,
@@ -24,6 +27,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
     width: WIDTH,
+    backgroundColor: colors.ground,
   },
   header: {
     flexDirection: 'row',
@@ -35,33 +39,37 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 32,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 40,
   },
   buttonsContainer: {
     flexDirection: 'row',
     gap: 9,
     paddingHorizontal: 16,
+    // Matches the space below the row, so the pills sit between the tabs and
+    // the feed rather than clinging to the tab underline.
+    paddingTop: 12,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     padding: 12,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 30,
   },
   buttonSelected: {
-    backgroundColor: colors.primary[200],
+    backgroundColor: colors.magenta,
   },
   buttonText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 14,
     lineHeight: 20,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   buttonTextSelected: {
-    color: colors.primary[600],
+    // On the magenta fill, not on the ground: white clears 8.34:1 there.
+    color: colors.white,
   },
   listScroll: {
     paddingHorizontal: 16,
@@ -92,14 +100,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 28,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   notListSubText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.muted,
     textAlign: 'center',
     paddingHorizontal: 70,
   },
@@ -109,7 +117,7 @@ const styles = StyleSheet.create({
     right: 18,
     padding: 13,
     borderRadius: 50,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     height: 60,
     width: 60,
     alignItems: 'center',
@@ -121,7 +129,7 @@ const styles = StyleSheet.create({
     right: 18,
     padding: 13,
     borderRadius: 50,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     height: 60,
     width: 60,
     alignItems: 'center',

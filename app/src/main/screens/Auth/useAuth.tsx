@@ -3,8 +3,10 @@ import { useNavigation } from '@react-navigation/native';
 
 // providers
 import { useUserAWSProvider } from 'providers/UserAWSProvider/UserAWSProvider';
+import { useActionSheet } from 'providers/ActionSheetProvider/ActionSheetProvider';
 
 const useAuth = (isNotBack: boolean = false) => {
+  const { showSheet } = useActionSheet();
   const { userAWS, signOutAWS } = useUserAWSProvider();
   const navigation = useNavigation();
 
@@ -24,16 +26,11 @@ const useAuth = (isNotBack: boolean = false) => {
 
     if (isBack && !isNotBack) navigation.goBack();
     else
-      Alert.alert('Log out', 'Are you sure you want to log out?', [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Log out',
-          onPress: logOut,
-        },
-      ]);
+      showSheet({
+        title: 'Log out',
+        message: 'You will need to sign in again next time.',
+        items: [{ label: 'Log out', destructive: true, onPress: logOut }],
+      });
   };
 
   return {

@@ -1,16 +1,11 @@
-import React, { Dispatch, ReactNode } from 'react';
-import {
-  KeyboardAvoidingView,
-  Modal as ModalComponent,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { Dispatch, ReactNode, useCallback, useRef } from 'react';
+import { Modal as ModalComponent, Text, View } from 'react-native';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+} from '@gorhom/bottom-sheet';
 
 import styles from './Modal.styles';
-import { IconArrowLeft } from 'assets/icons-auto/components';
 
 type Props = {
   children: ReactNode;
@@ -20,6 +15,15 @@ type Props = {
   disableScroll?: boolean;
 };
 
+/**
+ * Full-width sheet with a title, used by the map filters.
+ *
+ * Was a plain RN Modal with animationType="slide", which moved the dim overlay
+ * up with the sheet and offered no way to drag it away. Now the same
+ * @gorhom/bottom-sheet machinery as ActionSheet, so every sheet in the app
+ * behaves identically: drag to follow the finger, dismiss past a
+ * velocity-aware threshold, backdrop fades while the sheet slides.
+ */
 export default function Modal({
   children,
   onClose,
@@ -27,35 +31,55 @@ export default function Modal({
   visible,
   disableScroll = false,
 }: Props) {
+  const sheetRef = useRef<BottomSheet>(null);
+
+  const renderBackdrop = useCallback(
+    (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        pressBehavior="close"
+        opacity={0.6}
+      />
+    ),
+    [],
+  );
+
+  if (!visible) return null;
+
   return (
-    <>
-      <View style={[styles.overlay, { display: visible ? 'flex' : 'none' }]} />
-      <ModalComponent
-        animationType="slide"
-        visible={visible}
-        transparent={true}
-        onRequestClose={() => onClose(false)}
+    <ModalComponent
+      transparent
+      statusBarTranslucent
+      onRequestClose={() => sheetRef.current?.close()}
+    >
+      <BottomSheet
+        ref={sheetRef}
+        index={0}
+        // Filters can be long, so cap it rather than letting the sheet grow to
+        // the full height of the screen.
+        snapPoints={['70%']}
+        enablePanDownToClose
+        keyboardBehavior="interactive"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
+        onClose={() => onClose(false)}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={styles.sheetBackground}
+        handleIndicatorStyle={styles.grabber}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardAvoidingView}
+        <View style={styles.header}>
+          <Text style={styles.titleText}>{title}</Text>
+        </View>
+        <BottomSheetScrollView
+          scrollEnabled={!disableScroll}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.content}
         >
-          <View style={styles.container}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => onClose(false)}>
-                <IconArrowLeft width={30} height={30} />
-              </TouchableOpacity>
-              <Text style={styles.titleText}>{title}</Text>
-            </View>
-            <ScrollView
-              scrollEnabled={!disableScroll}
-              showsVerticalScrollIndicator={false}
-            >
-              {children}
-            </ScrollView>
-          </View>
-        </KeyboardAvoidingView>
-      </ModalComponent>
-    </>
+          {children}
+        </BottomSheetScrollView>
+      </BottomSheet>
+    </ModalComponent>
   );
 }

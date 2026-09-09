@@ -29,10 +29,13 @@ const AvatarMessagesTab: FunctionComponent<AvatarMessagesTabProps> = ({
   const [loading, setLoading] = useState(true);
 
   const showTwoLetters = useMemo(() => {
-    if (!name) return '...';
-    const firstName = name.length > 0 ? name[0] : '?';
-    const lastName = name.split(' ').length > 0 ? name.split(' ')[0][0] : '';
-    return `${firstName}${lastName}`;
+    const parts = (name ?? '').trim().split(/s+/).filter(Boolean);
+    if (parts.length === 0) return '?';
+    // First and LAST word. This used to index the first word twice, so
+    // "Jeremy Marshall" came out as "JJ".
+    const first = parts[0][0];
+    const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+    return (first + last).toUpperCase();
   }, [name]);
 
   return (

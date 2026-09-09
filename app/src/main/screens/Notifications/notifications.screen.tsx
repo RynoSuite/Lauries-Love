@@ -269,7 +269,7 @@ export default function NotificationsScreen() {
             <IconArrowLeft
               width={30}
               height={30}
-              stroke={colors.primary[600]}
+              stroke={colors.heading}
             />
           </TouchableOpacity>
           <Text style={styles.headerText}>Notifications</Text>
@@ -281,7 +281,7 @@ export default function NotificationsScreen() {
               styles.filterButton,
               {
                 backgroundColor:
-                  section === 'all' ? colors.primary[200] : colors.neutral[300],
+                  section === 'all' ? colors.magenta : colors.surface2,
               },
             ]}
           >
@@ -290,9 +290,7 @@ export default function NotificationsScreen() {
                 styles.filterButtonText,
                 {
                   color:
-                    section === 'all'
-                      ? colors.primary[600]
-                      : colors.neutral[700],
+                    section === 'all' ? colors.white : colors.muted,
                 },
               ]}
             >
@@ -306,8 +304,8 @@ export default function NotificationsScreen() {
               {
                 backgroundColor:
                   section === 'posts'
-                    ? colors.primary[200]
-                    : colors.neutral[300],
+                    ? colors.magenta
+                    : colors.surface2,
               },
             ]}
           >
@@ -315,10 +313,17 @@ export default function NotificationsScreen() {
               width={14}
               height={14}
               stroke={
-                section === 'posts' ? colors.primary[600] : colors.neutral[700]
+                section === 'posts' ? colors.white : colors.muted
               }
             />
-            <Text>Posts</Text>
+            <Text
+              style={[
+                styles.filterButtonText,
+                { color: section === 'posts' ? colors.white : colors.muted },
+              ]}
+            >
+              Posts
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => setSection('requests')}
@@ -327,8 +332,8 @@ export default function NotificationsScreen() {
               {
                 backgroundColor:
                   section === 'requests'
-                    ? colors.primary[200]
-                    : colors.neutral[300],
+                    ? colors.magenta
+                    : colors.surface2,
               },
             ]}
           >
@@ -337,11 +342,18 @@ export default function NotificationsScreen() {
               height={14}
               stroke={
                 section === 'requests'
-                  ? colors.primary[600]
-                  : colors.neutral[700]
+                  ? colors.white
+                  : colors.muted
               }
             />
-            <Text>Requests</Text>
+            <Text
+              style={[
+                styles.filterButtonText,
+                { color: section === 'requests' ? colors.white : colors.muted },
+              ]}
+            >
+              Requests
+            </Text>
           </TouchableOpacity>
         </View>
 

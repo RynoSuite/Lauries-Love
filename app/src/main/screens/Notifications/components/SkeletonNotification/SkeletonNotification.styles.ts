@@ -10,8 +10,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: colors.neutral[300],
-    backgroundColor: colors.neutral[100],
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
   },
   skeletonImage: {
     height: 34,

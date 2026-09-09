@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: '100%',
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
   },
   topContainer: {
     gap: 12,
@@ -30,6 +30,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    // Matches the 12px above and below the wall's Trending/New row, so the
+    // controls sit between the search field and the map rather than clamped
+    // to both.
+    paddingTop: 12,
+    paddingBottom: 12,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -53,12 +58,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 40,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderWidth: 1,
   },
   filterText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.neutral[1000],
+    color: colors.white,
   },
   filterBadge: {
     position: 'absolute',
@@ -74,7 +79,7 @@ const styles = StyleSheet.create({
   filterBadgeText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 12,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   safeAreaBottom: {
     position: 'absolute',
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     borderRadius: 80,
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
     boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.25)',
   },
   listViewButton: {
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
   listViewText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   // Map markers
   pin: {
@@ -112,7 +117,7 @@ const styles = StyleSheet.create({
   selectedPinWrap: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
     borderColor: colors.primary[500],
     borderWidth: 2,
     borderRadius: 26,

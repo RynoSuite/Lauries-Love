@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.surface2,
   },
   avatar: {
     width: '100%',
@@ -25,13 +25,14 @@ const styles = StyleSheet.create({
   notImage: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.secondary[300],
+    // The magenta fill, not the type colour: white on #911766 is 8.34:1.
+    backgroundColor: colors.magenta,
   },
   text: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 16,
     lineHeight: 26,
-    color: colors.primary[400],
+    color: colors.white,
   },
 });
 

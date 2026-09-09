@@ -169,7 +169,10 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
       !user.geoLocation.latitude ||
       !user.geoLocation.longitude
     )
-      return Alert.alert('Error', 'User does not have location data');
+      return showToast({
+        type: 'error',
+        message: 'This member has not shared a location.',
+      });
 
     navigation.reset({
       index: 0,

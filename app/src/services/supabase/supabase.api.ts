@@ -204,9 +204,19 @@ export async function supabaseApi(
   config: { method?: string; data?: any; params?: any } = {},
 ): Promise<any> {
   const method = (config.method || 'GET').toUpperCase();
-  const path = url.replace(/^https?:\/\/[^/]+/, '').split('?')[0];
+  // Normalised because callers reach this through several layers, one of
+  // which prefixes DEFAULT_APP_CONFIG.baseURL — the legacy NestJS API, which
+  // no longer exists. Interpolating that undefined value produced the literal
+  // "undefined/users/getUserInfoByCognitoId/...", which matched no route here
+  // and returned null. That was the silent failure behind "login does
+  // nothing": sign-in succeeded, the profile came back null, and the root
+  // navigator sent the member straight back to the login screen.
+  let path = url
+    .replace(/^https?:\/\/[^/]+/i, "")
+    .replace(/^undefined/i, "")
+    .split('?')[0];
+  if (!path.startsWith('/')) path = '/' + path;
   const query = url.includes('?') ? url.split('?')[1] : '';
-
   if (__DEV__) console.log(`🗄️ supabaseApi: ${method} ${path}`);
 
   // --- value definitions ---------------------------------------------------

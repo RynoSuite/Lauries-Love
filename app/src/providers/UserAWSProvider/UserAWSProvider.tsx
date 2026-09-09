@@ -126,11 +126,14 @@ const UserAWSProvider: FunctionComponent<UserAWSProviderProps> = ({
     }
     if (SUPABASE_ENABLED) {
       try {
+        console.log('[LL] sbSignIn start');
         const result = await sbSignIn(email, password);
+        console.log('[LL] sbSignIn OK, uid=', result?.user?.userId);
         setJwtTokenUser(result.jwt);
         setUserAWS(result.user as any);
         return result.signInOutput;
       } catch (error) {
+        console.log('[LL] sbSignIn FAILED:', (error as any)?.message, JSON.stringify(error));
         customShowError({ error, showToast });
         return null;
       }

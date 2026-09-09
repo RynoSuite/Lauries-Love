@@ -41,6 +41,9 @@ import { usePostsProvider } from 'providers/PostsProvider/PostsProvider';
 
 // components
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
+import ActionSheet, {
+  type ActionSheetItem,
+} from 'components/ActionSheet/ActionSheet';
 import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 import LoadingLine from 'components/LoadingLine/LoadingLine';
 import RichText from 'components/RichText/RichText';
@@ -57,6 +60,8 @@ import defaultAvatar from 'assets/images/avatar-empty.png';
 // icons
 import {
   IconArrowLeft,
+  IconTrashProfile,
+  IconInfo,
   IconSend,
   IconTabHeart,
 } from 'assets/icons-auto/components';
@@ -137,6 +142,13 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
   );
 
   const [userPost, ...restComments] = useMemo(() => comments, [comments]);
+  // Replaces Alert.alert: a system alert renders in the platform's colours,
+  // so a dark app got a white iOS box, and it cannot carry icons.
+  const [sheet, setSheet] = useState<{
+    title: string;
+    message?: string;
+    items: ActionSheetItem[];
+  } | null>(null);
 
   // Post author id (Supabase mode: sender ids are profile ids). Drives the
   // author options menu — own post => Delete, someone else's => Report.
@@ -149,36 +161,23 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
     [postAuthorId, userID],
   );
 
-  const handleDeletePost = useCallback(() => {
+  const handleDeletePost = useCallback(async () => {
     const channelUrl = route.params?.channelUrl;
     if (!channelUrl) return;
-    Alert.alert(
-      'Delete post',
-      'This permanently removes your post and its replies. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deletePost(channelUrl);
-              showToast({ type: 'success', message: 'Post deleted' });
-              getPosts();
-              navigation.goBack();
-            } catch (error) {
-              customShowError({ error, showToast });
-            }
-          },
-        },
-      ],
-    );
+    try {
+      await deletePost(channelUrl);
+      showToast({ type: 'success', message: 'Post deleted' });
+      getPosts();
+      navigation.goBack();
+    } catch (error) {
+      customShowError({ error, showToast });
+    }
   }, [route.params?.channelUrl, showToast, getPosts, navigation]);
 
-  const handleReportPost = useCallback(() => {
-    const channelUrl = route.params?.channelUrl;
-    if (!channelUrl) return;
-    const submit = async (reason: string) => {
+  const submitPostReport = useCallback(
+    async (reason: string) => {
+      const channelUrl = route.params?.channelUrl;
+      if (!channelUrl) return;
       try {
         await reportContent('post', channelUrl, reason);
         showToast({
@@ -188,26 +187,48 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
       } catch (error) {
         customShowError({ error, showToast });
       }
-    };
-    Alert.alert('Report post', 'Why are you reporting this post?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Spam', onPress: () => submit('Spam') },
-      { text: 'Harassment or bullying', onPress: () => submit('Harassment') },
-      {
-        text: 'Inappropriate content',
-        onPress: () => submit('Inappropriate content'),
-      },
-    ]);
-  }, [route.params?.channelUrl, showToast]);
+    },
+    [route.params?.channelUrl, showToast],
+  );
 
   const handlePostOptions = useCallback(() => {
     if (!SUPABASE_ENABLED || !userPost) return;
     if (isOwnPost) {
-      handleDeletePost();
+      setSheet({
+        title: 'Your post',
+        items: [
+          {
+            label: 'Delete post',
+            destructive: true,
+            icon: <IconTrashProfile width={20} height={20} stroke={colors.danger} />,
+            onPress: handleDeletePost,
+          },
+        ],
+      });
     } else {
-      handleReportPost();
+      setSheet({
+        title: 'Report post',
+        message: 'Why are you reporting this?',
+        items: [
+          {
+            label: 'Spam',
+            icon: <IconInfo width={20} height={20} stroke={colors.muted} />,
+            onPress: () => submitPostReport('Spam'),
+          },
+          {
+            label: 'Harassment or bullying',
+            icon: <IconInfo width={20} height={20} stroke={colors.muted} />,
+            onPress: () => submitPostReport('Harassment'),
+          },
+          {
+            label: 'Inappropriate content',
+            icon: <IconInfo width={20} height={20} stroke={colors.muted} />,
+            onPress: () => submitPostReport('Inappropriate content'),
+          },
+        ],
+      });
     }
-  }, [userPost, isOwnPost, handleDeletePost, handleReportPost]);
+  }, [userPost, isOwnPost, handleDeletePost, submitPostReport]);
 
   // Comment moderation menu: own reply => Delete (deleteComment; RLS enforces
   // author ownership); someone else's => Report (reportContent, 'comment').
@@ -219,14 +240,20 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
       const isOwn = !!commentAuthorId && commentAuthorId === userID;
 
       if (isOwn) {
-        Alert.alert(
-          'Delete reply',
-          'This permanently removes your reply. This cannot be undone.',
-          [
-            { text: 'Cancel', style: 'cancel' },
+        setSheet({
+          title: 'Your reply',
+          message: 'Deleting a reply cannot be undone.',
+          items: [
             {
-              text: 'Delete',
-              style: 'destructive',
+              label: 'Delete reply',
+              destructive: true,
+              icon: (
+                <IconTrashProfile
+                  width={20}
+                  height={20}
+                  stroke={colors.danger}
+                />
+              ),
               onPress: async () => {
                 try {
                   await deleteComment(comment.messageId);
@@ -240,7 +267,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
               },
             },
           ],
-        );
+        });
         return;
       }
 
@@ -255,15 +282,27 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
           customShowError({ error, showToast });
         }
       };
-      Alert.alert('Report reply', 'Why are you reporting this reply?', [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Spam', onPress: () => submit('Spam') },
-        { text: 'Harassment or bullying', onPress: () => submit('Harassment') },
-        {
-          text: 'Inappropriate content',
-          onPress: () => submit('Inappropriate content'),
-        },
-      ]);
+      setSheet({
+        title: 'Report reply',
+        message: 'Why are you reporting this?',
+        items: [
+          {
+            label: 'Spam',
+            icon: <IconInfo width={20} height={20} stroke={colors.muted} />,
+            onPress: () => submit('Spam'),
+          },
+          {
+            label: 'Harassment or bullying',
+            icon: <IconInfo width={20} height={20} stroke={colors.muted} />,
+            onPress: () => submit('Harassment'),
+          },
+          {
+            label: 'Inappropriate content',
+            icon: <IconInfo width={20} height={20} stroke={colors.muted} />,
+            onPress: () => submit('Inappropriate content'),
+          },
+        ],
+      });
     },
     [userID, showToast],
   );
@@ -561,7 +600,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}
               >
-                <IconArrowLeft width={30} height={30} />
+                <IconArrowLeft width={30} height={30} stroke={colors.heading} />
               </TouchableOpacity>
               {/* <Text style={styles.titleHeader}>Comment</Text> */}
               {SUPABASE_ENABLED && userPost ? (
@@ -574,7 +613,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                     style={{
                       fontSize: 26,
                       lineHeight: 30,
-                      color: colors.neutral[900],
+                      color: colors.heading,
                     }}
                   >
                     {'⋯'}
@@ -585,7 +624,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                   disabled
                   style={[styles.backButton, styles.backButtonHide]}
                 >
-                  <IconArrowLeft width={30} height={30} />
+                  <IconArrowLeft width={30} height={30} stroke={colors.heading} />
                 </TouchableOpacity>
               )}
             </View>
@@ -598,7 +637,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
 
             {!userPost ? (
               <View style={styles.loaderContainer}>
-                <ActivityIndicator color={colors.primary[600]} />
+                <ActivityIndicator color={colors.magentaText} />
               </View>
             ) : (
               <ScrollView
@@ -623,7 +662,6 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                         <AvatarMessagesTab
                           imageUrl={
                             userPost.sender?.plainProfileUrl ||
-                            defaultAvatar ||
                             ''
                           }
                           width={35}
@@ -689,11 +727,11 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                         width={24}
                         height={24}
                         stroke={
-                          isLiked ? colors.primary[500] : colors.primary[600]
+                          isLiked ? colors.magentaText : colors.muted
                         }
                         strokeWidth={2}
                         fill={
-                          isLiked ? colors.primary[500] : colors.transparent
+                          isLiked ? colors.magentaText : colors.transparent
                         }
                       />
                       <Text style={styles.postFooterItemText}>{likes}</Text>
@@ -727,7 +765,6 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                                 <AvatarMessagesTab
                                   imageUrl={
                                     comment.sender?.plainProfileUrl ||
-                                    defaultAvatar ||
                                     ''
                                   }
                                   width={35}
@@ -751,7 +788,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                                     styles.dot,
                                     {
                                       backgroundColor: comment.sender?.isActive
-                                        ? colors.primary[600]
+                                        ? colors.magentaText
                                         : colors.primary[200],
                                     },
                                   ]}
@@ -785,7 +822,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                                         style={{
                                           fontSize: 20,
                                           lineHeight: 20,
-                                          color: colors.neutral[700],
+                                          color: colors.muted,
                                         }}
                                       >
                                         {'⋯'}
@@ -815,13 +852,13 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                                 height={24}
                                 stroke={
                                   isReaction
-                                    ? colors.primary[500]
-                                    : colors.primary[600]
+                                    ? colors.magentaText
+                                    : colors.muted
                                 }
                                 strokeWidth={2}
                                 fill={
                                   isReaction
-                                    ? colors.primary[500]
+                                    ? colors.magentaText
                                     : colors.transparent
                                 }
                               />
@@ -844,8 +881,11 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
               style={[
                 styles.footer,
                 {
+                  // Opaque while the keyboard is up so the row reads as a bar
+                  // rather than floating text; this was near-white, which is
+                  // what showed around the field on a dark screen.
                   backgroundColor: showKeyboard
-                    ? colors.quaternary[100]
+                    ? colors.ground
                     : colors.transparent,
                 },
               ]}
@@ -854,7 +894,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                 <TextInput
                   ref={inputRef}
                   placeholder="Write your reply"
-                  placeholderTextColor={colors.neutral[600]}
+                  placeholderTextColor={colors.faint}
                   style={styles.textInput}
                   value={postText}
                   onChangeText={setPostText}
@@ -878,6 +918,14 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
             </Animated.View>
           </View>
         </KeyboardAvoidingView>
+
+        <ActionSheet
+          visible={!!sheet}
+          title={sheet?.title}
+          message={sheet?.message}
+          items={sheet?.items ?? []}
+          onClose={() => setSheet(null)}
+        />
       </BackgroundScreen>
     </>
   );

@@ -101,7 +101,7 @@ const ApplicationNavigator: FunctionComponent<ApplicationNavigatorProps> = ({
   if (isLoading || isLoadingUserDB || isChecking) {
     return (
       <LinearGradient
-        colors={[colors.white, colors.blueChalk50, colors.peachOrange]}
+        colors={[colors.ground, colors.surface, colors.surface2]}
         locations={[0, 0.8, 1]}
         style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         start={{ x: 0, y: 0 }}
@@ -111,6 +111,18 @@ const ApplicationNavigator: FunctionComponent<ApplicationNavigatorProps> = ({
       </LinearGradient>
     );
   }
+
+  console.log('[LL] gate:', JSON.stringify({
+    isOnboarding,
+    hasUserDB: !!userDB,
+    role: !!userDB?.role,
+    diagnosisTypes: userDB?.diagnosisTypes?.length ?? 0,
+    age: userDB?.age ?? null,
+    gender: userDB?.gender ?? null,
+    city: userDB?.city ?? null,
+    country: userDB?.country ?? null,
+    isRegistrationFull: !!isRegistrationFull,
+  }));
 
   return (
     <>

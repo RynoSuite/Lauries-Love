@@ -55,15 +55,27 @@ const ApiProvider: FunctionComponent<ApiProviderProps> = ({ children }) => {
       ? url
       : `${urlApi}${url}${url.includes('?') ? `&${queryParams}` : queryParams}`;
 
+    // Mock and Supabase are route TABLES keyed on the path: they match on
+    // '/users/...', not on a URL. DEFAULT_APP_CONFIG.baseURL points at the
+    // legacy NestJS API, which no longer exists, so it is undefined — and
+    // template interpolation turned that into the literal string
+    // "undefined/users/getUserInfoByCognitoId/...". Every route then fell
+    // through as UNHANDLED and returned null.
+    //
+    // That is why login appeared to do nothing: sign-in succeeded, the profile
+    // fetch silently returned null, and the root navigator sent the member back
+    // to the login screen because it had no profile to check.
+    const routedPath = url;
+
     if (MOCK_ENABLED) {
-      return (await mockApi(currentUrl, {
+      return (await mockApi(routedPath, {
         method: config?.method,
         data: config?.data,
       })) as any;
     }
 
     if (SUPABASE_ENABLED) {
-      return (await supabaseApi(currentUrl, {
+      return (await supabaseApi(routedPath, {
         method: config?.method,
         data: config?.data,
       })) as any;

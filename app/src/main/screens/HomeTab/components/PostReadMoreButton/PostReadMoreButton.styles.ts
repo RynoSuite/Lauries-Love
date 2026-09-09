@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   readMoreText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 14,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 20,
   },
 });

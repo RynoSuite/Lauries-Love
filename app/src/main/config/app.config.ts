@@ -2,13 +2,18 @@ import * as Sentry from 'services/sentry.shim';
 
 const DEFAULT_SENTRY_SETTINGS = {
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
-  debug: __DEV__,
+  // Was __DEV__, which made Sentry log every transport tick and every session
+  // replay screenshot to Metro — hundreds of lines a second, burying the
+  // app's own logs and making the console useless for debugging.
+  debug: false,
   environment: __DEV__ ? 'development' : 'production',
   tracesSampleRate: 1.0,
   _experiments: {
     profilesSampleRate: 1.0,
-    replaysSessionSampleRate: 1.0,
-    replaysOnErrorSampleRate: 1.0,
+    // Session replay screenshots every frame in development and tells you
+    // about each one. Keep it for release, off while developing.
+    replaysSessionSampleRate: __DEV__ ? 0 : 1.0,
+    replaysOnErrorSampleRate: __DEV__ ? 0 : 1.0,
   },
   integrations: [
     Sentry.mobileReplayIntegration({

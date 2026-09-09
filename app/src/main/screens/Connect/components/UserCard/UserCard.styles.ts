@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#EFEFEF',
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
   },
   row: {
     flexDirection: 'row',
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_HANKEN_GROTESK_700,
     fontSize: 18,
     alignSelf: 'center',
-    color: colors.primary[600],
+    color: colors.heading,
   },
   cityStateContainer: {
     paddingHorizontal: 12,
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   detailsText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   userRow: {
     flexDirection: 'row',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 40,
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
   },
   sendMessageText: {
     fontFamily: FONT_RALEWAY_600,

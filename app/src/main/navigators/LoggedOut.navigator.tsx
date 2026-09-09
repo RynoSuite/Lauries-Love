@@ -12,6 +12,7 @@ import AuthenticationNavigator from './auth/auth.navigator';
 
 // screens
 import IntroScreen from 'main/screens/Intro/intro.screen';
+import colors from 'styles/colors';
 
 const Stack = createStackNavigator<LoggedOutParamList>();
 
@@ -27,6 +28,8 @@ const LoggedOutNavigator: FunctionComponent = () => {
     <Stack.Navigator
       initialRouteName={initialRouteName}
       screenOptions={{
+        // Native stacks default to a white card, which flashes on every push.
+        cardStyle: { backgroundColor: colors.ground },
         headerShown: false,
       }}
     >

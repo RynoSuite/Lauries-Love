@@ -57,6 +57,12 @@ const VersionsProvider: FunctionComponent<VersionsProviderProps> = ({
 
   useEffect(() => {
     async function fetchLatestVersion() {
+      // The check asks the live store listing what the newest published
+      // version is. A development or internal build is always older than
+      // what the client has shipped, so this modal — which has no dismiss
+      // and one button that leaves for the store — blocks every build we
+      // make. Correct in production, useless anywhere else.
+      if (__DEV__) return;
       try {
         const latestVersion =
           (await VersionCheck.getLatestVersion({

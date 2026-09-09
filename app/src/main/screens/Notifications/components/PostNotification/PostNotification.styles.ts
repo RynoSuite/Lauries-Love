@@ -16,8 +16,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: colors.neutral[300],
-    backgroundColor: colors.neutral[100],
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
   },
   image: {
     width: 34,
@@ -31,15 +31,15 @@ const styles = StyleSheet.create({
   fullNameText: {
     fontFamily: FONT_RALEWAY_700,
     maxWidth: 96,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   typeText: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   timeText: {
     fontFamily: FONT_HANKEN_GROTESK_400,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   messageContainer: {
     flexDirection: 'row',
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   messageText: {
     maxWidth: 240,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });
 

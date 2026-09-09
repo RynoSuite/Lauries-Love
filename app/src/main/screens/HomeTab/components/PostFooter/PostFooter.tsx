@@ -46,14 +46,21 @@ const PostFooter: FunctionComponent<PostFooterProps> = ({
         <IconTabHeart
           width={24}
           height={24}
-          stroke={isLiked ? colors.primary[500] : colors.primary[600]}
+          stroke={isLiked ? colors.magentaText : colors.muted}
           strokeWidth={2.5}
-          fill={isLiked ? colors.primary[500] : colors.transparent}
+          fill={isLiked ? colors.magentaText : colors.transparent}
         />
         <Text style={styles.footerText}>{likes}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.footerLeft} onPress={onPressComment}>
-        <IconComments width={24} height={24} />
+        {/* Same rule as the heart: muted until there is something to see,
+            magenta once the post has comments. A permanently pink icon says
+            nothing, and every post looked identical. */}
+        <IconComments
+          width={24}
+          height={24}
+          stroke={comments > 0 ? colors.magentaText : colors.muted}
+        />
         <Text style={styles.footerText}>{comments}</Text>
       </TouchableOpacity>
     </View>

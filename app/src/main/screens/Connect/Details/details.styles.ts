@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   profileInfoRow: {
     flexDirection: 'row',
@@ -44,12 +44,12 @@ const styles = StyleSheet.create({
   profileInfoText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   profileInfoDate: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   buttonFriend: {
     flexDirection: 'row',
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 40,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
   },
   sendMessageButton: {
     borderWidth: 1,
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.primary[500],
+    color: colors.heading,
   },
   detailsCard: {
     gap: 20,
@@ -115,18 +115,18 @@ const styles = StyleSheet.create({
   },
   detailsLabel: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   detailsValue: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
     maxWidth: '45%',
   },
   detailsDate: {
     fontFamily: FONT_HANKEN_GROTESK_600,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
     maxWidth: 120,
   },
 });

@@ -16,8 +16,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: colors.neutral[300],
-    backgroundColor: colors.neutral[100],
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
   },
   contentContainer: {
     flexDirection: 'row',
@@ -34,16 +34,16 @@ const styles = StyleSheet.create({
   },
   fullNameText: {
     fontFamily: FONT_RALEWAY_700,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   requestText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 12,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   timeText: {
     fontFamily: FONT_HANKEN_GROTESK_400,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -56,22 +56,22 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 50,
     borderWidth: 1,
-    borderColor: colors.primary[200],
-    backgroundColor: colors.primary[100],
+    borderColor: colors.line,
+    backgroundColor: colors.surface2,
   },
   deleteButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 50,
-    backgroundColor: colors.neutral[400],
+    backgroundColor: colors.line,
   },
   confirmText: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[500],
+    color: colors.heading,
   },
   deleteText: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
 });
 

@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   },
   bellIcon: {
     padding: 8,
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
     borderRadius: 30,
   },
   unreadCountContainer: {

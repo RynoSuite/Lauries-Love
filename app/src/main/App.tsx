@@ -23,6 +23,7 @@ import ChatProvider from 'providers/ChatProvider/ChatProvider';
 import PushNotificationProvider from 'providers/PushNotificationProvider/PushNotificationProvider';
 import PostsProvider from 'providers/PostsProvider/PostsProvider';
 import VersionsProvider from 'providers/VersionsProvider/VersionsProvider';
+import ActionSheetProvider from 'providers/ActionSheetProvider/ActionSheetProvider';
 import { IntercomProvider } from 'providers/IntercomProvider/IntercomProvider';
 
 // navigators
@@ -117,6 +118,7 @@ export default function App() {
           <AppThemeProvider setCurrentRouteName={setCurrentRouteName}>
             <GestureHandlerRootView style={styles.rootView}>
               <ToastProvider>
+                <ActionSheetProvider>
                 <UserAWSProvider>
                   <ApiProvider>
                     <IntercomProvider>
@@ -148,6 +150,7 @@ export default function App() {
                     </IntercomProvider>
                   </ApiProvider>
                 </UserAWSProvider>
+                </ActionSheetProvider>
               </ToastProvider>
             </GestureHandlerRootView>
           </AppThemeProvider>

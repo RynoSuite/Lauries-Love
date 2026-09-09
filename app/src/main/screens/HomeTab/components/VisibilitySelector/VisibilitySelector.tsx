@@ -83,7 +83,7 @@ const VisibilitySelector: FunctionComponent<VisibilitySelectorProps> = ({
           ]}
         >
           <LinearGradient
-            colors={[colors.primary[600], colors.tertiary[500]]}
+            colors={[colors.gilt, colors.gilt]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.gradient}

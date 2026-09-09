@@ -30,14 +30,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     minHeight: HEIGHT * 0.74,
-    backgroundColor: colors.white,
+    // Was white. The approved design is a dark ground, and a white sheet on
+    // it reads as an unstyled system screen rather than the product.
+    backgroundColor: colors.surface,
     gap: 24,
   },
   title: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
     lineHeight: 48,
-    color: colors.wineBerry,
+    color: colors.heading,
     paddingHorizontal: 16,
   },
   body: {
@@ -51,7 +53,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.black,
+    color: colors.magentaText,
   },
   submitContainer: {
     gap: 12,
@@ -60,12 +62,12 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.gableGreen,
+    color: colors.muted,
     textAlign: 'center',
   },
   titleCreateAccount: {
     fontFamily: FONT_RALEWAY_700,
-    color: colors.gableGreen,
+    color: colors.magentaText,
     textDecorationLine: 'underline',
   },
 });

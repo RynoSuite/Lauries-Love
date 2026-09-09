@@ -26,6 +26,7 @@ import { customShowError } from 'utils/other';
 
 // constants
 import { PERMISSIONS_DEFAULT } from './PermissionsProvider.constants';
+import { useActionSheet } from 'providers/ActionSheetProvider/ActionSheetProvider';
 
 type PermissionsContext = {
   permissions: PermissionsAllType;
@@ -46,6 +47,7 @@ export const permissionsContext = createContext({} as PermissionsContext);
 const PermissionsProvider: FunctionComponent<PermissionsProviderProps> = ({
   children,
 }) => {
+  const { showSheet } = useActionSheet();
   const [permissions, setPermissions] =
     useState<PermissionsAllType>(PERMISSIONS_DEFAULT);
 
@@ -75,20 +77,16 @@ const PermissionsProvider: FunctionComponent<PermissionsProviderProps> = ({
   };
 
   const goToSettings = (titleType: string) => {
-    Alert.alert(
-      'Permission required',
-      `We need access to your ${titleType}. Please enable it in your settings.`,
-      [
+    showSheet({
+      title: 'Permission required',
+      message: `We need access to your ${titleType}. You can turn it on in Settings.`,
+      items: [
         {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Settings',
+          label: 'Open Settings',
           onPress: () => Linking.openSettings(),
         },
       ],
-    );
+    });
   };
 
   const requestPermissionsImagePicker = async () => {

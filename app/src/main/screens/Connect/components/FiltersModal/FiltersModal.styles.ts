@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   inputGradient: {
     alignItems: 'center',
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderRadius: 12,
     width: '100%',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
   },
   focusedTextInput: {
     width: screenWidth - 36,
@@ -41,8 +41,13 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 12,
     paddingVertical: 12,
+  },
+  // Equal halves: the two actions were different shapes and widths, which read
+  // as a mistake rather than a hierarchy.
+  filterAction: {
+    flex: 1,
   },
 });
 

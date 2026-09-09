@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Keyboard,
   View,
   Text,
   TouchableOpacity,
@@ -414,7 +415,15 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
 
   return (
     <BackgroundScreen type="home-main">
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+        onStartShouldSetResponder={() => {
+          Keyboard.dismiss();
+          // false: do not become the responder, so this never swallows a tap
+          // meant for a button or the list underneath.
+          return false;
+        }}
+      >
         <View style={styles.header}>
           <Text style={styles.headerText}>Community Wall</Text>
           <NotificationButtonHomeTab navigation={navigation} />
@@ -451,9 +460,7 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
                 width={14}
                 height={14}
                 stroke={
-                  selectTime === 'trending'
-                    ? colors.primary[600]
-                    : colors.neutral[700]
+                  selectTime === 'trending' ? colors.white : colors.muted
                 }
                 strokeWidth={2.2}
               />
@@ -478,9 +485,7 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
                 width={14}
                 height={14}
                 stroke={
-                  selectTime === 'new'
-                    ? colors.primary[600]
-                    : colors.neutral[700]
+                  selectTime === 'new' ? colors.white : colors.muted
                 }
                 strokeWidth={2.2}
               />
@@ -544,31 +549,26 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
             contentContainerStyle={styles.contentContainer}
             ListFooterComponent={
               loadingStorage ? (
-                <ActivityIndicator color={colors.primary[600]} />
+                <ActivityIndicator color={colors.magentaText} />
               ) : null
             }
             onScroll={handleScroll}
             scrollEventThrottle={16}
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
+            // Tapping the feed while the search keyboard is up now dismisses
+            // it: "handled" lets a tap on a post still open that post, but a
+            // tap on empty space closes the keyboard instead of doing nothing.
+            keyboardShouldPersistTaps="handled"
+            // Scrolling away from the search field dismisses it too, which is
+            // what people reach for before they think to tap.
+            keyboardDismissMode="on-drag"
           />
         </View>
-        <TouchableOpacity
-          onPress={handleIntercom}
-          style={styles.buttonIntercom}
-        >
-          <IconIntercom
-            width={30}
-            height={30}
-            fill={colors.neutral[100]}
-            strokeWidth={1.8}
-          />
-          {unreadCount > 0 && (
-            <View style={styles.countIntercom}>
-              <Text style={styles.unreadIntercom}>{unreadCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+        {/* The floating support-chat button used to sit above the plus. It
+            duplicated a destination the bottom bar already owns, and stacking
+            two circles in the same corner made the primary action, posting,
+            compete with a secondary one. Support is reachable from Messages. */}
         <TouchableOpacity
           onPress={() => navigation.navigate(PATHS_HOME_TAB.homeTabCreatePost)}
           style={styles.buttonAdd}
@@ -576,7 +576,7 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
           <IconPlus
             width={34}
             height={34}
-            stroke={colors.neutral[100]}
+            stroke={colors.white}
             strokeWidth={1.8}
           />
         </TouchableOpacity>

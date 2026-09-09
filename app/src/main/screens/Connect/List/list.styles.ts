@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    backgroundColor: colors.quaternary[100],
+    backgroundColor: colors.ground,
   },
   searchContainer: {
     gap: 12,
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 40,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderWidth: 1,
   },
   filterText: {
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   filterCountText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 12,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   flatListContainer: {
     gap: 12,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   mapViewButton: {
     borderRadius: 80,
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
     boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.25)',
   },
   mapViewButtonContent: {
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   mapViewText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });
 

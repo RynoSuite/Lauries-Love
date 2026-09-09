@@ -211,7 +211,7 @@ const PostHomeTab: FunctionComponent<PostHomeTabProps> = ({
           <IconArrowRight
             width={19}
             height={19}
-            stroke={colors.primary[600]}
+            stroke={colors.heading}
             strokeWidth={2.5}
           />
         </TouchableOpacity>
@@ -265,7 +265,9 @@ const PostHomeTab: FunctionComponent<PostHomeTabProps> = ({
     <View style={styles.mainContainer}>
       <TouchableOpacity onPress={handlePressPost}>
         <LinearGradient
-          colors={[colors.quaternary10018, colors.quaternary20018]}
+          // Deepwater to surface: an on-brand green that reads as depth on the
+          // card rather than the grey the old tints became on a dark ground.
+          colors={[colors.deepwater, colors.surface]}
           start={[0, 0]}
           end={[1, 1]}
           style={styles.container}
@@ -279,9 +281,7 @@ const PostHomeTab: FunctionComponent<PostHomeTabProps> = ({
             >
               <TouchableOpacity onPress={goToUserProfile}>
                 <AvatarMessagesTab
-                  imageUrl={
-                    post.creator?.plainProfileUrl || defaultAvatar || ''
-                  }
+                  imageUrl={post.creator?.plainProfileUrl || ''}
                   width={35}
                   height={35}
                   name={post.creator?.nickname || ''}

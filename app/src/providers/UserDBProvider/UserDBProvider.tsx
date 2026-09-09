@@ -98,7 +98,11 @@ const UserDBProvider: FunctionComponent<UserDBProviderProps> = ({
         },
       );
 
-      if (!result) return;
+      console.log('[LL] getUserDB result:', result ? 'got profile' : 'NULL');
+      if (!result) {
+        console.log('[LL] getUserDB returned nothing — userDB stays null');
+        return;
+      }
 
       const userId = result.cognitoId;
       const email = result.email;

@@ -43,6 +43,7 @@ import { PATHS_MESSAGES_TAB } from 'main/navigators/paths';
 import colors from 'styles/colors';
 import styles from './MessagesTabDetailsGroup.styles';
 import { useChatProvider } from 'providers/ChatProvider/ChatProvider';
+import { useActionSheet } from 'providers/ActionSheetProvider/ActionSheetProvider';
 
 type MessagesTabDetailsGroupProps = {
   navigation: NativeStackNavigationProp<RootMessagesTabParamList>;
@@ -51,6 +52,7 @@ type MessagesTabDetailsGroupProps = {
 const MessagesTabDetailsGroup: FunctionComponent<
   MessagesTabDetailsGroupProps
 > = ({ navigation }) => {
+  const { showSheet } = useActionSheet();
   const route =
     useRoute<
       RouteProp<RootMessagesTabParamList, 'messages-tab-details-group'>
@@ -118,19 +120,18 @@ const MessagesTabDetailsGroup: FunctionComponent<
         },
       );
     else
-      Alert.alert('Leave group', 'Are you sure you want to leave this group?', [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Leave group',
-          style: 'destructive',
-          onPress: () => {
-            onLeave();
+      showSheet({
+        title: 'Leave group',
+        message:
+          'You will stop receiving messages from this group. Your messages stay where they are.',
+        items: [
+          {
+            label: 'Leave group',
+            destructive: true,
+            onPress: () => onLeave(),
           },
-        },
-      ]);
+        ],
+      });
   };
 
   // Depend on the provider cache length: in Supabase mode the channel comes

@@ -47,6 +47,7 @@ import { useCountry } from 'presentation/hooks';
 import styles from './MessagesTabProfile.styles';
 import colors from 'styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useToastProvider } from 'providers/ToastProvider/ToastProvider';
 
 type MessagesTabProfileProps = {
   navigation: NativeStackNavigationProp<RootMessagesTabParamList>;
@@ -55,6 +56,7 @@ type MessagesTabProfileProps = {
 const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
   navigation,
 }) => {
+  const { showToast } = useToastProvider();
   const { getChannels } = useChatProvider();
   const { getOnlyUserDBById } = useUserDBProvider();
   const route =
@@ -196,7 +198,10 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
       !selectUserDB.geoLocation.latitude ||
       !selectUserDB.geoLocation.longitude
     )
-      return Alert.alert('Error', 'User does not have location data');
+      return showToast({
+        type: 'error',
+        message: 'This member has not shared a location.',
+      });
 
     navigation.dispatch(
       CommonActions.reset({

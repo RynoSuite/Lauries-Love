@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 14,
     overflow: 'hidden',
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
   },
   image: {
     width: '100%',
@@ -29,17 +29,17 @@ const styles = StyleSheet.create({
   headerText: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 34,
   },
   contentText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
-    color: colors.neutral[800],
+    color: colors.body,
     lineHeight: 18,
   },
   sawTitleContainer: {
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
     padding: 16,
     borderRadius: 14,
   },

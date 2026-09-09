@@ -35,7 +35,7 @@ const RichText: React.FC<RichTextProps> = ({
 }) => {
   const parts = (text ?? '').split(TOKEN_RE);
   const link = [
-    { color: colors.primary[600], fontWeight: '600' as const },
+    { color: colors.magentaText, fontWeight: '600' as const },
     linkStyle,
   ];
 

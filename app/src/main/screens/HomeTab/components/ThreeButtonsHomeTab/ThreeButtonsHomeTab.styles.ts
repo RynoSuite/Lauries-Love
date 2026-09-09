@@ -20,15 +20,17 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   buttonTextSelected: {
-    color: colors.primary[600],
+    // Magenta as TYPE, not the #911766 fill: that scores 1.82:1 on this
+    // ground and is unreadable. magentaText is 5.14:1 and passes AA.
+    color: colors.magentaText,
   },
   lineContainer: {
     width: '100%',
     height: 2,
-    backgroundColor: colors.neutral[600],
+    backgroundColor: colors.line,
   },
   line: {
     height: 2,

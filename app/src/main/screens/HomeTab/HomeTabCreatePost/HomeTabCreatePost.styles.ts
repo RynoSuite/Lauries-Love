@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.black,
+    color: colors.heading,
     fontSize: 16,
     lineHeight: 20,
   },
@@ -32,13 +32,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   postButton: {
-    backgroundColor: colors.neutral[500],
+    backgroundColor: colors.surface2,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
   },
   postButtonActive: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
   postButtonText: {
     fontFamily: FONT_RALEWAY_600,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
     paddingVertical: 13,
   },
   footer: {
@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingTop: 13,
+    paddingBottom: 34,
     gap: 8,
   },
   footerVisibilityCont: {
@@ -86,16 +87,16 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.neutral[600],
+    color: colors.muted,
   },
   uploadButton: {
-    backgroundColor: colors.neutral[500],
+    backgroundColor: colors.surface2,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
   },
   uploadActiveButton: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
   imageButtonInner: {
     flexDirection: 'row',
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     color: colors.neutral[100],
   },
   imageCont: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     width: 81,
     height: 81,
     position: 'relative',
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -8.5,
     right: -11,
-    backgroundColor: '#999',
+    backgroundColor: colors.line,
     width: 22,
     height: 22,
     borderRadius: 11,

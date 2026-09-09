@@ -1,5 +1,6 @@
 import React, { Dispatch, useEffect, useMemo, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import colors from 'styles/colors';
@@ -153,12 +154,12 @@ export default React.memo(function FiltersModal({
         <View style={{ gap: 8 }}>
           <Text style={styles.label}>City</Text>
           <LinearGradient
-            colors={['rgba(178, 93, 149, 1)', 'rgba(255, 162, 60, 1)']}
+            colors={[colors.magenta, colors.lagoon]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.inputGradient}
           >
-            <TextInput
+            <BottomSheetTextInput
               value={city}
               onChangeText={address => setCity(address)}
               placeholder="No Preference"
@@ -168,7 +169,7 @@ export default React.memo(function FiltersModal({
               ]}
               textContentType="addressCity"
               keyboardType="default"
-              placeholderTextColor={colors.neutral[600]}
+              placeholderTextColor={colors.faint}
               onFocus={() => setIsCityOnFocus(true)}
               onBlur={() => {
                 setIsCityOnFocus(false);
@@ -178,8 +179,19 @@ export default React.memo(function FiltersModal({
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <Button title="Clear All" type="secondary" onPress={handleClear} />
-        <Button title="Apply filters" shape="rounded" onPress={handleApply} />
+        <Button
+          title="Clear all"
+          type="secondary"
+          shape="rounded"
+          onPress={handleClear}
+          style={styles.filterAction}
+        />
+        <Button
+          title="Apply filters"
+          shape="rounded"
+          onPress={handleApply}
+          style={styles.filterAction}
+        />
       </View>
     </Modal>
   );

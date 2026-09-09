@@ -121,7 +121,7 @@ const ThreeButtonsHomeTab: FunctionComponent<ThreeButtonsHomeTabProps> = ({
               {
                 color: colorTextPosts.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [colors.neutral[600], colors.primary[600]],
+                  outputRange: [colors.faint, colors.magentaText],
                 }),
               },
             ]}
@@ -139,7 +139,7 @@ const ThreeButtonsHomeTab: FunctionComponent<ThreeButtonsHomeTabProps> = ({
               {
                 color: colorTextFriends.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [colors.neutral[600], colors.primary[600]],
+                  outputRange: [colors.faint, colors.magentaText],
                 }),
               },
             ]}
@@ -157,7 +157,7 @@ const ThreeButtonsHomeTab: FunctionComponent<ThreeButtonsHomeTabProps> = ({
               {
                 color: colorTextGroups.interpolate({
                   inputRange: [0, 1],
-                  outputRange: [colors.neutral[600], colors.primary[600]],
+                  outputRange: [colors.faint, colors.magentaText],
                 }),
               },
             ]}
@@ -184,7 +184,7 @@ const ThreeButtonsHomeTab: FunctionComponent<ThreeButtonsHomeTabProps> = ({
           ]}
         >
           <LinearGradient
-            colors={[colors.primary[600], colors.tertiary[500]]}
+            colors={[colors.gilt, colors.gilt]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.gradient}
