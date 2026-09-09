@@ -641,6 +641,9 @@ export default function MapScreen() {
           style={styles.map}
           onReady={pushMarkersToMap}
           onMarkerPress={handleLeafletMarkerPress}
+          // Restores what the native map's onPress did: tapping away from a
+          // pin dismisses the member card. Without it the card had no way out.
+          onMapPress={() => setUser(null)}
           onRegionChange={handleLeafletRegionChange}
         />
         <SafeAreaView style={styles.safeAreaTop}>
@@ -718,7 +721,7 @@ export default function MapScreen() {
         </SafeAreaView>
         <SafeAreaView style={styles.safeAreaBottom}>
           {user ? (
-            <UserCard user={user} setInitialRegion={setInitialRegion} />
+            <UserCard user={user} onClose={() => setUser(null)} setInitialRegion={setInitialRegion} />
           ) : (
             <View style={styles.cardContainer}>
               <TouchableOpacity

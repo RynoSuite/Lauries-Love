@@ -52,14 +52,26 @@ export const leafletHtml = `<!doctype html>
   .leaflet-control-attribution a { color: ${colors.muted}; }
   .leaflet-control-zoom { display: none; }
 
-  .marker-cluster { background: ${colors.magenta}59; }
+  .marker-cluster {
+    background: ${colors.magenta}59;
+    border-radius: 50%;
+    text-align: center;
+  }
   .marker-cluster div {
+    width: 32px; height: 32px;
+    margin: 4px;
+    border-radius: 50%;
     background: ${colors.magenta};
     color: #fff;
-    font-weight: 600;
-    font-family: system-ui, sans-serif;
+    font: 600 13px/32px system-ui, sans-serif;
+    text-align: center;
     box-shadow: 0 0 0 1px ${colors.magentaText}8c;
   }
+  .marker-cluster span { line-height: 32px; }
+  .marker-cluster-medium div { width: 38px; height: 38px; font-size: 14px; line-height: 38px; }
+  .marker-cluster-medium span { line-height: 38px; }
+  .marker-cluster-large div { width: 44px; height: 44px; font-size: 15px; line-height: 44px; }
+  .marker-cluster-large span { line-height: 44px; }
 
   .ll-pin {
     width: 18px; height: 18px; border-radius: 50%;
@@ -123,6 +135,12 @@ export const leafletHtml = `<!doctype html>
     });
   }
   map.on('moveend', reportRegion);
+
+  // A tap on the basemap, not on a pin, closes whatever card is open. Leaflet
+  // fires this only when no marker handled the click.
+  map.on('click', function () {
+    send({ type: 'mapPress' });
+  });
 
   // Messages from React Native. Both listeners: iOS delivers on window,
   // Android on document.

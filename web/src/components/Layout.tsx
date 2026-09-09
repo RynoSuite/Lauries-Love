@@ -82,8 +82,22 @@ export function Layout() {
     (r) => pathname === r || pathname.startsWith(r + '/'),
   );
 
+  // The community wall gets the artwork behind it. It lives here rather than
+  // in the Feed page because a backdrop inside the page would sit behind this
+  // container's own opaque background and never be seen.
+  const showFeedArt = pathname === '/';
+
   return (
-    <div className="min-h-screen bg-ground">
+    <div className="relative min-h-screen bg-ground">
+      {showFeedArt && (
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
+          <img src="/feed-bg.png" alt="" className="h-full w-full object-cover" />
+          {/* The artwork is dark on the left but bright pink and gold in the
+              lower right, which is where cards land on a wide screen. The
+              scrim keeps body text readable across all of it. */}
+          <div className="absolute inset-0 bg-ground/80" />
+        </div>
+      )}
       <header className="sticky top-0 z-[1100] bg-harbor/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1500px] items-center gap-6 px-4 py-2 sm:px-6">
           {/* Mark only. The wordmark and tagline are carried by the logo's own
@@ -150,7 +164,7 @@ export function Layout() {
 
       <div
         className={
-          'mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_minmax(0,1fr)] ' +
+          'relative z-10 mx-auto grid max-w-[1500px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[248px_minmax(0,1fr)] ' +
           (wide ? '' : 'xl:grid-cols-[248px_minmax(0,1fr)_296px]')
         }
       >
@@ -191,9 +205,11 @@ export function Layout() {
 
             <section className="rounded-2xl border border-line bg-surface p-4">
               <div className="flex items-center gap-2.5">
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-magenta-plate text-magenta-text">
-                  <IconRibbon className="h-[18px] w-[18px]" />
-                </span>
+                <img
+                  src="/icon-support.png"
+                  alt=""
+                  className="-my-2 h-14 w-14 shrink-0"
+                />
                 <h3 className="font-sans text-sm font-semibold text-magenta-text">
                   Need support now?
                 </h3>
@@ -225,7 +241,7 @@ export function Layout() {
             <TaraStory />
 
             <RailCard
-              Icon={IconHeart}
+              iconSrc="/icon-heart.png"
               title="Community guidelines"
               body="Be kind. Be respectful. Be supportive. Together we keep this a safe space for everyone."
             />
@@ -233,27 +249,22 @@ export function Layout() {
                 the left rail, so the same destination appeared twice on one
                 screen. The left one is kept because it sits above the fold. */}
             <RailCard
-              Icon={IconCommunity}
+              iconSrc="/icon-groups.png"
               title="Active groups"
               body="Connect in groups that match what you are actually facing."
               to="/groups"
               cta="Browse groups"
             />
 
-            {/* The artwork ships without type on it, so the line is set here.
-                The heart sits in the lower-right of the square source, so the
-                crop is pulled down to 62% to keep the heart and its swoosh in
-                the band, and the copy is inset left of it. */}
-            <section className="relative overflow-hidden rounded-2xl border border-line">
+            {/* This artwork has the line set into it, so nothing is drawn on
+                top. The words live in alt text instead, or they would be
+                invisible to a screen reader. */}
+            <section className="overflow-hidden rounded-2xl border border-line">
               <img
-                src="/stronger.png"
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-                style={{ objectPosition: '50% 62%' }}
+                src="/stronger-lockup.png"
+                alt="Together, we are stronger."
+                className="block w-full"
               />
-              <p className="relative py-9 pl-5 pr-24 font-serif text-lg leading-snug text-heading">
-                Together, we are stronger.
-              </p>
             </section>
           </div>
         </aside>
@@ -264,12 +275,15 @@ export function Layout() {
 
 function RailCard({
   Icon,
+  iconSrc,
   title,
   body,
   to,
   cta,
 }: {
-  Icon: (p: { className?: string }) => ReactElement;
+  Icon?: (p: { className?: string }) => ReactElement;
+  /** Artwork that already includes its own plate, used instead of Icon. */
+  iconSrc?: string;
   title: string;
   body: string;
   to?: string;
@@ -278,9 +292,15 @@ function RailCard({
   return (
     <section className="rounded-2xl border border-line bg-surface p-4">
       <div className="flex items-start gap-3">
+        {iconSrc ? (
+          // The supplied artwork carries its own magenta disc, so no plate is
+          // drawn behind it — two discs would show as a ring.
+          <img src={iconSrc} alt="" className="-my-1 h-14 w-14 shrink-0" />
+        ) : (
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-magenta-plate text-magenta-text">
-          <Icon className="h-5 w-5" />
+          {Icon && <Icon className="h-5 w-5" />}
         </span>
+        )}
         <div className="min-w-0">
           <h3 className="font-sans text-sm font-semibold text-magenta-text">
             {title}

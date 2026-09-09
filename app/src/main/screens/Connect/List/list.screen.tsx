@@ -249,7 +249,7 @@ export default function ListScreen() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color={colors.primary[600]} />
+        <ActivityIndicator size="large" color={colors.magentaText} />
       </View>
     );
   }
@@ -272,8 +272,8 @@ export default function ListScreen() {
                 styles.locationButton,
                 {
                   backgroundColor: isCurrentLocation
-                    ? colors.primary[200]
-                    : colors.quaternary[200],
+                    ? colors.magenta
+                    : colors.surface2,
                 },
               ]}
               onPress={() => setIsCurrentLocation(!isCurrentLocation)}
@@ -282,7 +282,7 @@ export default function ListScreen() {
                 width={14}
                 height={14}
                 stroke={
-                  isCurrentLocation ? colors.primary[600] : colors.neutral[700]
+                  isCurrentLocation ? colors.white : colors.muted
                 }
               />
               <Text
@@ -290,8 +290,8 @@ export default function ListScreen() {
                   styles.locationButtonText,
                   {
                     color: isCurrentLocation
-                      ? colors.primary[600]
-                      : colors.neutral[700],
+                      ? colors.white
+                      : colors.muted,
                   },
                 ]}
               >
@@ -304,7 +304,7 @@ export default function ListScreen() {
                 styles.filterButton,
                 {
                   borderColor:
-                    filtersCount > 0 ? colors.primary[300] : 'transparent',
+                    filtersCount > 0 ? colors.magentaText : 'transparent',
                 },
               ]}
             >
@@ -312,7 +312,7 @@ export default function ListScreen() {
               <IconChevronDown
                 width={20}
                 height={20}
-                stroke={colors.neutral[700]}
+                stroke={colors.white}
               />
 
               {filtersCount > 0 && (
@@ -338,7 +338,7 @@ export default function ListScreen() {
                 onPress={handleView}
                 style={styles.mapViewButtonContent}
               >
-                <IconMapPin width={18} height={18} fill={colors.primary[600]} />
+                <IconMapPin width={18} height={18} fill={colors.white} />
                 <Text style={styles.mapViewText}>Map view</Text>
               </TouchableOpacity>
             </View>

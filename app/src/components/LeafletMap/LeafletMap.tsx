@@ -32,6 +32,8 @@ type Props = {
   style?: StyleProp<ViewStyle>;
   onMarkerPress?: (id: string) => void;
   onRegionChange?: (bounds: LeafletBounds, zoom: number) => void;
+  /** A tap on the basemap, not on a pin. */
+  onMapPress?: () => void;
   onReady?: () => void;
 };
 
@@ -49,7 +51,7 @@ type Props = {
  * would throw away the user's pan and zoom every time a marker moved.
  */
 const LeafletMap = forwardRef<LeafletMapHandle, Props>(function LeafletMap(
-  { style, onMarkerPress, onRegionChange, onReady },
+  { style, onMarkerPress, onRegionChange, onMapPress, onReady },
   ref,
 ) {
   const webRef = useRef<WebView>(null);
@@ -77,9 +79,10 @@ const LeafletMap = forwardRef<LeafletMapHandle, Props>(function LeafletMap(
       }
       if (msg.type === 'markerPress') onMarkerPress?.(msg.id);
       if (msg.type === 'regionChange') onRegionChange?.(msg.bounds, msg.zoom);
+      if (msg.type === 'mapPress') onMapPress?.();
       if (msg.type === 'ready') onReady?.();
     },
-    [onMarkerPress, onRegionChange, onReady],
+    [onMarkerPress, onRegionChange, onMapPress, onReady],
   );
 
   return (

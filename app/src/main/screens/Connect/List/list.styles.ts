@@ -11,8 +11,9 @@ const styles = StyleSheet.create({
   searchContainer: {
     gap: 12,
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    // 12 top and bottom, matching the map view and the community wall's pills.
     paddingTop: 12,
+    paddingBottom: 12,
   },
   filterButtonContainer: {
     flexDirection: 'row',
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.neutral[1000],
+    color: colors.white,
   },
   filterCount: {
     position: 'absolute',

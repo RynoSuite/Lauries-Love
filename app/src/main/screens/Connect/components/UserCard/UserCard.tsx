@@ -1,6 +1,6 @@
 import { Region } from 'react-native-maps';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
+import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import React, {
   Dispatch,
@@ -27,6 +27,9 @@ import { findOrCreateDirectConversation } from 'services/supabase/supabase.chat'
 type Props = {
   user: User;
   setInitialRegion?: Dispatch<SetStateAction<Region>>;
+  /** Dismiss the card. Tapping the map also closes it, but that is not
+      discoverable on a phone, and the card covers the pin you just tapped. */
+  onClose?: () => void;
 };
 
 // Perf: signed S3 URLs are valid for 7 days — cache them for the session so
@@ -41,6 +44,7 @@ const profilePictureCache = new Map<string, URL>();
 export default React.memo(function UserCard({
   user,
   setInitialRegion,
+  onClose,
 }: Props) {
   const navigation = useNavigation();
   const { showToast } = useToastProvider();
@@ -159,9 +163,10 @@ export default React.memo(function UserCard({
     });
   }
 
-  const imageSource = profilePicture
-    ? { uri: profilePicture.toString() }
-    : require('../../../../../assets/images/image-not-found.png');
+  // Empty string rather than a placeholder image, so AvatarMessagesTab falls
+  // through to its initials-on-magenta branch instead of showing a white
+  // "not found" tile.
+  const avatarUrl = profilePicture ? profilePicture.toString() : '';
 
   // Perf: memoized country lookup instead of scanning all countries per render.
   const country = useMemo(
@@ -173,9 +178,24 @@ export default React.memo(function UserCard({
 
   return (
     <View style={styles.container}>
+      {onClose && (
+        <TouchableOpacity
+          onPress={onClose}
+          style={styles.closeButton}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityLabel="Close"
+        >
+          <Text style={styles.closeButtonText}>×</Text>
+        </TouchableOpacity>
+      )}
       <View>
         <View style={styles.row}>
-          <Image source={imageSource} style={styles.image} />
+          <AvatarMessagesTab
+            imageUrl={avatarUrl}
+            width={49}
+            height={49}
+            name={user.firstName ?? ''}
+          />
           <View style={{ flex: 1 }}>
             <View style={styles.headerRow}>
               <Text style={styles.headerText}>
@@ -201,7 +221,7 @@ export default React.memo(function UserCard({
         {!isFriend && (
           <>
             {user.diagnosisYear && (
-              <IconMiddleDot width={8} height={8} fill={colors.primary[600]} />
+              <IconMiddleDot width={8} height={8} fill={colors.muted} />
             )}
             <Text style={styles.userText}>{user.diagnosisYear}</Text>
           </>
@@ -213,28 +233,18 @@ export default React.memo(function UserCard({
           onPress={handleMessage}
           style={{ flex: 1 }}
         >
-          <LinearGradient
-            colors={['rgba(178, 93, 149, 1)', 'rgba(255, 162, 60, 1)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.buttonOutlinedContainer}
-          >
+          <View style={styles.buttonOutlinedContainer}>
             <View style={styles.buttonInnerContainer}>
               <Text style={styles.sendMessageText}>
                 {isLoadingSendMessage ? 'Connecting...' : 'Send message'}
               </Text>
             </View>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleDetails} style={{ flex: 1 }}>
-          <LinearGradient
-            colors={['rgba(178, 93, 149, 1)', 'rgba(255, 162, 60, 1)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.buttonContainer}
-          >
+          <View style={styles.buttonContainer}>
             <Text style={styles.viewProfileText}>View profile</Text>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
