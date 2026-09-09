@@ -79,7 +79,7 @@ export default function SubCancerTypeScreen() {
     return (
       <TouchableOpacity
         onPress={() => setSubCancerType(item.id)}
-        style={styles.listItem}
+        style={[styles.listItem, subCancerType === item.id && styles.listItemSelected]}
       >
         <Text style={styles.listText}>{item.description}</Text>
 

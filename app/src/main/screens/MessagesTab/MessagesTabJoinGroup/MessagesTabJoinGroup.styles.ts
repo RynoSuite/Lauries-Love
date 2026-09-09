@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import colors from 'styles/colors';
 import { FONT_RALEWAY_700 } from 'styles/fonts';
 
 const styles = StyleSheet.create({
@@ -19,6 +20,7 @@ const styles = StyleSheet.create({
   inputSearch: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 14,
+    color: colors.heading,
   },
 });
 

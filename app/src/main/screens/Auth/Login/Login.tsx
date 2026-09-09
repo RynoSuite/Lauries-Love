@@ -117,8 +117,8 @@ const LoginScreen: FunctionComponent = () => {
           <Image source={logo} style={styles.image} resizeMode="contain" />
           <View style={styles.bottomSheet}>
             <LinearGradient
-              colors={[colors.ground, colors.surface, colors.surface2]}
-              locations={[0, 0.8, 1]}
+              colors={[colors.surface, colors.surface, colors.surface2]}
+              locations={[0, 0.7, 1]}
               style={styles.containerGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}

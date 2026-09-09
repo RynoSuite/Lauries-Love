@@ -45,8 +45,9 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.surface2,
   },
   buttonSelected: {
-    borderColor: colors.primary[600],
+    borderColor: colors.magentaText,
     backgroundColor: colors.surface2,
+    borderWidth: 2,
   },
   buttonText: {
     fontFamily: FONT_RALEWAY_500,

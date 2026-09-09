@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: FONT_RALEWAY_600,
+    color: colors.heading,
   },
   titlePrimary: {
     color: colors.white,
@@ -74,11 +75,13 @@ const styles = StyleSheet.create({
   roundedTitle: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
+    color: colors.heading,
   },
   titleMd: {
     fontSize: 16,
     lineHeight: 20,
     fontFamily: FONT_RALEWAY_500,
+    color: colors.heading,
   },
   titleSm: {
     fontSize: 14,

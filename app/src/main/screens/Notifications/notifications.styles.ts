@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
   },
   filterButtonText: {
     fontFamily: FONT_RALEWAY_600,
+    color: colors.heading,
   },
   filterButtonIcon: {
     width: 14,

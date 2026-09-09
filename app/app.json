@@ -9,8 +9,8 @@
     "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#051A1D"
     },
     "platforms": [
       "ios",
@@ -52,6 +52,11 @@
       },
       "entitlements": {
         "aps-environment": "production"
+      },
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#051A1D"
       }
     },
     "android": {
@@ -84,6 +89,11 @@
         "googleMaps": {
           "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
         }
+      },
+      "splash": {
+        "image": "./assets/splash-icon.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#051A1D"
       }
     },
     "web": {
@@ -168,6 +178,7 @@
         "projectId": "3dce34f7-098c-4c93-84c8-5c2542b31d2b"
       }
     },
-    "owner": "rynosuite"
+    "owner": "rynosuite",
+    "backgroundColor": "#051A1D"
   }
 }

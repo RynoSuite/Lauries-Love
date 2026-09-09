@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
   },
   locationButtonText: {
     fontFamily: FONT_RALEWAY_600,
+    color: colors.heading,
   },
   filterButton: {
     flexDirection: 'row',

@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
   prefixText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
+    color: colors.heading,
   },
   input: {
     flex: 1,
@@ -43,9 +44,10 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     paddingLeft: 13,
     paddingRight: 16,
+    color: colors.heading,
   },
   errorText: {
-    color: 'red',
+    color: colors.danger,
     marginTop: 4,
     fontSize: 12,
   },

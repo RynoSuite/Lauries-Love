@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
   inputSearch: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 14,
+    color: colors.heading,
   },
 });
 

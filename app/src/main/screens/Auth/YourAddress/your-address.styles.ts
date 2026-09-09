@@ -75,6 +75,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontFamily: FONT_RALEWAY_500,
+    color: colors.heading,
   },
   modalText: {
     fontFamily: FONT_RALEWAY_500,

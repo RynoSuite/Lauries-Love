@@ -143,7 +143,14 @@ const useFriendsUserDB = ({
   };
 
   const getRequestedFriend = async () => {
-    if (!friendId || isCurrentUser) return;
+    // Your own profile has no friendship to look up — but the early return
+    // used to skip the finally below, which is the only place isLoading is
+    // ever cleared. The result was a button stuck on "Loading..." forever on
+    // your own profile. Nothing to fetch still means nothing to wait for.
+    if (!friendId || isCurrentUser) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await api(`/users/${friendId}/friend-requests`, {

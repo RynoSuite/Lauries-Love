@@ -44,11 +44,12 @@ export const styles = StyleSheet.create({
     height: 24,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: colors.neutral[600],
+    borderColor: colors.line,
   },
   selectedCheckbox: {
     backgroundColor: colors.magenta,
-    borderColor: colors.primary[500],
+    borderColor: colors.magentaText,
+    borderWidth: 2,
   },
   checkboxWrapper: {
     paddingHorizontal: 16,
@@ -90,8 +91,9 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.surface2,
   },
   diagnosedButtonSelected: {
-    borderColor: colors.primary[600],
+    borderColor: colors.magentaText,
     backgroundColor: colors.surface2,
+    borderWidth: 2,
   },
   diagnosedButtonText: {
     fontFamily: FONT_RALEWAY_500,

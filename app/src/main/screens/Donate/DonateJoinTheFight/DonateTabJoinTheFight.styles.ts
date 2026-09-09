@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 28,
+    color: colors.heading,
   },
   textContainer: {
     gap: 16,
@@ -37,11 +38,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 20,
     lineHeight: 24,
+    color: colors.heading,
   },
   text: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
+    color: colors.heading,
   },
   tag: {
     flexDirection: 'row',

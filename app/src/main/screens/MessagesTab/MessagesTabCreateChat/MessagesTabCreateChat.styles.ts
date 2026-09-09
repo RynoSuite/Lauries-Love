@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_700,
     fontSize: 14,
     lineHeight: 16,
+    color: colors.heading,
   },
   cancel: {
     paddingLeft: 12,

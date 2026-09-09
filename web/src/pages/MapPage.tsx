@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   MapContainer,
   TileLayer,
@@ -52,6 +52,8 @@ type Definition = {
 const US_CENTER: [number, number] = [39.5, -98.35];
 const US_ZOOM = 4;
 const NEARBY_ZOOM = 9;
+// Closer than "near me": you asked for one person, not a region.
+const MEMBER_ZOOM = 11;
 
 async function fetchDefinitions(): Promise<Definition[]> {
   const { data } = await supabase
@@ -91,9 +93,26 @@ function ViewportLoader({ onData }: { onData: (m: Marker[]) => void }) {
   return null;
 }
 
+// Centres on a specific member when the page was opened from their profile's
+// "View on map". Their coordinates arrive as ?lat/?lng.
+function FocusMember({ lat, lng }: { lat: number; lng: number }) {
+  const map = useMap();
+  const done = useRef(false);
+  useEffect(() => {
+    if (done.current) return;
+    done.current = true;
+    map.setView([lat, lng], MEMBER_ZOOM);
+  }, [map, lat, lng]);
+  return null;
+}
+
 // Centres the map on the member's own location once, if they allow it.
 // Someone opening a "who is near me" map wants to be near themselves; the
 // whole-US view answers a question nobody asked.
+//
+// Skipped entirely when the page was opened on someone: asking to see a member
+// and being shown your own neighbourhood is worse than not moving at all, and
+// geolocation resolves late enough to yank the map away after it had arrived.
 function LocateOnFirstLoad({ onResolved }: { onResolved: (ok: boolean) => void }) {
   const map = useMap();
   const done = useRef(false);
@@ -211,6 +230,16 @@ export function MapPage() {
     [markers, filters],
   );
 
+  // ?lat/?lng come from a member profile's "View on map".
+  const [searchParams] = useSearchParams();
+  const focus = useMemo(() => {
+    const lat = Number(searchParams.get('lat'));
+    const lng = Number(searchParams.get('lng'));
+    return Number.isFinite(lat) && Number.isFinite(lng) && (lat !== 0 || lng !== 0)
+      ? { lat, lng }
+      : null;
+  }, [searchParams]);
+
   const activeCount = Object.values(filters).filter(Boolean).length;
 
   if (!isEnabled('community_map'))
@@ -272,8 +301,8 @@ export function MapPage() {
         style={{ height: '70vh' }}
       >
         <MapContainer
-          center={US_CENTER}
-          zoom={US_ZOOM}
+          center={focus ? [focus.lat, focus.lng] : US_CENTER}
+          zoom={focus ? MEMBER_ZOOM : US_ZOOM}
           style={{ height: '100%', width: '100%' }}
         >
           {/* Standard OSM raster tiles, darkened on the client by a CSS filter
@@ -285,7 +314,11 @@ export function MapPage() {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             maxZoom={19}
           />
-          <LocateOnFirstLoad onResolved={setLocated} />
+          {focus ? (
+            <FocusMember lat={focus.lat} lng={focus.lng} />
+          ) : (
+            <LocateOnFirstLoad onResolved={setLocated} />
+          )}
           <ViewportLoader onData={setMarkers} />
           <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
             {visible.map((m) => (

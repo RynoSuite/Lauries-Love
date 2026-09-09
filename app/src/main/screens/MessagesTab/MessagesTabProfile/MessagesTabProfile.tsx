@@ -264,10 +264,12 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
           </View>
 
           <View style={{ gap: 16 }}>
+            {/* Same rule as the Connect profile: there is no friendship to add
+                or remove with yourself, so the control is absent rather than
+                permanently disabled. */}
+            {!isCurrentUser && (
             <Button
-              disabled={
-                isPending || isCurrentUser || isLoadingFriends || isLoading
-              }
+              disabled={isPending || isLoadingFriends || isLoading}
               title={
                 isLoadingFriends
                   ? 'Loading...'
@@ -303,6 +305,7 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
                   : { color: colors.white }
               }
             />
+            )}
             <View style={styles.actionButtonRow}>
               <TouchableOpacity
                 style={styles.actionButtonMessage}

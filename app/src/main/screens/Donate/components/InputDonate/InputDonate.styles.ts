@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     paddingLeft: 13,
     fontFamily: FONT_RALEWAY_500,
     paddingRight: 16,
+    color: colors.heading,
   },
   containerError: {
     position: 'relative',

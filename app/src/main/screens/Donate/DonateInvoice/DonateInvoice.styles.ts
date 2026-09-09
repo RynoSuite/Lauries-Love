@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     textAlign: 'center',
+    color: colors.heading,
   },
   titleContainer: {
     flexDirection: 'row',
@@ -45,11 +46,13 @@ const styles = StyleSheet.create({
     fontSize: 52,
     lineHeight: 64,
     fontFamily: FONT_HANKEN_GROTESK_700,
+    color: colors.heading,
   },
   amountCents: {
     fontSize: 22,
     lineHeight: 28,
     fontFamily: FONT_HANKEN_GROTESK_700,
+    color: colors.heading,
   },
   screenshotLoader: { 
     position: 'absolute',

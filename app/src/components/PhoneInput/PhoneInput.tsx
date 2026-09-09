@@ -100,9 +100,9 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
           styles.inputContainer,
           {
             borderColor: errorMessage
-              ? colors.error[400]
+              ? colors.danger
               : isOnFocus
-              ? colors.primary[300]
+              ? colors.magentaText
               : 'transparent',
           },
         ]}
@@ -113,10 +113,10 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
             styles.prefixButton,
             {
               borderColor: errorMessage
-                ? colors.error[400]
+                ? colors.danger
                 : isOnFocus
-                ? colors.primary[300]
-                : colors.neutral[500],
+                ? colors.magentaText
+                : colors.line,
             },
           ]}
           onPress={() => setModalVisible(true)}
@@ -134,7 +134,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
           textContentType="telephoneNumber"
           keyboardType="phone-pad"
           secureTextEntry={false}
-          placeholderTextColor={colors.neutral[600]}
+          placeholderTextColor={colors.faint}
           autoCapitalize="sentences"
           onFocus={() => setIsOnFocus(true)}
           onBlur={() => {

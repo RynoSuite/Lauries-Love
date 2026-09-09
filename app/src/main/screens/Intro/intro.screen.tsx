@@ -19,22 +19,25 @@ import Button from 'components/Button/Button';
 // Styles
 import colors from 'styles/colors';
 import styles from './intro.styles';
+import WallMockup from './components/WallMockup/WallMockup';
+import MapMockup from './components/MapMockup/MapMockup';
+import ChatMockup from './components/ChatMockup/ChatMockup';
 
 const CONTENT = [
   {
-    image: require('assets/images/intro-welcome.png'),
+    Component: WallMockup,
     title: 'Welcome to Laurie’s Love',
     description:
       'Our mission is to connect, empower, and inspire every member who joins so that no warrior goes through their cancer journey alone.',
   },
   {
-    image: require('assets/images/intro-support.png'),
+    Component: MapMockup,
     title: 'Find support near you',
     description:
       'Find comfort and connection near or far, on your terms. Use our interactive map to discover others on the same journey.',
   },
   {
-    image: require('assets/images/intro-connect.png'),
+    Component: ChatMockup,
     title: 'Connect, share and support',
     description:
       'Connect, share, and find support through our community. Learn how to help through donations.',
@@ -106,10 +109,10 @@ export default function IntroScreen() {
         <View style={styles.logoContainer}>
           <Image
             source={require('assets/images/lauries-love.png')}
-            style={{ width: 180, height: 180, resizeMode: 'contain' }}
+            style={{ width: 140, height: 140, resizeMode: 'contain' }}
           />
         </View>
-        <View style={{ gap: 24 }}>
+        <View style={{ flex: 1, gap: 24 }}>
           <View style={styles.flatListContainer}>
             <FlatList
               ref={flatListRef}
@@ -120,7 +123,7 @@ export default function IntroScreen() {
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <View style={[styles.imageWrapper, { width }]}>
-                  <Image source={item.image} />
+                  <item.Component />
                   <View style={{ alignItems: 'center' }}>
                     <Text style={styles.titleText}>{item.title}</Text>
                     <Text style={styles.descriptionText}>
@@ -141,7 +144,9 @@ export default function IntroScreen() {
                   styles.paginationDot,
                   {
                     backgroundColor:
-                      currentIndex === index ? colors.primary[500] : '#D9D9D9',
+                      currentIndex === index
+                        ? colors.magentaText
+                        : colors.lineStrong,
                   },
                 ]}
               />

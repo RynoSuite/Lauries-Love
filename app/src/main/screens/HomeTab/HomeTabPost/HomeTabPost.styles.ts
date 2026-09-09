@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 18,
     lineHeight: 22,
+    color: colors.heading,
   },
   loaderContainer: {
     width: '100%',

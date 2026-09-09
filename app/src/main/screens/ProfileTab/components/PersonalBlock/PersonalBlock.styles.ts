@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_HANKEN_GROTESK_400,
     fontSize: 14,
     lineHeight: 14,
+    color: colors.heading,
   },
 });
 

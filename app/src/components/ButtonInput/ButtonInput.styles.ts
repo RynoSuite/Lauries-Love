@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 18,
+    color: colors.heading,
   },
 });
 

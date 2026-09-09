@@ -304,10 +304,13 @@ export default function MapScreen() {
         //   3) whole-US ONLY as a last resort when we truly have no location
         const TIGHT_DELTA = { latitudeDelta: 0.15, longitudeDelta: 0.15 };
 
-        const region: Region = latitude && longitude
-          ? { ...myLocation, ...TIGHT_DELTA }
-          : userParams?.user?.geoLocation
-            ? { ...userParams.user.geoLocation, ...TIGHT_DELTA }
+        // A member passed in from "View in map" comes FIRST. GPS used to win
+        // here, so asking to see someone dropped you on your own street
+        // instead — the member was only consulted if GPS failed.
+        const region: Region = userParams?.user?.geoLocation
+          ? { ...userParams.user.geoLocation, ...TIGHT_DELTA }
+          : latitude && longitude
+            ? { ...myLocation, ...TIGHT_DELTA }
             : {
                 latitude: 37.0902,
                 longitude: -95.7129,
@@ -529,6 +532,9 @@ export default function MapScreen() {
     // (their current location if we have it, otherwise the already-correct
     // initialRegion). Never force the whole-US view.
     if (isFocused && Platform.OS === 'android') {
+      // A pending member focus wins: this effect exists to undo Android's
+      // whole-US re-zoom, not to overrule an explicit request.
+      if (applyPendingFocus()) return;
       const target = currentLocation ?? initialRegion;
       if (target) {
         leafletRef.current?.flyTo(target.latitude, target.longitude, zoomForDelta(target.longitudeDelta));
@@ -558,6 +564,46 @@ export default function MapScreen() {
   // filtered users at the current zoom. Cell size shrinks as you zoom in, so
   // bubbles progressively split until single members become pins.
   const leafletRef = useRef<LeafletMapHandle>(null);
+
+  // Where a "View in map" wants the map to sit, until it has been applied.
+  const pendingFocus = useRef<Region | null>(null);
+
+  // Fly to a pending focus if there is one and the map can accept it. Cleared
+  // only once it lands, so a request made before the WebView is ready is not
+  // thrown away — and never replays afterwards.
+  const applyPendingFocus = useCallback(() => {
+    const target = pendingFocus.current;
+    const handle = leafletRef.current;
+    if (!target || !handle) return false;
+    handle.flyTo(
+      target.latitude,
+      target.longitude,
+      zoomForDelta(target.longitudeDelta),
+    );
+    pendingFocus.current = null;
+    return true;
+  }, []);
+
+  // Opened from a member's profile. This cannot live in the mount effect:
+  // MapView already sits under that screen in the Connect stack, so it never
+  // remounts — the params simply change underneath it.
+  const focusUserId = userParams?.user?.id;
+  useEffect(() => {
+    const target = userParams?.user;
+    const lat = target?.geoLocation?.latitude;
+    const lng = target?.geoLocation?.longitude;
+    if (!target || lat == null || lng == null) return;
+
+    pendingFocus.current = {
+      latitude: lat,
+      longitude: lng,
+      latitudeDelta: 0.15,
+      longitudeDelta: 0.15,
+    };
+    setUser(target);
+    setIsCurrentLocation(false);
+    applyPendingFocus();
+  }, [focusUserId, applyPendingFocus]);
 
   // Marker data crosses to the page over postMessage rather than as React
   // children: rebuilding the page on every change would throw away the pan and
@@ -647,7 +693,10 @@ export default function MapScreen() {
         <LeafletMap
           ref={leafletRef}
           style={styles.map}
-          onReady={pushMarkersToMap}
+          onReady={() => {
+            pushMarkersToMap();
+            applyPendingFocus();
+          }}
           onMarkerPress={handleLeafletMarkerPress}
           // Restores what the native map's onPress did: tapping away from a
           // pin dismisses the member card. Without it the card had no way out.

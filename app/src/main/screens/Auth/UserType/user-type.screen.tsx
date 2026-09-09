@@ -64,31 +64,28 @@ export default function UserTypeScreen() {
   const isDisabled = !userType || isLoading;
 
   function formatIcon(name: string) {
-    let IconComponent;
+    const key = (name || '').toLowerCase();
+    let IconComponent = IconTabUser;
+    let strokeWidth = 2;
 
-    switch (name) {
-      case 'Warrior (patient)':
-        IconComponent = IconTabHeart;
-        break;
-      case 'Family Member':
-        IconComponent = IconTabHome;
-        break;
-      case 'Caregiver':
-        IconComponent = IconTabUser;
-        break;
-      case 'Friend':
-        IconComponent = IconSmileyFace;
-        break;
-      default:
-        return null;
+    if (key.includes('warrior') || key.includes('patient')) {
+      IconComponent = IconTabHeart;
+    } else if (key.includes('family')) {
+      IconComponent = IconTabHome;
+    } else if (key.includes('friend')) {
+      IconComponent = IconSmileyFace;
+      strokeWidth = 4;
     }
+    // Anything else keeps the person icon rather than rendering nothing:
+    // the roles come from the database, so the list here cannot be assumed
+    // complete, and a card with no icon looks broken rather than generic.
 
     return (
       <IconComponent
         width={54}
         height={54}
-        stroke="#3D112D"
-        strokeWidth={name === 'Friend' ? 4 : 2}
+        stroke={colors.heading}
+        strokeWidth={strokeWidth}
       />
     );
   }
@@ -121,7 +118,17 @@ export default function UserTypeScreen() {
                 <Text style={styles.title}>What type of user are you?</Text>
 
                 <View style={styles.buttonGrid}>
-                  {designationTypes.map(type => (
+                  {designationTypes
+                    .filter(type => {
+                      const d = (type.description || '').toLowerCase();
+                      return !(
+                        d.includes('admin') ||
+                        d.includes('staff') ||
+                        d.includes('moderator') ||
+                        d.includes('agent')
+                      );
+                    })
+                    .map(type => (
                     <TouchableOpacity
                       key={type.id}
                       style={[
@@ -136,7 +143,7 @@ export default function UserTypeScreen() {
 
                       <Text style={styles.buttonText}>{type.description}</Text>
                     </TouchableOpacity>
-                  ))}
+                    ))}
                 </View>
               </View>
             </View>

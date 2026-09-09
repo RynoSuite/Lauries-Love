@@ -174,23 +174,14 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
         message: 'This member has not shared a location.',
       });
 
-    navigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: 'Connect',
-          state: {
-            routes: [
-              {
-                name: 'MapView',
-                params: {
-                  user: user,
-                },
-              },
-            ],
-          },
-        },
-      ],
+    // navigate, not reset. The reset this replaces rebuilt the whole tab
+    // navigator from one route, which threw away every other tab's stack —
+    // Messages, Home and Profile all silently returned to their roots. Because
+    // MapView already sits under this screen in the Connect stack, navigating
+    // to it pops back to the live instance and merges the new params in.
+    navigation.navigate('Connect', {
+      screen: 'MapView',
+      params: { user },
     });
   }
 
@@ -291,9 +282,13 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
             </View>
 
             <View style={{ gap: 16 }}>
+              {/* Nothing to add or remove on your own profile. It used to
+                  render disabled, which read as a broken button rather than an
+                  inapplicable one. */}
+              {!isCurrentUser && (
               <TouchableOpacity
                 onPress={handleFriend}
-                disabled={isPending || isCurrentUser || isLoading}
+                disabled={isPending || isLoading}
                 style={[
                   styles.buttonFriend,
                   {
@@ -340,7 +335,9 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                     : 'Add Friend'}
                 </Text>
               </TouchableOpacity>
+              )}
               <View style={styles.actionButtonRow}>
+                {!isCurrentUser && (
                 <TouchableOpacity
                   disabled={isLoadingSendMessage}
                   onPress={handleMessage}
@@ -355,6 +352,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                     stroke={colors.heading}
                   />
                 </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   onPress={handleMap}
                   style={styles.actionButtonMap}

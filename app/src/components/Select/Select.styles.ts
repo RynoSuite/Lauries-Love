@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   selectedText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
+    color: colors.heading,
   },
   modalContainer: {
     flex: 1,

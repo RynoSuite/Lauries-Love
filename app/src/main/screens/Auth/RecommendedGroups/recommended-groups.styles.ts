@@ -41,8 +41,8 @@ export const styles = StyleSheet.create({
   },
   selectedChannelCard: {
     backgroundColor: colors.surface2,
-    borderColor: colors.primary[600],
-    borderWidth: 1,
+    borderColor: colors.magentaText,
+    borderWidth: 2,
   },
   channelName: {
     fontFamily: FONT_RALEWAY_500,
@@ -60,7 +60,9 @@ export const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
   checkboxSelected: {
-    backgroundColor: colors.primary[600],
+    backgroundColor: colors.magenta,
+    borderColor: colors.magentaText,
+    borderWidth: 2,
   },
   buttonContainer: {
     paddingHorizontal: 16,

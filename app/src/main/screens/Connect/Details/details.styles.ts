@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   textFriend: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
+    color: colors.heading,
   },
   buttonContainer: {
     gap: 16,

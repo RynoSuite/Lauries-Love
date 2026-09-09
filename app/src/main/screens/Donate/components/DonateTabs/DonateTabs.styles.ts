@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontFamily: FONT_RALEWAY_600,
+    color: colors.heading,
   },
   box: {
     gap: 12,

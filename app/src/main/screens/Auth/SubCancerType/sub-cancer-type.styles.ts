@@ -43,12 +43,19 @@ export const styles = StyleSheet.create({
     height: 50,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.primary[100],
+    borderColor: colors.line,
     backgroundColor: 'rgba(238, 237, 231, 0.40)',
+  },
+  // The whole row, not just the checkbox: a 20px tick is a small cue on a
+  // full-width card, and on a dark ground it was easy to miss entirely.
+  listItemSelected: {
+    borderColor: colors.magentaText,
+    borderWidth: 2,
   },
   listText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
+    color: colors.heading,
   },
   checkbox: {
     alignItems: 'center',
@@ -57,11 +64,12 @@ export const styles = StyleSheet.create({
     height: 24,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: colors.neutral[600],
+    borderColor: colors.line,
   },
   selectedCheckbox: {
     backgroundColor: colors.magenta,
-    borderColor: colors.primary[500],
+    borderColor: colors.magentaText,
+    borderWidth: 2,
   },
   buttonContainer: {
     paddingHorizontal: 16,

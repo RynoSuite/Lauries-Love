@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
+    color: colors.heading,
   },
   container: {
     position: 'relative',
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_700,
     fontSize: 14,
     lineHeight: 18,
+    color: colors.heading,
   },
   cancel: {
     paddingLeft: 12,
@@ -108,6 +110,7 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontFamily: FONT_RALEWAY_700,
+    color: colors.heading,
   },
   dateContainer: {
     gap: 5,

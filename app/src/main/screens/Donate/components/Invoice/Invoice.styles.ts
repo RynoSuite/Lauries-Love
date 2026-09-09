@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: FONT_RALEWAY_500,
     paddingBottom: 4,
+    color: colors.heading,
   },
   invoiceDetail: {
     flexDirection: 'row',
@@ -54,6 +55,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: FONT_RALEWAY_500,
+    color: colors.heading,
   },
   invoiceDetailValue: {
     fontSize: 16,

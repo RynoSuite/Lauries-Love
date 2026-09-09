@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: colors.deepwater,
+    backgroundColor: colors.ground,
   },
   // The sheet fills whatever is left below the logo, so it always reaches the
   // bottom edge rather than stopping at a fixed height.
@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
   },
   bottomSheet: {
     marginTop: -20,
+    borderTopWidth: 1,
+    borderTopColor: colors.line,
     width: WIDTH,
     flex: 1,
     borderTopLeftRadius: 20,

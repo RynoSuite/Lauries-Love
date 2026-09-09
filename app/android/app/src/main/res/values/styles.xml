@@ -3,7 +3,12 @@
     <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
     <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="android:statusBarColor">#ffffff</item>
+    <item name="android:statusBarColor">#051A1D</item>
+    <!-- MainActivity swaps to this theme in onCreate, before React has drawn
+         anything. Without a window background it falls back to the DayNight
+         light default — a white frame between the splash and the first JS
+         render, which is the flash. -->
+    <item name="android:windowBackground">@color/splashscreen_background</item>
   </style>
   <style name="Theme.App.SplashScreen" parent="AppTheme">
     <item name="android:windowBackground">@drawable/ic_launcher_background</item>

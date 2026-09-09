@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     width: '100%',
     backgroundColor: colors.surface2,
+    color: colors.heading,
   },
   focusedTextInput: {
     width: screenWidth - 36,

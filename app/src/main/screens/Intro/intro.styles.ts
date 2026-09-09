@@ -16,14 +16,19 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: 16,
   },
+  // Takes whatever the logo and the buttons leave, rather than a fixed height
+  // a short phone cannot honour: at 384 the tallest slide pushed its own title
+  // and description off the bottom edge.
   flatListContainer: {
-    height: 384,
+    flex: 1,
   },
   imageWrapper: {
+    height: '100%',
     alignItems: 'center',
-    gap: 24,
+    justifyContent: 'center',
+    gap: 32,
   },
   titleText: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
