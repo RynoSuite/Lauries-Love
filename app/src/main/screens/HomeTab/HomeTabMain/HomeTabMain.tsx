@@ -166,8 +166,15 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
       const getTrendingScore = (item: GroupChannelSendBirdType) => {
         const cached = trendingScoreCache.get(item.url);
         if (cached !== undefined) return cached;
-        const commentQty = JSON.parse(item.data).commentQty || 0;
-        const score = commentQty + commentQty;
+        // Same weighting as the search path below, and guarded: this JSON.parse
+        // had no try/catch, so one post with empty data threw mid-sort.
+        let score = 0;
+        try {
+          const meta = JSON.parse(item.data);
+          score = (meta.likeCount || 0) + (meta.commentQty || 0) * 2;
+        } catch {
+          score = 0;
+        }
         trendingScoreCache.set(item.url, score);
         return score;
       };
@@ -305,13 +312,18 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
         const score = (item: GroupChannelSendBirdType) => {
           const cached = cache.get(item.url);
           if (cached !== undefined) return cached;
-          let commentQty = 0;
+          let engagement = 0;
           try {
-            commentQty = JSON.parse(item.data).commentQty || 0;
+            const meta = JSON.parse(item.data);
+            // Comments weigh more than likes: writing a reply is a larger act
+            // than tapping a heart. This was commentQty + commentQty, which
+            // ignored likes entirely — so on a tab whose posts have likes but
+            // no comments, Trending sorted by nothing.
+            engagement = (meta.likeCount || 0) + (meta.commentQty || 0) * 2;
           } catch {
-            commentQty = 0;
+            engagement = 0;
           }
-          const s = commentQty + commentQty;
+          const s = engagement;
           cache.set(item.url, s);
           return s;
         };

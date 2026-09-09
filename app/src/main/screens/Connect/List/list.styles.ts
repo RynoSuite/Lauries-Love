@@ -75,8 +75,12 @@ const styles = StyleSheet.create({
   },
   mapViewButton: {
     borderRadius: 80,
-    backgroundColor: colors.surface,
-    boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.25)',
+    backgroundColor: colors.magenta,
+    borderWidth: 1,
+    borderColor: colors.magentaText,
+    // boxShadow is New Architecture only and was being dropped silently; on a
+    // dark ground the border is what lifts this off the list anyway.
+    elevation: 6,
   },
   mapViewButtonContent: {
     flexDirection: 'row',
@@ -88,7 +92,7 @@ const styles = StyleSheet.create({
   mapViewText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.heading,
+    color: colors.white,
   },
 });
 
