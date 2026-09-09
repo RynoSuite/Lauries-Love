@@ -20,7 +20,7 @@ import { useChatProvider } from 'providers/ChatProvider/ChatProvider';
 
 // backend v2
 import { SUPABASE_ENABLED } from 'services/supabase/backend.config';
-import { getGroupMembers } from 'services/supabase/supabase.social';
+import { getConversationMembers } from 'services/supabase/supabase.chat';
 
 // components
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
@@ -70,7 +70,9 @@ const MessagesTabMembersGroup: FunctionComponent<
       // Supabase mode: members come straight from group_members (legacy
       // member shape: userId/nickname/plainProfileUrl/metaData.id/role).
       try {
-        const groupMembers = await getGroupMembers(route.params.channelUrl);
+        const groupMembers = await getConversationMembers(
+          route.params.channelUrl,
+        );
         setChannel({
           url: route.params.channelUrl,
           members: groupMembers,
@@ -122,7 +124,7 @@ const MessagesTabMembersGroup: FunctionComponent<
           onScroll={handleScrollDown}
         >
           <ListFriendsMessageTab
-            title={'Frequently contacted'}
+            title={'In this conversation'}
             friends={members}
             onSelect={selectedFriend => addFriend(selectedFriend.userId)}
             isFullHeight

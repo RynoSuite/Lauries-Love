@@ -113,7 +113,12 @@ export default React.memo(function FiltersModal({
   }, [DEFAULT_COUNTRIES, country]);
 
   return (
-    <Modal onClose={setIsFiltersOpen} title="Filters" visible={isFiltersOpen}>
+    <Modal
+      onClose={setIsFiltersOpen}
+      title="Filters"
+      visible={isFiltersOpen}
+      fullScreen
+    >
       <View style={styles.sectionGap}>
         <View style={styles.fieldGap}>
           <Text style={styles.label}>Role</Text>

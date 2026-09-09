@@ -13,6 +13,8 @@ type Props = {
   title: string;
   visible: boolean;
   disableScroll?: boolean;
+  /** Take the screen, for sheets with more in them than fits comfortably. */
+  fullScreen?: boolean;
 };
 
 /**
@@ -30,6 +32,7 @@ export default function Modal({
   title,
   visible,
   disableScroll = false,
+  fullScreen = false,
 }: Props) {
   const sheetRef = useRef<BottomSheet>(null);
 
@@ -57,9 +60,10 @@ export default function Modal({
       <BottomSheet
         ref={sheetRef}
         index={0}
-        // Filters can be long, so cap it rather than letting the sheet grow to
-        // the full height of the screen.
-        snapPoints={['70%']}
+        // A full-screen sheet stops just short of the top: the sliver of
+        // backdrop above it is what keeps it reading as a sheet you can
+        // dismiss rather than a screen you have navigated to.
+        snapPoints={fullScreen ? ['94%'] : ['70%']}
         enablePanDownToClose
         keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"

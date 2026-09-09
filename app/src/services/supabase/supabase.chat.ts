@@ -90,6 +90,32 @@ const conversationToChannel = (
   };
 };
 
+/**
+ * The people in one thread.
+ *
+ * The Members screen was calling getGroupMembers(), which reads group_members
+ * by group_id — right for a community group, empty for an ad-hoc group
+ * conversation, whose people live in conversation_members. So creating a group
+ * message and opening its Members screen showed nothing at all.
+ *
+ * resolveThreadId is used because the Messages list mixes conversation ids and
+ * community-group ids in the same "channel url".
+ */
+export async function getConversationMembers(channelUrl: string) {
+  const conversationId = await resolveThreadId(channelUrl);
+  const { data, error } = await supabase
+    .from('conversation_members')
+    .select(
+      'profile:profiles(id, first_name, last_name, display_name, avatar_path)',
+    )
+    .eq('conversation_id', conversationId);
+  if (error) throw error;
+  return (data ?? [])
+    .map((r: any) => r.profile)
+    .filter(Boolean)
+    .map((profile: any) => senderFromProfile(profile));
+}
+
 /** All my conversations, shaped as legacy chat channels, newest first. */
 export async function getMyConversations(meIdHint?: string) {
   const me = meIdHint ?? (await uid());
