@@ -26,6 +26,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.heading,
   },
+  selectedTextEmpty: {
+    color: colors.faint,
+  },
   modalContainer: {
     flex: 1,
   },
@@ -42,6 +45,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   searchInput: {
+    // Without a colour, typed text takes the platform default: black, on a
+    // dark panel. Same trap as every other input in this app.
+    color: colors.heading,
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

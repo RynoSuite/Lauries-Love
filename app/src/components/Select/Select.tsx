@@ -92,7 +92,7 @@ export default function Select({
           ]}
         >
           {isSelected(item) && (
-            <IconCheckbox width={14} height={14} stroke={colors.neutral[100]} />
+            <IconCheckbox width={14} height={14} stroke={colors.white} />
           )}
         </View>
       </TouchableOpacity>
@@ -143,12 +143,12 @@ export default function Select({
           <Text
             style={[
               styles.selectedText,
-              {
-                color:
-                  selected.length === 0
-                    ? colors.neutral[600]
-                    : colors.primary[600],
-              },
+              // The chosen value is heading white and the empty state is the
+              // placeholder tone. These were set inline as neutral[600] and
+              // primary[600] — the pre-rebrand teal — which overrode the
+              // stylesheet and left a picked value in dark type on a dark
+              // control.
+              selected.length === 0 && styles.selectedTextEmpty,
             ]}
           >
             {selected.length === 0
@@ -191,7 +191,7 @@ export default function Select({
                   value={query}
                   onChangeText={setQuery}
                   placeholder="Search..."
-                  placeholderTextColor={colors.neutral[500]}
+                  placeholderTextColor={colors.faint}
                 />
               )}
               <FlatList
