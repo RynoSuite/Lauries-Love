@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   buttonContainer: {
-    backgroundColor: colors.quaternary20070,
+    backgroundColor: colors.surface,
   },
   label: {
     color: colors.muted,

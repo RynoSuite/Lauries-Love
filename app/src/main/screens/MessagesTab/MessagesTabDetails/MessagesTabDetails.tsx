@@ -289,8 +289,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
                   setIsModalBlock(true);
                 }}
                 isRightArrow={false}
-                styleContainer={styles.blockUserButton}
-                styleLabel={styles.labelBlockUserButton}
+                tone="danger"
               />
             </View>
           )}

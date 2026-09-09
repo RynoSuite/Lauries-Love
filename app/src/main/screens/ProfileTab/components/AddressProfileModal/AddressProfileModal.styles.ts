@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     borderWidth: 1,
-    borderColor: colors.neutral[500],
+    borderColor: colors.line,
     borderRadius: 10,
     overflow: 'hidden',
     maxHeight: 350,
@@ -46,13 +46,13 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     borderBottomWidth: 1,
-    borderBottomColor: colors.quaternary[100],
+    borderBottomColor: colors.line,
   },
   item: {
     backgroundColor: colors.surface2,
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: colors.quaternary[100],
+    borderBottomColor: colors.line,
   },
 });
 

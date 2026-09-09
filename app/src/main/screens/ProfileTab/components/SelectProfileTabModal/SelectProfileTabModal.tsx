@@ -46,7 +46,6 @@ const SelectProfileTabModal: FunctionComponent<SelectProfileTabModalProps> = ({
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEnabled={scrollEnabled}
-        showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}
         contentContainerStyle={styles.container}
       >

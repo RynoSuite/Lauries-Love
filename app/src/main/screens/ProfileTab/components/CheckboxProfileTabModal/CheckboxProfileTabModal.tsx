@@ -52,7 +52,6 @@ const CheckboxProfileTabModal: FunctionComponent<
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEnabled={scrollEnabled}
-        showsVerticalScrollIndicator={false}
         style={styles.scrollContainer}
         contentContainerStyle={styles.container}
       >

@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 21,
     borderTopWidth: 1,
-    borderTopColor: colors.quaternary[100],
+    borderTopColor: colors.line,
   },
   cancelButton: {
     paddingRight: 20,

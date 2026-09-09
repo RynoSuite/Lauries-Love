@@ -25,7 +25,6 @@ import { useCountry } from 'presentation/hooks';
 
 // styles
 import styles from './ProfileTabDetails.styles';
-import colors from 'styles/colors';
 
 type ProfileTabDetailsProps = {
   navigation: NativeStackNavigationProp<RootProfileTabParamList>;
@@ -118,10 +117,6 @@ const ProfileTabDetails: FunctionComponent<ProfileTabDetailsProps> = ({
                     value={value}
                     onPress={() => setSelectTypeModal(item.type)}
                     disabled={disabled}
-                    iconProps={{
-                      stroke: colors.heading,
-                      strokeWidth: 2.5,
-                    }}
                   />
                 );
               })}

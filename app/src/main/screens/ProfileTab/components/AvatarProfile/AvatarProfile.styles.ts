@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   notImage: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.secondary[300],
+    backgroundColor: colors.magentaPlate,
   },
   text: {
     fontFamily: FONT_RALEWAY_700,

@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     padding: 2,
     borderRadius: 50,
     borderWidth: 2,
-    borderColor: colors.neutral[600],
+    borderColor: colors.lineStrong,
   },
   selectCheckbox: {
     borderWidth: 0,

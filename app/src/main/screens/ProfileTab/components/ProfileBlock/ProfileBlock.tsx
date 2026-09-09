@@ -20,7 +20,6 @@ import { useCountry } from 'presentation/hooks';
 
 // styles
 import styles from './ProfileBlock.styles';
-import colors from 'styles/colors';
 
 type ProfileBlockProps = {
   setSelectTypeModal: React.Dispatch<
@@ -113,10 +112,6 @@ const ProfileBlock: FunctionComponent<ProfileBlockProps> = ({
             value={typeof value === 'string' ? value : 'Not set'}
             onPress={() => setSelectTypeModal(item.type)}
             disabled={disabled}
-            iconProps={{
-              stroke: colors.heading,
-              strokeWidth: 2.1,
-            }}
           />
         );
       })}
