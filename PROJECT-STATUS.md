@@ -80,6 +80,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908280000_location_precision_v2` | **Privacy.** Coarsens further to a ~3.5mi grid; map no longer re-rounds |
 | `20260908300000_group_min_two_v1` | Lowered group minimum to two ~~(superseded same day)~~ |
 | `20260908320000_group_min_three_v1` | Restores the three-person minimum. **Run this; skip 300000** |
+| `20260909120000_post_delete_trigger_fix_v1` | Deleting any post failed on a BEFORE-trigger conflict; splits the reaction cleanup |
 
 > `20260908220000` was amended after it was first run: `moderation_queue_detailed()`
 > now also returns `post_id` so the queue can deep-link to the reported post.
