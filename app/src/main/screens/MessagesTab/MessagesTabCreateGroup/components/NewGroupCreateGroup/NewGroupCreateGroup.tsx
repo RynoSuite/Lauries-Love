@@ -57,7 +57,7 @@ const NewGroupCreateGroup: FunctionComponent<NewGroupCreateGroupProps> = ({
   const buttonAnchor = useMemo(
     () => (
       <LinearGradient
-        colors={[colors.primary[400], colors.tertiary[500]]}
+        colors={[colors.magentaText, colors.tertiary[500]]}
         style={[
           styles.permissionsButtonGradient,
           visible && styles.permissionsButtonGradientActive,
@@ -119,7 +119,7 @@ const NewGroupCreateGroup: FunctionComponent<NewGroupCreateGroupProps> = ({
           onChangeText={text => setNewGroup(prev => ({ ...prev, name: text }))}
           placeholder="Group name"
           style={styles.groupNameInput}
-          placeholderTextColor={colors.neutral[600]}
+          placeholderTextColor={colors.faint}
         />
       </View>
       <Menu

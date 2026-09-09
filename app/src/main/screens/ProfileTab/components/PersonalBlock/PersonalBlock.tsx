@@ -64,7 +64,7 @@ const PersonalBlock: FunctionComponent<PersonalBlockProps> = ({
         <IconArrowRight
           width={24}
           height={24}
-          stroke={colors.primary[600]}
+          stroke={colors.heading}
           strokeWidth={2}
         />
       </TouchableOpacity>

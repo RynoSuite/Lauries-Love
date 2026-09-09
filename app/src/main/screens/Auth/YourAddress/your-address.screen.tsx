@@ -204,7 +204,7 @@ export default function YourAddressScreen() {
                     <IconChevronDown
                       width={24}
                       height={24}
-                      stroke={colors.neutral[600]}
+                      stroke={colors.muted}
                     />
                   </TouchableOpacity>
                   <Input
@@ -248,7 +248,7 @@ export default function YourAddressScreen() {
               <View style={styles.modalContainer}>
                 <View style={styles.headerModal}>
                   <TouchableOpacity onPress={() => setIsModalOpen(false)}>
-                    <IconArrowLeft width={30} height={30} />
+                    <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
                   </TouchableOpacity>
                   <Text style={styles.titleTextModal}>
                     Select country or region

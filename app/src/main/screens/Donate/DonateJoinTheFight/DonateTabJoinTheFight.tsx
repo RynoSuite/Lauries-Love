@@ -19,6 +19,7 @@ import { IconArrowLeft, IconClock } from 'assets/icons-auto/components';
 
 // styles
 import styles from './DonateTabJoinTheFight.styles';
+import colors from 'styles/colors';
 
 type ClientsMainScreenProps = {
   navigation: NativeStackNavigationProp<RootDonateTabParamList>;
@@ -32,7 +33,7 @@ const DonateTabJoinTheFight: FunctionComponent<ClientsMainScreenProps> = ({
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.contentContainer}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <IconArrowLeft width={30} height={30} />
+            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
           </TouchableOpacity>
           <ImageBackground
             resizeMode="cover"

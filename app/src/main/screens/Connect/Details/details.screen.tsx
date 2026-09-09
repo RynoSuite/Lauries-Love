@@ -318,7 +318,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                   <IconUserMinus
                     width={16}
                     height={16}
-                    stroke={colors.neutral[900]}
+                    stroke={colors.muted}
                   />
                 ) : (
                   <IconUserPlus
@@ -360,7 +360,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                   <IconChatBubbleLeft
                     width={19}
                     height={19}
-                    stroke={colors.primary[500]}
+                    stroke={colors.heading}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -371,7 +371,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                   <IconMapPin
                     width={19}
                     height={19}
-                    stroke={colors.primary[500]}
+                    stroke={colors.heading}
                     fill="transparent"
                   />
                 </TouchableOpacity>
@@ -437,7 +437,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                         style={{
                           paddingVertical: 8,
                           borderTopWidth: 1,
-                          borderTopColor: colors.neutral[300],
+                          borderTopColor: colors.line,
                         }}
                       >
                         <Text

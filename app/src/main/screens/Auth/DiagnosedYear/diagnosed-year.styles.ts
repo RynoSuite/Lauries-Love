@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
   title: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   mainSection: {
     gap: 12,
@@ -47,7 +47,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.neutral[600],
   },
   selectedCheckbox: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderColor: colors.primary[500],
   },
   checkboxWrapper: {
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
   checkboxText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   checkboxTextLink: {
     textDecorationLine: 'underline',
@@ -87,15 +87,15 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'transparent',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
   },
   diagnosedButtonSelected: {
     borderColor: colors.primary[600],
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
   },
   diagnosedButtonText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });

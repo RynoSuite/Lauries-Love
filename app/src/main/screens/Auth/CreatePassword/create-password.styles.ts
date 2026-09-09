@@ -28,12 +28,12 @@ export const styles = StyleSheet.create({
   title: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   subtitle: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   formSection: {
     gap: 12,

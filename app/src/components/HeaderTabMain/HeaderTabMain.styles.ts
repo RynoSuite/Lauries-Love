@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 32,
     lineHeight: 40,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   buttonHeader: {
     paddingHorizontal: 16,

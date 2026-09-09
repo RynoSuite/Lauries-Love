@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
     lineHeight: 48,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   subTitle: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   buttonContainer: {
     paddingHorizontal: 16,

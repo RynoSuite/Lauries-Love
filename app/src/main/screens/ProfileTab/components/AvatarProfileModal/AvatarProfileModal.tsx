@@ -198,7 +198,7 @@ const AvatarProfileModal: FunctionComponent<AvatarProfileModalProps> = ({
             <IconClose
               width={30}
               height={30}
-              stroke={colors.neutral[700]}
+              stroke={colors.muted}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2.857}
@@ -214,7 +214,7 @@ const AvatarProfileModal: FunctionComponent<AvatarProfileModalProps> = ({
             styleLabel={styles.label}
             isRightArrow={false}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.heading,
               strokeWidth: 2.1,
             }}
           />
@@ -226,7 +226,7 @@ const AvatarProfileModal: FunctionComponent<AvatarProfileModalProps> = ({
             isRightArrow={false}
             styleLabel={styles.label}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.heading,
               strokeWidth: 2.1,
             }}
           />

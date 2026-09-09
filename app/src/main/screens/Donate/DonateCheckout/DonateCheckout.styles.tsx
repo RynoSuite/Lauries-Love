@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   paymentButtonContainer: {
     paddingVertical: 20,
@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 16,
     flexDirection: 'row',
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
   googleText: {
-    color: colors.black,
+    color: colors.heading,
     fontSize: 16,
     lineHeight: 24,
     fontFamily: FONT_RALEWAY_700,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   orLine: {
     height: 1,

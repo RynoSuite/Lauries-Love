@@ -110,7 +110,7 @@ const ConfirmationPdfModal: FunctionComponent<ConfirmationPdfModalProps> = ({
               <IconClose
                 width={28}
                 height={28}
-                stroke={colors.neutral[800]}
+                stroke={colors.body}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2.857}

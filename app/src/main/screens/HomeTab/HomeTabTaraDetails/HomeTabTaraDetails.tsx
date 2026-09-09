@@ -78,13 +78,13 @@ const HomeTabTaraDetails: FunctionComponent<HomeTabTaraDetailsProps> = ({
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <IconArrowLeft width={30} height={30} />
+            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
           </TouchableOpacity>
           <TouchableOpacity
             disabled
             style={[styles.backButton, styles.backButtonHide]}
           >
-            <IconArrowLeft width={30} height={30} />
+            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
           </TouchableOpacity>
         </View>
         <View style={styles.content}>
@@ -102,7 +102,7 @@ const HomeTabTaraDetails: FunctionComponent<HomeTabTaraDetailsProps> = ({
                   <IconClock
                     width={13}
                     height={13}
-                    stroke={colors.primary[600]}
+                    stroke={colors.heading}
                     strokeWidth={3}
                   />
                   <Text style={styles.bottomBarText}>3 min</Text>

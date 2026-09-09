@@ -6,13 +6,13 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     flexDirection: 'row',
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
     borderRadius: 6,
     padding: 2,
   },
   backgroundButton: {
     position: 'absolute',
-    backgroundColor: colors.primary[300],
+    backgroundColor: colors.surface2,
     borderRadius: 4,
     width: 63,
     height: 27,
@@ -27,16 +27,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[700],
+    color: colors.muted,
     fontSize: 14,
     lineHeight: 18,
   },
   titleSelected: {
-    color: colors.neutral[100],
+    color: colors.white,
   },
   line: {
     width: 1,
-    backgroundColor: colors.neutral[500],
+    backgroundColor: colors.line,
     height: '100%',
   },
 });

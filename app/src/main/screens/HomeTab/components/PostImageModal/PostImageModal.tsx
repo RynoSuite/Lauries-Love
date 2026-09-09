@@ -181,7 +181,7 @@ const PostImageModal: FunctionComponent<PostImageModalProps> = ({
             styleLabel={styles.label}
             isRightArrow={false}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.heading,
               strokeWidth: 2.1,
             }}
           />
@@ -193,7 +193,7 @@ const PostImageModal: FunctionComponent<PostImageModalProps> = ({
             isRightArrow={false}
             styleLabel={styles.label}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.heading,
               strokeWidth: 2.1,
             }}
           />
@@ -205,7 +205,7 @@ const PostImageModal: FunctionComponent<PostImageModalProps> = ({
             isRightArrow={false}
             styleLabel={styles.label}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.heading,
               strokeWidth: 2.1,
             }}
           /> */}

@@ -14,7 +14,6 @@ import {
   FlatList,
   ListRenderItem,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -34,9 +33,11 @@ import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
 import HeaderTabMain from 'components/HeaderTabMain/HeaderTabMain';
 import InputSearch from 'components/InputSearch/InputSearch';
 import AvatarMessagesTab from '../components/AvatarMessagesTab/AvatarMessagesTab';
-
-// images
-import defaultAvatar from 'assets/images/avatar-empty.png';
+import { RectButton, Swipeable } from 'react-native-gesture-handler';
+import { supabase } from 'services/supabase/client';
+import { useActionSheet } from 'providers/ActionSheetProvider/ActionSheetProvider';
+import { useToastProvider } from 'providers/ToastProvider/ToastProvider';
+import { IconTrashProfile } from 'assets/icons-auto/components';
 
 // icons
 import {
@@ -99,6 +100,7 @@ type ChannelRowProps = {
   search: string;
   userChatId: string;
   country: string;
+  onRequestDelete: (channelUrl: string, name: string) => void;
   onPressTo: (
     channelUrl: string,
     isGroup?: boolean,
@@ -109,7 +111,16 @@ type ChannelRowProps = {
 // Memoized list row: per-item derivation (friend lookup, avatar url, name,
 // last message) only re-runs when the row's own props change.
 const ChannelRow = React.memo<ChannelRowProps>(
-  ({ result, index, showResultList, search, userChatId, country, onPressTo }) => {
+  ({
+    result,
+    index,
+    showResultList,
+    search,
+    userChatId,
+    country,
+    onPressTo,
+    onRequestDelete,
+  }) => {
     const item = result.channel;
     const isGroup =
       item.cachedMetaData?.type === 'group' ||
@@ -127,18 +138,30 @@ const ChannelRow = React.memo<ChannelRowProps>(
       member => member.userId !== userChatId,
     ) as MemberSendBirdType | undefined;
     const imageUrl = isGroup
-      ? item.coverUrl
-      : friend?.plainProfileUrl || defaultAvatar || item.coverUrl;
+      ? item.coverUrl ?? ''
+      : friend?.plainProfileUrl || '';
     const name = isGroup ? item.name : friend?.nickname || 'No name';
 
     const matchMessageId = `${result.matchedMessages[0]?.messageId ?? ''}`;
 
     return (
+      <Swipeable
+        renderRightActions={() => (
+          <RectButton
+            style={styles.swipeDelete}
+            onPress={() => onRequestDelete(item.url, name)}
+          >
+            <IconTrashProfile width={22} height={22} stroke={colors.white} />
+            <Text style={styles.swipeDeleteText}>Delete</Text>
+          </RectButton>
+        )}
+        overshootRight={false}
+      >
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => onPressTo(item.url, isGroup, matchMessageId)}
       >
-        <AvatarMessagesTab imageUrl={imageUrl} />
+        <AvatarMessagesTab imageUrl={imageUrl} name={name} />
         <View
           style={[
             styles.infoContainer,
@@ -184,6 +207,7 @@ const ChannelRow = React.memo<ChannelRowProps>(
           </View>
         </View>
       </TouchableOpacity>
+      </Swipeable>
     );
   },
 );
@@ -200,6 +224,42 @@ const MessagesTabMain: FunctionComponent<MessagesTabMainProps> = ({
   const [filterChannels, setFilterChannel] = useState<LocalSearchResult[]>([]);
   const [showResultList, setShowResultList] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+
+  const { showSheet } = useActionSheet();
+  const { showToast } = useToastProvider();
+
+  const requestDeleteConversation = useCallback(
+    (channelUrl: string, name: string) => {
+      showSheet({
+        title: `Delete conversation with ${name}?`,
+        message:
+          'It disappears from your list. The other person keeps the conversation and everything in it.',
+        items: [
+          {
+            label: 'Delete conversation',
+            destructive: true,
+            onPress: async () => {
+              const { error } = await supabase.rpc('leave_any_conversation', {
+                p_conversation_id: channelUrl,
+              });
+              if (error) {
+                showToast({
+                  type: 'error',
+                  message: /function|does not exist/i.test(error.message)
+                    ? 'Needs migration 20260909140000_leave_any_conversation_v1.sql.'
+                    : error.message,
+                });
+                return;
+              }
+              showToast({ type: 'success', message: 'Conversation deleted' });
+              getChannels();
+            },
+          },
+        ],
+      });
+    },
+    [showSheet, showToast, getChannels],
+  );
 
   const debouncedSearch = useDebouncedValue(search, 300);
   const searchIdRef = useRef(0);
@@ -344,9 +404,17 @@ const MessagesTabMain: FunctionComponent<MessagesTabMainProps> = ({
         userChatId={userChat?.userId || ''}
         country={userDB?.country ?? ''}
         onPressTo={onPressTo}
+        onRequestDelete={requestDeleteConversation}
       />
     ),
-    [showResultList, search, userChat?.userId, userDB?.country, onPressTo],
+    [
+      showResultList,
+      search,
+      userChat?.userId,
+      userDB?.country,
+      onPressTo,
+      requestDeleteConversation,
+    ],
   );
 
   useEffect(() => {
@@ -357,25 +425,11 @@ const MessagesTabMain: FunctionComponent<MessagesTabMainProps> = ({
 
   return (
     <BackgroundScreen type="messages">
-      <HeaderTabMain
-        title="Chat"
-        customRightElement={
-          <TouchableOpacity
-            style={styles.joinButton}
-            onPress={() =>
-              navigation.navigate(PATHS_MESSAGES_TAB.messagesTabJoinGroup)
-            }
-          >
-            <IconUsers width={17} height={11} />
-            <Text style={styles.titleJoinButton}>Join group</Text>
-          </TouchableOpacity>
-        }
-        containerStyle={styles.header}
-      />
-      <ScrollView
-        scrollEnabled={false}
-        contentContainerStyle={styles.container}
-      >
+      {/* The "Join group" button was removed from this header: it moved as the
+          header laid out, and joining a group belongs on the groups tab rather
+          than in the corner of the conversation list. */}
+      <HeaderTabMain title="Chat" containerStyle={styles.header} />
+      <View style={styles.container}>
         <View style={styles.searchContainer}>
           <InputSearch
             search={search}
@@ -384,7 +438,7 @@ const MessagesTabMain: FunctionComponent<MessagesTabMainProps> = ({
             styleContainer={styles.inputSearchContainer}
             styleInput={styles.inputSearch}
             iconProps={{ width: 24, height: 24, strokeWidth: 2.1 }}
-            placeholderTextColor={colors.neutral[600]}
+            placeholderTextColor={colors.faint}
             onClear={() => setSearch('')}
           />
           {search.length > 0 && (
@@ -453,7 +507,7 @@ const MessagesTabMain: FunctionComponent<MessagesTabMainProps> = ({
           <IconEdit width={20} height={20} />
           <Text style={styles.titleButtonNewChat}>New chat</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </BackgroundScreen>
   );
 };

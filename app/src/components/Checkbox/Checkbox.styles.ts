@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.neutral[600],
   },
   selectedCheckbox: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderColor: colors.primary[500],
   },
   checkboxContainer: {
@@ -26,6 +26,6 @@ export const styles = StyleSheet.create({
   checkboxText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });

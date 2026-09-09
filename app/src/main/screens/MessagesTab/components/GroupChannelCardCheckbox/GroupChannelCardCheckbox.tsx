@@ -27,9 +27,9 @@ const GroupChannelCardCheckbox: React.FC<GroupChannelCardCheckboxProps> = ({ cha
         paddingVertical: 14,
         paddingHorizontal: 16,
         borderRadius: 12,
-        backgroundColor: colors.quaternary[200],
+        backgroundColor: colors.surface2,
         borderWidth: isSelected ? 1 : 0,
-        borderColor: isSelected ? colors.primary[600] : 'transparent',
+        borderColor: isSelected ? colors.heading : 'transparent',
       }}
     >
       {coverUrl ? (
@@ -58,7 +58,7 @@ const GroupChannelCardCheckbox: React.FC<GroupChannelCardCheckboxProps> = ({ cha
           flex: 1,
           fontFamily: FONT_RALEWAY_500,
           fontSize: 16,
-          color: colors.primary[600],
+          color: colors.heading,
         }}
       >
         {name}
@@ -70,13 +70,13 @@ const GroupChannelCardCheckbox: React.FC<GroupChannelCardCheckboxProps> = ({ cha
           height: 24,
           borderRadius: 12,
           borderWidth: 2,
-          borderColor: colors.primary[600],
+          borderColor: colors.heading,
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
         {isSelected && (
-          <IconCheckbox width={14} height={14} stroke={colors.primary[600]} />
+          <IconCheckbox width={14} height={14} stroke={colors.heading} />
         )}
       </View>
     </TouchableOpacity>

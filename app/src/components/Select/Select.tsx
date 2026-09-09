@@ -79,7 +79,7 @@ export default function Select({
           style={{
             fontFamily: FONT_RALEWAY_500,
             fontSize: 16,
-            color: colors.primary[600],
+            color: colors.heading,
           }}
         >
           {item.label}
@@ -158,7 +158,7 @@ export default function Select({
           <IconChevronDown
             width={24}
             height={24}
-            stroke={colors.neutral[700]}
+            stroke={colors.muted}
           />
         </Pressable>
       </LinearGradient>

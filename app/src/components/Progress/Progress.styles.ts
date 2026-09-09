@@ -6,12 +6,12 @@ const styles = StyleSheet.create({
   container: {
     height: 4,
     borderRadius: 10,
-    backgroundColor: colors.neutral[400],
+    backgroundColor: colors.line,
   },
   progress: {
     height: '100%',
     borderRadius: 10,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
 });
 

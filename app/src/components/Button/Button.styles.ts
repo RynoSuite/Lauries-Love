@@ -49,19 +49,19 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
   },
   titlePrimary: {
-    color: colors.neutral[100],
+    color: colors.white,
   },
   titleSecondary: {
-    color: colors.primary[500],
+    color: colors.heading,
   },
   titleSecondaryDisabled: {
-    color: colors.neutral[500],
+    color: colors.faint,
   },
   titleInvalid: {
-    color: colors.error[500],
+    color: colors.danger,
   },
   titleInvalidDisabled: {
-    color: colors.neutral[500],
+    color: colors.faint,
   },
   titleLg: {
     fontSize: 20,

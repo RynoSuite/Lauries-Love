@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 10,
     paddingHorizontal: 18,
   },
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 18,
-    color: colors.black,
+    color: colors.heading,
     paddingVertical: 15,
   },
   buttons: {
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.quaternary[100],
   },
   item: {
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: colors.quaternary[100],

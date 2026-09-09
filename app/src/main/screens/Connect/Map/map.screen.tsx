@@ -266,6 +266,15 @@ export default function MapScreen() {
 
       const adjustedFriends = offsetOverlappingMarkers(usersWithLocation);
 
+      console.log('[LL map]', JSON.stringify({
+        fetched: usersData.data.length,
+        withLocation: usersData.data.filter(
+          (u: any) => u.geoLocation?.latitude && u.geoLocation?.longitude,
+        ).length,
+        insideBounds: usersWithLocation.length,
+        afterOffset: adjustedFriends.length,
+      }));
+
       setAllFriends(adjustedFriends);
       setIsLoading(false);
     } catch (error) {
@@ -374,8 +383,15 @@ export default function MapScreen() {
             diagnosisYear => friend.diagnosisYear === diagnosisYear.id,
           )
         : true;
+      // The filter carries country CODES ("US") while a profile stores the
+      // country NAME ("United States"), so a strict id comparison matched
+      // nothing and emptied the map. Accept either, case-insensitively.
       const matchesCountry = country.length
-        ? country.some(country => friend.country === country.id)
+        ? country.some(
+            c =>
+              friend.country?.toLowerCase() === c.id?.toLowerCase() ||
+              friend.country?.toLowerCase() === c.label?.toLowerCase(),
+          )
         : true;
       const matchesCity = city
         ? friend.city?.toLowerCase().includes(city.toLowerCase())
@@ -555,6 +571,7 @@ export default function MapScreen() {
   // children: rebuilding the page on every change would throw away the pan and
   // zoom the member had set.
   const pushMarkersToMap = useCallback(() => {
+    console.log('[LL map] pushing markers:', (friends ?? []).length);
     const list = (friends ?? [])
       .filter(u => u.geoLocation?.latitude != null && u.geoLocation?.longitude != null)
       .map(u => ({

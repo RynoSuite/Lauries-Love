@@ -545,10 +545,10 @@ const MessagesTabChatGroup: FunctionComponent<MessagesTabChatGroupProps> = ({
                 style={styles.buttonHeader}
               >
                 <IconArrowLeft
-                  width={18}
-                  height={18}
-                  stroke={colors.black}
-                  strokeWidth={1}
+                  width={28}
+                  height={28}
+                  stroke={colors.heading}
+                  strokeWidth={2}
                 />
               </TouchableOpacity>
               <View style={styles.userContainer}>
@@ -606,7 +606,7 @@ const MessagesTabChatGroup: FunctionComponent<MessagesTabChatGroupProps> = ({
                 <IconPlus
                   width={40}
                   height={40}
-                  stroke={colors.neutral[700]}
+                  stroke={colors.muted}
                   strokeWidth={3.333}
                 />
               </TouchableOpacity>

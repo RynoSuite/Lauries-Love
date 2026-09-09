@@ -123,7 +123,7 @@ const GroupImageModal: FunctionComponent<GroupImageModalProps> = ({
             <IconClose
               width={30}
               height={30}
-              stroke={colors.neutral[700]}
+              stroke={colors.muted}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2.857}
@@ -139,7 +139,7 @@ const GroupImageModal: FunctionComponent<GroupImageModalProps> = ({
             styleLabel={styles.label}
             isRightArrow={false}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.muted,
               strokeWidth: 2.1,
             }}
           />
@@ -151,7 +151,7 @@ const GroupImageModal: FunctionComponent<GroupImageModalProps> = ({
             styleLabel={styles.label}
             isRightArrow={false}
             iconProps={{
-              stroke: colors.neutral[700],
+              stroke: colors.muted,
               strokeWidth: 2.1,
             }}
           />

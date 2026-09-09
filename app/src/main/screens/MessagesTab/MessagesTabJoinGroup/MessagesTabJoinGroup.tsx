@@ -126,7 +126,7 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
             styleContainer={styles.inputSearchContainer}
             styleInput={styles.inputSearch}
             iconProps={{ width: 24, height: 24, strokeWidth: 2.1 }}
-            placeholderTextColor={colors.neutral[600]}
+            placeholderTextColor={colors.faint}
           />
         </View>
         <View>

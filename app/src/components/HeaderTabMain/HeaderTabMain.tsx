@@ -29,9 +29,8 @@ const HeaderTabMain: FunctionComponent<HeaderTabMainProps> = ({
   return (
     <View style={[styles.header, containerStyle]}>
       <Text style={styles.titleHeader}>{title}</Text>
-      {customRightElement ? (
-        customRightElement
-      ) : (
+      {customRightElement}
+      {!customRightElement && onPressQR && (
         <TouchableOpacity style={styles.buttonHeader} onPress={onPressQR}>
           <IconQrWhite width={40} height={40} />
         </TouchableOpacity>

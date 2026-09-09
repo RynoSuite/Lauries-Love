@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 14,
     lineHeight: 20,
-    color: colors.black,
+    color: colors.heading,
   },
   createButton: {
     flexDirection: 'row',
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   iconCreateButton: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     padding: 11,
     borderRadius: 50,
   },
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   loaderContainer: {
     position: 'absolute',
@@ -86,14 +86,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 28,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   subtitleEmptyList: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
 });

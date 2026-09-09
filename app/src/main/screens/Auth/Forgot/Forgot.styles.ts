@@ -29,12 +29,12 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
     lineHeight: 48,
-    color: colors.wineBerry,
+    color: colors.heading,
   },
   subtitle: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   body: {
     gap: 12,
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   resendCodeText: {
-    color: colors.neutral[600],
+    color: colors.faint,
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
@@ -51,14 +51,14 @@ const styles = StyleSheet.create({
   },
   resendCodeLink: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.primary[600],
+    color: colors.heading,
     textDecorationLine: 'underline',
   },
   subTitle: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.gableGreen,
+    color: colors.body,
     textAlign: 'center',
   },
   submitContainer: {
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   titleCreateAccount: {
     fontFamily: FONT_RALEWAY_700,
-    color: colors.gableGreen,
+    color: colors.body,
     textDecorationLine: 'underline',
   },
 });

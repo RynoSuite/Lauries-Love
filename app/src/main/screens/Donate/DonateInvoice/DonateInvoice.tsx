@@ -117,8 +117,10 @@ export default function DonateInvoice() {
               >
                 <TouchableOpacity onPress={goBack}>
                   <IconArrowLeft
-                    width={30}
-                    height={30}
+                    width={28}
+                    height={28}
+                    stroke={colors.heading}
+                    strokeWidth={2}
                     style={takingScreenshot && styles.backButtonHide}
                   />
                 </TouchableOpacity>
@@ -136,7 +138,7 @@ export default function DonateInvoice() {
                   onPress={goBack}
                   style={[styles.backButtonHide]}
                 >
-                  <IconArrowLeft width={30} height={30} />
+                  <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
               <View

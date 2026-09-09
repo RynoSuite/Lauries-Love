@@ -558,16 +558,16 @@ const MessagesTabChat: FunctionComponent<MessagesTabChatProps> = ({
                 style={styles.buttonHeader}
               >
                 <IconArrowLeft
-                  width={18}
-                  height={18}
-                  stroke={colors.black}
-                  strokeWidth={1}
+                  width={28}
+                  height={28}
+                  stroke={colors.heading}
+                  strokeWidth={2}
                 />
               </TouchableOpacity>
               <View style={styles.userContainer}>
                 <AvatarMessagesTab
                   imageUrl={
-                    friend?.plainProfileUrl || defaultAvatar || channel.coverUrl
+                    friend?.plainProfileUrl || channel.coverUrl || ''
                   }
                   width={47}
                   height={47}
@@ -624,7 +624,7 @@ const MessagesTabChat: FunctionComponent<MessagesTabChatProps> = ({
                 <IconPlus
                   width={40}
                   height={40}
-                  stroke={colors.neutral[700]}
+                  stroke={colors.muted}
                   strokeWidth={3.333}
                 />
               </TouchableOpacity>

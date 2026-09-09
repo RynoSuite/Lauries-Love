@@ -177,11 +177,10 @@ const ForgotPasswordScreen: FunctionComponent = () => {
               <View style={styles.topSection}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                   <IconArrowLeft
-                    style={{
-                      width: 30,
-                      height: 30,
-                      color: colors.neutral[1000],
-                    }}
+                    width={28}
+                    height={28}
+                    stroke={colors.heading}
+                    strokeWidth={2}
                   />
                 </TouchableOpacity>
               </View>

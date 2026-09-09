@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
     lineHeight: 48,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   listWrapper: {
     flex: 1,
@@ -37,17 +37,17 @@ export const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
   },
   selectedChannelCard: {
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
     borderColor: colors.primary[600],
     borderWidth: 1,
   },
   channelName: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   checkboxCircle: {
     width: 20,
@@ -69,14 +69,14 @@ export const styles = StyleSheet.create({
   skipText: {
     marginTop: 12,
     textAlign: 'center',
-    color: colors.primary[600],
+    color: colors.heading,
     fontSize: 16,
     textDecorationLine: 'underline',
   },
   infoText: {
     marginTop: 10,
     fontSize: 14,
-    color: colors.neutral[600],
+    color: colors.faint,
     textAlign: 'center',
   },
 });

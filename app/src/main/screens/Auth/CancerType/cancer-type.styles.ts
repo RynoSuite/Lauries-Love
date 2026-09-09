@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
     lineHeight: 48,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   listContainer: {
     gap: 8,
@@ -63,7 +63,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.neutral[600],
   },
   selectedCheckbox: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderColor: colors.primary[500],
   },
   buttonContainer: {

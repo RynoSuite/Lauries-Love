@@ -12,10 +12,10 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 12,
     lineHeight: 14,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   titleFocused: {
-    color: colors.primary[500],
+    color: colors.heading,
   },
 });
 

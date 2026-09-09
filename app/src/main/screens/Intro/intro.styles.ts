@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     lineHeight: 36,
     textAlign: 'center',
-    color: colors.primary[600],
+    color: colors.heading,
     width: 220,
     paddingTop: 8,
   },
@@ -66,13 +66,13 @@ const styles = StyleSheet.create({
   accountText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   loginLinkText: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 16,
     textDecorationLine: 'underline',
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });
 

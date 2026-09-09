@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   emptyContainer: {
     width: WIDTH,
@@ -56,13 +56,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 28,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   emptySubText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   sizeElement: {
     width: WIDTH / 3 - 2 * 2,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderColor: colors.quaternary[200],
     borderWidth: 1,
     borderRadius: 14,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   docTitles: {
     gap: 8,
@@ -86,13 +86,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 18,
     lineHeight: 22,
-    color: colors.neutral[800],
+    color: colors.body,
   },
   subTitleDoc: {
     fontFamily: FONT_HANKEN_GROTESK_400,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   loadingContainer: {
     position: 'absolute',

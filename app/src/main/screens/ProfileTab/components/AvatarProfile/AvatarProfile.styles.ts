@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_700,
     fontSize: 22,
     lineHeight: 26,
-    color: colors.primary[400],
+    color: colors.magentaText,
   },
   textBig: {
     fontSize: 35,
@@ -37,9 +37,9 @@ const styles = StyleSheet.create({
     padding: 4,
     bottom: 0,
     right: 0,
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
     borderWidth: 3.3,
-    borderColor: colors.white,
+    borderColor: colors.line,
     borderRadius: 100,
   },
 });

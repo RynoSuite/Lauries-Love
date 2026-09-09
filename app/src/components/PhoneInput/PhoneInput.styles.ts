@@ -7,7 +7,7 @@ const HEIGH = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 10,
     borderWidth: 1,
     overflow: 'hidden',
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     paddingRight: 30,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   listContainer: { gap: 24, paddingBottom: 60 },

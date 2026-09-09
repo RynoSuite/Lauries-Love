@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
 });
 

@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontFamily: FONT_RALEWAY_600,
-    color: colors.primary[500],
+    color: colors.heading,
   },
   paddedContainer: {
     padding: 20,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   supportText: {
     fontSize: 16,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     textAlign: 'center',
     padding: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   daysContainer: {
     borderRadius: 14,
@@ -52,13 +52,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     lineHeight: 44,
     fontFamily: FONT_HANKEN_GROTESK_700,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   daysText: {
     fontSize: 22,
     lineHeight: 28,
     fontFamily: FONT_RALEWAY_600,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });
 

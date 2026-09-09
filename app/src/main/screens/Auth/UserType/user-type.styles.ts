@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
     lineHeight: 48,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   buttonGrid: {
     flexDirection: 'row',
@@ -50,17 +50,17 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'transparent',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
   },
   buttonSelected: {
     borderColor: colors.primary[600],
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
   },
   image: { width: 54, height: 54 },
   buttonText: {
     fontFamily: FONT_RALEWAY_400,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   buttonContainer: {
     paddingHorizontal: 16,

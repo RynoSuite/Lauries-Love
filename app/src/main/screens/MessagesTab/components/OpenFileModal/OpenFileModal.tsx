@@ -150,7 +150,12 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <IconArrowLeft width={24} height={24} strokeWidth={2.2} />
+          <IconArrowLeft
+            width={28}
+            height={28}
+            stroke={colors.heading}
+            strokeWidth={2}
+          />
         </TouchableOpacity>
         <Text numberOfLines={1} style={styles.headerTitle}>
           {fullName}
@@ -159,7 +164,12 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
           onPress={onClose}
           style={[styles.closeButton, styles.closeButtonHidden]}
         >
-          <IconArrowLeft width={24} height={24} strokeWidth={2.2} />
+          <IconArrowLeft
+            width={28}
+            height={28}
+            stroke={colors.heading}
+            strokeWidth={2}
+          />
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -168,7 +178,7 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
       >
         {loading && (
           <View style={styles.loaderContainer}>
-            <ActivityIndicator color={colors.primary[600]} />
+            <ActivityIndicator color={colors.heading} />
           </View>
         )}
         {component}
@@ -186,7 +196,7 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
             onPress={onSharingHandler}
             style={styles.buttonFooter}
           >
-            <IconChatUpload width={24} height={24} fill={colors.primary[600]} />
+            <IconChatUpload width={24} height={24} fill={colors.heading} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onDownloadHandler}
@@ -195,7 +205,7 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
             <IconDownload
               width={24}
               height={24}
-              stroke={colors.primary[600]}
+              stroke={colors.heading}
               strokeWidth={2.2}
             />
           </TouchableOpacity>

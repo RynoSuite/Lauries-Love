@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     paddingVertical: 15,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 10,
   },
   checkboxContainer: {
@@ -21,14 +21,14 @@ const styles = StyleSheet.create({
   },
   selected: {
     paddingVertical: 13,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
     margin: 2,
   },
   title: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.black,
+    color: colors.heading,
   },
   checkbox: {
     justifyContent: 'center',
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   selectCheckbox: {
     borderWidth: 0,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
 });
 

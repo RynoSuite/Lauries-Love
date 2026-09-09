@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 18,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
     marginBottom: 4,
   },
 });

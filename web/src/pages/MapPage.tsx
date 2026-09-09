@@ -303,7 +303,7 @@ export function MapPage() {
                 <Popup>
                   <Link
                     to={`/users/${m.id}`}
-                    className="font-semibold text-heading hover:underline"
+                    className="font-semibold text-magenta-text hover:underline"
                   >
                     {m.display_name || m.first_name || 'Member'}
                   </Link>

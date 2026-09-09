@@ -175,7 +175,6 @@ function WeeklyBars({
 
       <div className="mt-1.5 flex justify-between border-t border-line pt-1.5 text-[11px] text-faint">
         <span>{fmt(data[0].week)}</span>
-        <span>peak {max}</span>
         <span>{fmt(data[data.length - 1].week)}</span>
       </div>
     </section>

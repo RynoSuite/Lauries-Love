@@ -144,10 +144,10 @@ const styles = StyleSheet.create({
     height: 20,
     width: 20,
     borderRadius: 16,
-    backgroundColor: colors.error[500],
+    backgroundColor: colors.danger,
   },
   unreadIntercom: {
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 12,
     fontWeight: '600',
   },

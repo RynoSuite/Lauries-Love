@@ -42,12 +42,12 @@ const styles = StyleSheet.create({
   },
   postButtonText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 16,
     lineHeight: 20,
   },
   postButtonTextActive: {
-    color: colors.neutral[100],
+    color: colors.white,
   },
   textInputContainer: {
     flexDirection: 'row',
@@ -105,12 +105,12 @@ const styles = StyleSheet.create({
   },
   imageButtonText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 14,
     lineHeight: 20,
   },
   imageButtonTextActive: {
-    color: colors.neutral[100],
+    color: colors.white,
   },
   imageCont: {
     backgroundColor: colors.surface,

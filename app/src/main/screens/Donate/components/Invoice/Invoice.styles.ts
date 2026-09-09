@@ -13,14 +13,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 40,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
     gap: 8,
   },
   invoiceDetailsContainer: {
     paddingVertical: 20,
   },
   invoiceDetails: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
   },
   invoiceDetailTitleContainer: {
@@ -42,13 +42,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   invoiceIcon: {
-    color: colors.primary[400],
+    color: colors.magentaText,
   },
   donationTypeText: {
     fontSize: 16,
     lineHeight: 22,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   invoiceDetailTitle: {
     fontSize: 16,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   invoiceDetailValue: {
     fontSize: 16,
     lineHeight: 24,
-    color: colors.neutral[700],
+    color: colors.muted,
     fontFamily: FONT_RALEWAY_500,
   },
   numeric: {

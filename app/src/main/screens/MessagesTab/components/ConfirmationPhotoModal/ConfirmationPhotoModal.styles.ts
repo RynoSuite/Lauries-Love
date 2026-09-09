@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
-    backgroundColor: colors.primary[200],
+    backgroundColor: colors.magenta,
   },
   image: {
     position: 'absolute',
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   iconCloseContainer: {
-    backgroundColor: colors.neutral[400],
+    backgroundColor: colors.line,
     padding: 9,
     borderRadius: 50,
   },
@@ -60,14 +60,14 @@ const styles = StyleSheet.create({
   },
   userTitle: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 16,
     lineHeight: 22,
   },
   buttonSend: {
     paddingHorizontal: 9,
     paddingVertical: 9,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   iconButtonSendText: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 16,
     lineHeight: 22,
   },

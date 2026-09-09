@@ -28,14 +28,14 @@ const styles = StyleSheet.create({
   avatarLetterContainer: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.primary[400],
+    backgroundColor: colors.magenta,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarLetter: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 32,
-    color: colors.neutral[100],
+    color: colors.white,
   },
   infoContainer: {
     gap: 4,
@@ -43,14 +43,14 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 32,
     textAlign: 'center',
   },
   birthday: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
-    color: colors.neutral[700],
+    color: colors.muted,
     lineHeight: 18,
     textAlign: 'center',
   },
@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   blockedText: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 28,
     textAlign: 'center',
   },
   subTitleBlocked: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 18,
     textAlign: 'center',
   },
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.transparent,
   },
   labelBlockUserButton: {
-    color: colors.error[500],
+    color: colors.danger,
   },
   loaderContainer: {
     position: 'absolute',
@@ -94,11 +94,11 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary[500] + '4D',
+    backgroundColor: colors.magenta + '4D',
   },
   // BottomSheetCustom
   handleIndicatorStyle: {
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
     width: 36,
     display: 'flex',
   },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   titleHeader: {
-    color: colors.primary[600],
+    color: colors.heading,
     fontFamily: FONT_RALEWAY_600,
     fontSize: 20,
     lineHeight: 24,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.neutral[700],
+    color: colors.muted,
     lineHeight: 22,
   },
   buttonContainer: {

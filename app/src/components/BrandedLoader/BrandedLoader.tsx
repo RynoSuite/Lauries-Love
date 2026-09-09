@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 28,
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.ground,
   },
   logo: {
     width: 160,
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     width: 180,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     overflow: 'hidden',
   },
   barFill: {
     height: '100%',
     borderRadius: 3,
-    backgroundColor: colors.primary[600],
+    backgroundColor: colors.magenta,
   },
 });
 

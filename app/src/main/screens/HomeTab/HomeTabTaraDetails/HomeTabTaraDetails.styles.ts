@@ -12,7 +12,7 @@ const HEIGHT = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.quaternary[100],
+    backgroundColor: colors.ground,
     gap: 24,
   },
   header: {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   title: {
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 24,
     lineHeight: 28,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
@@ -70,18 +70,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: 6,
-    backgroundColor: colors.quaternary[100],
+    backgroundColor: colors.ground,
   },
   bottomBarText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 12,
-    color: colors.primary[600],
+    color: colors.heading,
     lineHeight: 14,
   },
   bottomBarRight: {
     padding: 11,
     borderRadius: 50,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   scrollView: {
     flex: 1,
@@ -97,13 +97,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 20,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   historyItemContent: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   showVideoContainer: {
     position: 'absolute',

@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     height: 124,
   },
   textContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: 20,
     paddingVertical: 14,
     width: WIDTH - 32 - 141,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.black,
+    color: colors.heading,
   },
   linkButton: {
     flexDirection: 'row',
@@ -39,11 +39,11 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
   linkButtonIcon: {
     marginLeft: 4,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
 });
 

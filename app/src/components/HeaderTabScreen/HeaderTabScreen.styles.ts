@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 28,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   button: {
     paddingHorizontal: 16,

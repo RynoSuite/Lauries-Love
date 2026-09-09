@@ -296,15 +296,15 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
               onPress={handleFriend}
               styleContainer={
                 isFriend || isFriendSendbird
-                  ? { backgroundColor: colors.neutral[400] }
+                  ? { backgroundColor: colors.line }
                   : isLoading || isPending
-                  ? { backgroundColor: colors.primary[300] }
-                  : { backgroundColor: colors.primary[500] }
+                  ? { backgroundColor: colors.surface2 }
+                  : { backgroundColor: colors.heading }
               }
               styleTitle={
                 isFriend || isFriendSendbird
-                  ? { color: colors.neutral[900] }
-                  : { color: colors.neutral[100] }
+                  ? { color: colors.heading }
+                  : { color: colors.white }
               }
             />
             <View style={styles.actionButtonRow}>
@@ -316,7 +316,7 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
                 <IconChatBubbleLeft
                   width={19}
                   height={19}
-                  stroke={colors.primary[500]}
+                  stroke={colors.heading}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -327,7 +327,7 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
                 <IconMapPin
                   width={19}
                   height={19}
-                  stroke={colors.primary[500]}
+                  stroke={colors.heading}
                   fill="transparent"
                 />
               </TouchableOpacity>

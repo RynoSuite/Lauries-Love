@@ -196,7 +196,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
           onPressLeft={() => navigation.goBack()}
         />
         <View style={[styles.container, { alignItems: 'center' }]}>
-          <ActivityIndicator color={colors.primary[600]} />
+          <ActivityIndicator color={colors.heading} />
         </View>
       </BackgroundScreen>
     );
@@ -251,7 +251,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
                 Icon={IconGallery}
                 label={'Media and docs'}
                 iconProps={{
-                  stroke: colors.neutral[800],
+                  stroke: colors.body,
                   strokeWidth: 2.1,
                 }}
                 onPress={() => {
@@ -266,7 +266,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
               <ButtonModalTabs
                 Icon={IconTabUser}
                 iconProps={{
-                  stroke: colors.neutral[800],
+                  stroke: colors.body,
                   strokeWidth: 2.5,
                 }}
                 label={'Profile'}
@@ -325,7 +325,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
                 <IconClose
                   width={30}
                   height={30}
-                  stroke={colors.neutral[700]}
+                  stroke={colors.muted}
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2.857}
@@ -337,7 +337,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
                 <IconMinusCircle
                   width={30}
                   height={30}
-                  stroke={colors.neutral[700]}
+                  stroke={colors.muted}
                   strokeWidth={2.5}
                 />
                 <Text style={styles.blockUserText}>
@@ -349,7 +349,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
                 <IconBellOff
                   width={30}
                   height={30}
-                  stroke={colors.neutral[700]}
+                  stroke={colors.muted}
                   strokeWidth={2.5}
                 />
                 <Text style={styles.blockUserText}>
@@ -360,7 +360,7 @@ const MessagesTabDetails: FunctionComponent<MessagesTabDetailsProps> = ({
                 <IconTabUser
                   width={30}
                   height={30}
-                  stroke={colors.neutral[700]}
+                  stroke={colors.muted}
                   strokeWidth={2.5}
                 />
                 <Text style={styles.blockUserText}>

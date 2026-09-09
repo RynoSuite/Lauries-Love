@@ -114,7 +114,7 @@ const ProfileBlock: FunctionComponent<ProfileBlockProps> = ({
             onPress={() => setSelectTypeModal(item.type)}
             disabled={disabled}
             iconProps={{
-              stroke: colors.primary[600],
+              stroke: colors.heading,
               strokeWidth: 2.1,
             }}
           />

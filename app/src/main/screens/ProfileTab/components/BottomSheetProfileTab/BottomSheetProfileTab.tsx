@@ -16,6 +16,7 @@ import { IconArrowLeft } from 'assets/icons-auto/components';
 
 // styles
 import styles from './BottomSheetProfileTab.styles';
+import colors from 'styles/colors';
 
 type BottomSheetProfileTabProps = {
   onClose: () => void;
@@ -57,7 +58,7 @@ const BottomSheetProfileTab: FunctionComponent<BottomSheetProfileTabProps> = ({
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <IconArrowLeft width={30} height={30} />
+            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.titleHeader}>{title}</Text>
           <TouchableOpacity
@@ -65,7 +66,7 @@ const BottomSheetProfileTab: FunctionComponent<BottomSheetProfileTabProps> = ({
             onPress={onClose}
             style={styles.buttonHideHeader}
           >
-            <IconArrowLeft width={30} height={30} />
+            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
           </TouchableOpacity>
         </View>
         {children}

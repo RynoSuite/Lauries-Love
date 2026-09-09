@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.quaternary[200],
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.neutral[500],
+    color: colors.faint,
   },
   linearGradient: {
     flex: 1,

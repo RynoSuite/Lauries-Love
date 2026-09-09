@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: WIDTH - 32,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     paddingHorizontal: 20,
     paddingVertical: 24,
@@ -24,14 +24,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 20,
     lineHeight: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   subTitle: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
     paddingHorizontal: 10,
     textAlign: 'center',
   },
@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   buttonDelete: {
-    backgroundColor: colors.error[500],
+    backgroundColor: colors.danger,
   },
   titleButtonDelete: {
     fontFamily: FONT_RALEWAY_600,

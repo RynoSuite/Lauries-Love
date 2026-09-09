@@ -5,7 +5,7 @@ import { FONT_RALEWAY_500 } from 'styles/fonts';
 const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 10,
     borderWidth: 1,
   },

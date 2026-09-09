@@ -9,14 +9,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   inputContainer: {
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 10,
   },
   input: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.black,
+    color: colors.heading,
     paddingHorizontal: 21,
     paddingVertical: 15,
   },

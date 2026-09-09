@@ -154,6 +154,13 @@ h5 {
    hardcoded white, which punches a bright hole in the dark map page. Bring
    them onto the surface colours. */
 .leaflet-tooltip,
+/* Leaflet colours popup links its own blue, with enough specificity to beat a
+   utility class. The member's name is the one link in there, and it should be
+   the brand's on-dark magenta like every other link in the app. */
+.leaflet-popup-content a {
+  color: rgb(var(--c-magenta-text));
+}
+
 .leaflet-popup-content-wrapper,
 .leaflet-popup-tip {
   background: rgb(var(--c-surface));

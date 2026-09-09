@@ -12,13 +12,15 @@ const styles = StyleSheet.create({
     width: WIDTH,
     height: HEIGHT,
     position: 'relative',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 4,
+    // Was 4: the avatar and title touched the top edge of the panel.
+    paddingTop: 20,
+    paddingBottom: 12,
     gap: 16,
   },
   buttonHeader: {
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 20,
     lineHeight: 24,
-    color: colors.black,
+    color: colors.heading,
   },
   //messages
   messages: {
@@ -49,7 +51,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
     paddingVertical: 22,
   },
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     minWidth: 85,
     padding: 16,
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
     borderRadius: 20,
   },
   messageImage: {
@@ -84,24 +86,24 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   messageMine: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
   messageText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
     paddingBottom: 6,
   },
   messageTextMine: {
-    color: colors.neutral[100],
+    color: colors.white,
     textAlign: 'left',
   },
   messageDate: {
     position: 'absolute',
     bottom: 7,
     right: 8,
-    color: colors.neutral[700],
+    color: colors.muted,
     fontSize: 12,
     lineHeight: 14,
   },
@@ -113,14 +115,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingHorizontal: 16,
     paddingVertical: 2,
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
     borderRadius: 20,
   },
   documentName: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 
   //footer
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 2,
     paddingHorizontal: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   inputContainer: {
     flex: 1,
@@ -152,7 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 40,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
   },
   loaderContainer: {
     position: 'absolute',

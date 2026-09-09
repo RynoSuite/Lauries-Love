@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 36,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   buttonHideHeader: {
     opacity: 0,
@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   saveButton: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderRadius: 40,
     paddingHorizontal: 20,
     paddingVertical: 12,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   disabledButton: {
-    backgroundColor: colors.neutral[500],
+    backgroundColor: colors.line,
   },
 });
 

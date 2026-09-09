@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     height: 50,
     width: '100%',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
   },
   buttonOpen: { height: 46, padding: 10, borderRadius: 10 },
   gradientBorder: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   dropdownText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   checkboxContainer: {
     alignItems: 'center',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     borderColor: colors.neutral[600],
   },
   selectedCheckbox: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderColor: colors.primary[500],
   },
 });

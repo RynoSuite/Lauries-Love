@@ -47,7 +47,13 @@ const ButtonModalTabs: FunctionComponent<ButtonModalTabsProps> = ({
     onPress={onPress}
   >
     <View style={styles.part}>
-      <Icon width={20} height={20} {...iconProps} />
+      <Icon
+        width={20}
+        height={20}
+        stroke={colors.heading}
+        strokeWidth={2}
+        {...iconProps}
+      />
       <Text style={[styles.label, styleLabel]}>{label}</Text>
     </View>
     <View style={[styles.part, styles.partRight]}>
@@ -62,7 +68,7 @@ const ButtonModalTabs: FunctionComponent<ButtonModalTabsProps> = ({
         <IconArrowRight
           width={20}
           height={20}
-          stroke={colors.primary[600]}
+          stroke={colors.heading}
           strokeWidth={2}
         />
       )}

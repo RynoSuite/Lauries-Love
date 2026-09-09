@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   profileInfoRow: {
     flexDirection: 'row',
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   profileInfoText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   buttonContainer: {
     gap: 16,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 40,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
   },
   sendMessageButton: {
     borderWidth: 1,
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.primary[500],
+    color: colors.heading,
   },
   detailsCard: {
     gap: 20,
@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
   },
   detailsLabel: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   detailsValue: {
     maxWidth: '45%',
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   loaderContainer: {
     position: 'absolute',
@@ -122,14 +122,14 @@ const styles = StyleSheet.create({
   avatarLetterContainer: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.primary[400],
+    backgroundColor: colors.magenta,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarLetter: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 32,
-    color: colors.neutral[100],
+    color: colors.white,
   },
 });
 

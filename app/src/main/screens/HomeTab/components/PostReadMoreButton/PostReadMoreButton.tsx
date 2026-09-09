@@ -24,7 +24,7 @@ const PostReadMoreButton: FunctionComponent<PostReadMoreButtonProps> = ({
       <IconArrowRight
         width={19}
         height={19}
-        stroke={colors.primary[600]}
+        stroke={colors.heading}
         strokeWidth={2.5}
       />
     </TouchableOpacity>

@@ -17,12 +17,12 @@ export const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_400,
     fontSize: 16,
     borderWidth: 1,
-    color: colors.primary[600],
-    backgroundColor: colors.quaternary[200],
+    color: colors.heading,
+    backgroundColor: colors.surface2,
   },
   separator: {
     fontSize: 16,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   animatedContainer: {
     position: 'relative',

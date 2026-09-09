@@ -23,14 +23,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   title: {
     width: WIDTH * 0.4,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 32,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
     textAlignVertical: 'center',
   },
@@ -44,10 +44,10 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_700,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[500],
+    color: colors.heading,
   },
   nextTextDisabled: {
-    color: colors.neutral[600],
+    color: colors.faint,
   },
 });
 

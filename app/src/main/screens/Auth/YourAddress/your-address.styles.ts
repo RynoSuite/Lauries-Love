@@ -29,12 +29,12 @@ export const styles = StyleSheet.create({
   title: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 36,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   subtitle: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   formSection: {
     gap: 12,
@@ -58,14 +58,14 @@ export const styles = StyleSheet.create({
     paddingRight: 30,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   listContainer: { gap: 24, paddingBottom: 60 },
   countrySelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     borderRadius: 10,
     paddingLeft: 13,
     paddingRight: 14,

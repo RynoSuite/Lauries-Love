@@ -14,11 +14,11 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   header: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   closeButton: {
     paddingHorizontal: 16,
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 27,
     textAlign: 'center',
-    color: colors.primary[600],
+    color: colors.heading,
     textTransform: 'uppercase',
   },
   document: {
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   documentLoad: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   notDocument: {
     justifyContent: 'center',
@@ -48,14 +48,14 @@ const styles = StyleSheet.create({
   },
   documentTitle: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[800],
+    color: colors.body,
     fontSize: 20,
     lineHeight: 27,
     textAlign: 'center',
   },
   documentMessage: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[600],
+    color: colors.faint,
     fontSize: 16,
     lineHeight: 22,
     textAlign: 'center',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   footer: {
     width: WIDTH,
     gap: 9,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
   },
   inputContainer: {
     borderRadius: 19,

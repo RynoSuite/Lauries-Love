@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 14,
     lineHeight: 20,
-    color: colors.black,
+    color: colors.heading,
   },
   lists: {
     gap: 12,
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.neutral[400],
+    borderColor: colors.line,
     padding: 16,
     borderRadius: 12,
     overflow: 'hidden',
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.quaternary[200],
+    backgroundColor: colors.surface2,
     opacity: 0.3,
   },
   listMembers: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   avatarLetterContainer: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.primary[400],
+    backgroundColor: colors.magenta,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.neutral[100],
+    color: colors.white,
   },
   removeMember: {
     position: 'absolute',
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });
 

@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: 12,
     paddingVertical: 16,
     borderRadius: 10,
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   valueContainer: {
     flex: 1,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 22,
-    color: colors.neutral[700],
+    color: colors.muted,
     textAlign: 'right',
   },
 });

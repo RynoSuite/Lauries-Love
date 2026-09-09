@@ -145,7 +145,7 @@ const MessagesTabCreateChat: FunctionComponent<MessagesTabCreateChatProps> = ({
               styleContainer={styles.inputSearchContainer}
               styleInput={styles.inputSearch}
               iconProps={{ width: 24, height: 24, strokeWidth: 2.1 }}
-              placeholderTextColor={colors.neutral[600]}
+              placeholderTextColor={colors.faint}
             />
             {search.length > 0 && (
               <TouchableOpacity
@@ -169,14 +169,14 @@ const MessagesTabCreateChat: FunctionComponent<MessagesTabCreateChatProps> = ({
             <IconArrowRight
               width={18}
               height={18}
-              stroke={colors.primary[600]}
+              stroke={colors.heading}
               strokeWidth={2}
             />
           </TouchableOpacity>
         </View>
         {isLoading && isEnd ? (
           <View style={styles.loaderContainer}>
-            <ActivityIndicator size={'large'} color={colors.primary[600]} />
+            <ActivityIndicator size={'large'} color={colors.heading} />
           </View>
         ) : filteredFriends.length > 0 || search.length > 0 ? (
           <ListFriendsMessageTab

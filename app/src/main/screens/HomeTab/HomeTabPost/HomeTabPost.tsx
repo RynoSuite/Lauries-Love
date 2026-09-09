@@ -600,7 +600,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}
               >
-                <IconArrowLeft width={30} height={30} stroke={colors.heading} />
+                <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
               </TouchableOpacity>
               {/* <Text style={styles.titleHeader}>Comment</Text> */}
               {SUPABASE_ENABLED && userPost ? (
@@ -624,7 +624,7 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
                   disabled
                   style={[styles.backButton, styles.backButtonHide]}
                 >
-                  <IconArrowLeft width={30} height={30} stroke={colors.heading} />
+                  <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
                 </TouchableOpacity>
               )}
             </View>

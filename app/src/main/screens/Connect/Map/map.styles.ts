@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 18,
-    backgroundColor: colors.primary[300],
+    backgroundColor: colors.surface2,
   },
   filterBadgeText: {
     fontFamily: FONT_RALEWAY_500,

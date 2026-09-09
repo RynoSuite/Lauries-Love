@@ -30,13 +30,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 20,
     lineHeight: 24,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   subTitleInfo: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   phoneInfo: {
     fontFamily: FONT_HANKEN_GROTESK_400,

@@ -13,14 +13,14 @@ const styles = StyleSheet.create({
   mainList: {
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.neutral[400],
+    borderColor: colors.line,
     padding: 16,
   },
   titleMainList: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.primary[600],
+    color: colors.heading,
     paddingBottom: 24,
   },
   userContainer: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   avatarLetterContainer: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.primary[400],
+    backgroundColor: colors.magenta,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -46,14 +46,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 18,
     lineHeight: 24,
-    color: colors.neutral[100],
+    color: colors.white,
   },
   userName: {
     flex: 1,
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   checkboxContainer: {
     backgroundColor: colors.transparent,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     borderColor: colors.neutral[600],
   },
   checkboxContainerSelected: {
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderColor: colors.primary[500],
   },
   checkboxContainerFriends: {
@@ -71,25 +71,25 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderWidth: 1,
-    backgroundColor: colors.primary[100],
-    borderColor: colors.primary[200],
+    backgroundColor: colors.surface2,
+    borderColor: colors.line,
     borderRadius: 50,
   },
   checkboxContainerSelectedFriends: {
-    backgroundColor: colors.neutral[400],
-    borderColor: colors.neutral[400],
+    backgroundColor: colors.line,
+    borderColor: colors.line,
   },
   textSelectedAdd: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[500],
+    color: colors.heading,
   },
   textSelected: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   checkHide: {
     width: 16,
@@ -101,13 +101,13 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
-    backgroundColor: colors.neutral[400],
+    backgroundColor: colors.line,
   },
   titleEmptyList: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
 });
 

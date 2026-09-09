@@ -119,7 +119,7 @@ const ProfileTabDetails: FunctionComponent<ProfileTabDetailsProps> = ({
                     onPress={() => setSelectTypeModal(item.type)}
                     disabled={disabled}
                     iconProps={{
-                      stroke: colors.primary[500],
+                      stroke: colors.heading,
                       strokeWidth: 2.5,
                     }}
                   />

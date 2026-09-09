@@ -14,9 +14,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   otherInput: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderWidth: 0,
-    borderColor: colors.white,
+    borderColor: colors.line,
     borderRadius: 12,
   },
   buttons: {
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 14,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[600],
+    color: colors.faint,
   },
 });
 

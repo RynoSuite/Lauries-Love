@@ -21,6 +21,7 @@ import { PATHS_HOME_TAB } from 'main/navigators/paths';
 
 // styles
 import styles from './PostNotification.styles';
+import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 
 type Props = {
   notification: Notification;
@@ -79,13 +80,19 @@ export default function PostNotification({
     }
   }
 
-  const imageSource = profilePicture
-    ? { uri: profilePicture.toString() }
-    : require('../../../../../assets/images/image-not-found.png');
+  // Empty rather than a placeholder image: AvatarMessagesTab falls through to
+  // initials on magenta, which is what a member without a photo should look
+  // like everywhere in the app.
+  const avatarUrl = profilePicture ? profilePicture.toString() : '';
 
   return (
     <TouchableOpacity onPress={handleRemove} style={styles.container}>
-      <Image source={imageSource} style={styles.image} />
+      <AvatarMessagesTab
+        imageUrl={avatarUrl}
+        width={48}
+        height={48}
+        name={notification.firstName ?? ''}
+      />
       <View style={{ flex: 1 }}>
         <View style={styles.nameAndType}>
           <Text numberOfLines={2}>

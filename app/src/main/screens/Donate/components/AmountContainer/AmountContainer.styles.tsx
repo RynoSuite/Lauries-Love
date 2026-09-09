@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 12,
-    color: colors.error[500],
+    color: colors.danger,
     marginTop: 8,
   },
 });

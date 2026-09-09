@@ -93,7 +93,7 @@ export default function DonateCheckout() {
           <FormProvider {...methods}>
             <View style={styles.titleContainer}>
               <TouchableOpacity onPress={() => navigation.goBack()}>
-                <IconArrowLeft width={30} height={30} />
+                <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
               </TouchableOpacity>
               <Text style={styles.title}>
                 Donation
@@ -103,7 +103,7 @@ export default function DonateCheckout() {
                 onPress={() => navigation.goBack()}
                 style={[styles.backButtonHide]}
               >
-                <IconArrowLeft width={30} height={30} />
+                <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
               </TouchableOpacity>
             </View>
             <AmountContainer

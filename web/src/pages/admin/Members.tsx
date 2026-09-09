@@ -21,6 +21,17 @@ type Member = {
 };
 type StaffRow = { profile_id: string; role: 'owner' | 'agent' };
 
+// What each stored role is called in the interface.
+//   owner — full administrator: everything an agent can do, plus managing the
+//           staff roster itself and the branding console.
+//   agent — support staff: tickets and moderation, but cannot add, remove or
+//           promote staff. That split is deliberate, so a compromised agent
+//           account cannot enrol accomplices or remove the owner.
+const ROLE_LABEL: Record<'owner' | 'agent', string> = {
+  owner: 'Admin',
+  agent: 'Support agent',
+};
+
 async function fetchMembers(search: string): Promise<Member[]> {
   let q = supabase
     .from('profiles')
@@ -115,10 +126,10 @@ export function AdminMembers() {
                 <td>
                   {role ? (
                     <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-semibold text-heading">
-                      {role}
+                      {ROLE_LABEL[role]}
                     </span>
                   ) : (
-                    <span className="text-faint">member</span>
+                    <span className="text-faint">Member</span>
                   )}
                 </td>
                 {isAdmin && (
@@ -133,9 +144,9 @@ export function AdminMembers() {
                       }
                       className="rounded border border-line-strong px-2 py-1 text-xs"
                     >
-                      <option value="">member</option>
-                      <option value="agent">agent</option>
-                      <option value="owner">owner</option>
+                      <option value="">Member</option>
+                      <option value="agent">Support agent</option>
+                      <option value="owner">Admin</option>
                     </select>
                   </td>
                 )}

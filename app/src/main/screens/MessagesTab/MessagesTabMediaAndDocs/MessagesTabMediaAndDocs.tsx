@@ -271,7 +271,7 @@ const MessagesTabMediaAndDocs: FunctionComponent<
                         <IconFileProfile
                           width={44}
                           height={44}
-                          stroke={colors.neutral[600]}
+                          stroke={colors.faint}
                         />
                         <View style={styles.docTitles}>
                           <Text style={styles.titleDoc}>
@@ -307,7 +307,7 @@ const MessagesTabMediaAndDocs: FunctionComponent<
         {loading && (
           <View style={styles.loadingContainer}>
             <ActivityIndicator
-              color={colors.primary[500]}
+              color={colors.heading}
               size="large"
               animating={loading}
             />

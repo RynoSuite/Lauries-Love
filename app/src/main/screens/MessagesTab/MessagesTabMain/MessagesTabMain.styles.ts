@@ -21,9 +21,9 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: colors.primary[100],
+    backgroundColor: colors.surface2,
     borderWidth: 1,
-    borderColor: colors.primary[200],
+    borderColor: colors.line,
     borderRadius: 40,
   },
   titleJoinButton: {
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 14,
     lineHeight: 20,
-    color: colors.black,
+    color: colors.heading,
   },
   listContainer: {
     paddingTop: 24,
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 22,
     lineHeight: 28,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   infoContainer: {
     flex: 1,
@@ -84,11 +84,11 @@ const styles = StyleSheet.create({
     gap: 24,
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.neutral[400],
+    borderBottomColor: colors.line,
   },
   infoTopBorder: {
     borderTopWidth: 1,
-    borderTopColor: colors.neutral[400],
+    borderTopColor: colors.line,
   },
   titlesItem: {
     flex: 1,
@@ -98,13 +98,13 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   subtitleItem: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   highlight: {
     fontFamily: FONT_RALEWAY_700,
@@ -117,10 +117,10 @@ const styles = StyleSheet.create({
     fontFamily: FONT_HANKEN_GROTESK_400,
     fontSize: 12,
     lineHeight: 14,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   dataItemIsNew: {
-    color: colors.primary[400],
+    color: colors.magentaText,
   },
   newMessagesContainer: {
     width: 24,
@@ -128,13 +128,13 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.primary[400],
+    backgroundColor: colors.magenta,
   },
   newMessages: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.neutral[100],
+    color: colors.white,
   },
 
   emptyListContainer: {
@@ -155,21 +155,21 @@ const styles = StyleSheet.create({
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 28,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   subtitleEmptyList: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   subtitleEmptyListBold: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 14,
     lineHeight: 18,
-    color: colors.primary[600],
+    color: colors.heading,
     textAlign: 'center',
   },
   buttonNewChat: {
@@ -181,18 +181,30 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderRadius: 40,
   },
   titleButtonNewChat: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 20,
-    color: colors.neutral[100],
+    color: colors.white,
   },
   loadingLine: {
     width: '100%',
     height: 2,
+  },
+  swipeDelete: {
+    width: 96,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    backgroundColor: colors.danger,
+  },
+  swipeDeleteText: {
+    color: colors.white,
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
 

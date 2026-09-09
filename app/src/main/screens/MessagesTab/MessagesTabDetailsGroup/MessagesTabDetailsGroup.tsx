@@ -168,7 +168,7 @@ const MessagesTabDetailsGroup: FunctionComponent<
               Icon={IconGallery}
               label={'Media and docs'}
               iconProps={{
-                stroke: colors.neutral[800],
+                stroke: colors.body,
                 strokeWidth: 2.1,
               }}
               onPress={() => {
@@ -183,7 +183,7 @@ const MessagesTabDetailsGroup: FunctionComponent<
             <ButtonModalTabs
               Icon={IconTabUser}
               iconProps={{
-                stroke: colors.neutral[800],
+                stroke: colors.body,
                 strokeWidth: 2.5,
               }}
               label={'Members'}

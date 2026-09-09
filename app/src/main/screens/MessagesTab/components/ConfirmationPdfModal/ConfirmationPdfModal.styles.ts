@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: WIDTH,
     height: HEIGHT,
-    backgroundColor: colors.neutral[100],
+    backgroundColor: colors.surface,
   },
   notDocument: {
     justifyContent: 'center',
@@ -27,14 +27,14 @@ const styles = StyleSheet.create({
   },
   documentTitle: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[800],
+    color: colors.body,
     fontSize: 20,
     lineHeight: 27,
     textAlign: 'center',
   },
   documentMessage: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[600],
+    color: colors.faint,
     fontSize: 16,
     lineHeight: 22,
     textAlign: 'center',
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   iconCloseContainer: {
-    backgroundColor: colors.neutral[400],
+    backgroundColor: colors.line,
     padding: 9,
     borderRadius: 50,
   },
@@ -78,14 +78,14 @@ const styles = StyleSheet.create({
   },
   userTitle: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 16,
     lineHeight: 22,
   },
   buttonSend: {
     paddingHorizontal: 9,
     paddingVertical: 9,
-    backgroundColor: colors.primary[500],
+    backgroundColor: colors.magenta,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   iconButtonSendText: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[100],
+    color: colors.white,
     fontSize: 16,
     lineHeight: 22,
   },

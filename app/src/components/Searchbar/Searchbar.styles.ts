@@ -10,13 +10,13 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 8,
     borderRadius: 30,
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
   },
   input: {
     flex: 1,
     paddingVertical: 12,
     fontSize: 14,
-    color: colors.primary[600],
+    color: colors.heading,
   },
   clearButton: {
     position: 'absolute',
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 24,
-    backgroundColor: colors.neutral[500],
+    backgroundColor: colors.line,
   },
 });
 

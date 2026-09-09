@@ -24,6 +24,7 @@ import { appConfig } from 'main/config/app.config';
 import styles from './RequestNotification.styles';
 import useFriendsUserDB from 'providers/UserDBProvider/useFriendsUserDB';
 import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
+import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 
 type Props = {
   isLoading: boolean;
@@ -101,7 +102,12 @@ export default function RequestNotification({
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
-        <Image source={imageSource} style={styles.image} />
+        <AvatarMessagesTab
+        imageUrl={avatarUrl}
+        width={48}
+        height={48}
+        name={notification.firstName ?? ''}
+      />
 
         <View style={styles.textContainer}>
           <Text style={styles.fullNameText}>{notification.firstName}</Text>

@@ -156,8 +156,15 @@ export default function ListScreen() {
             diagnosisYear => friend.diagnosisYear === diagnosisYear.id,
           )
         : true;
+      // The filter carries country CODES ("US") while a profile stores the
+      // country NAME ("United States"), so a strict id comparison matched
+      // nothing and emptied the map. Accept either, case-insensitively.
       const matchesCountry = country.length
-        ? country.some(country => friend.country === country.id)
+        ? country.some(
+            c =>
+              friend.country?.toLowerCase() === c.id?.toLowerCase() ||
+              friend.country?.toLowerCase() === c.label?.toLowerCase(),
+          )
         : true;
       const matchesCity = city
         ? friend.city.toLowerCase().includes(city.toLowerCase())

@@ -168,7 +168,7 @@ const ProfileTabSupportTicket: FunctionComponent<Props> = ({ navigation }) => {
     return (
       <BackgroundScreen>
         <HeaderTabScreen title="Ticket" onPressLeft={() => navigation.goBack()} />
-        <Text style={{ textAlign: 'center', marginTop: 60, color: colors.neutral[600] }}>
+        <Text style={{ textAlign: 'center', marginTop: 60, color: colors.faint }}>
           Ticket not found.
         </Text>
       </BackgroundScreen>

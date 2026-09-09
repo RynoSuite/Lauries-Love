@@ -45,20 +45,20 @@ const ChannelItemRow = React.memo<ChannelItemRowProps>(
   ({ channel, isJoined, isLast, onSelect }) => (
     <View>
       <View style={styles.userContainer}>
-        <AvatarMessagesTab imageUrl={channel.coverUrl} width={47} height={47} />
+        <AvatarMessagesTab
+          imageUrl={channel.coverUrl}
+          width={47}
+          height={47}
+          name={channel.name}
+        />
         <Text numberOfLines={1} style={styles.userName}>
           {channel.name}
         </Text>
-        <TouchableOpacity
-          disabled={isJoined}
-          style={[styles.buttonJoinGroup, isJoined && styles.joined]}
-          onPress={() => onSelect(channel.url)}
-        >
-          <Text style={styles.buttonJoinGroupText}>
-            {isJoined ? 'Joined' : 'Join'}
-          </Text>
-          {!isJoined && <IconPlusCircle width={18} height={18} />}
-        </TouchableOpacity>
+        {/* The Join pill was removed: it shifted position as rows re-rendered,
+            and tapping the row already opens or joins the group, so it was a
+            second control for something the row itself does. Membership is
+            still stated, just not as a moving target. */}
+        {isJoined && <Text style={styles.joinedLabel}>Joined</Text>}
       </View>
       {!isLast && (
         <View style={styles.separatorContainer}>
@@ -99,7 +99,7 @@ const ListChannelsMessageTab: FunctionComponent<
         <Text style={styles.titleMainList}>{title}</Text>
         {isLoading ? (
           <View style={styles.loaderContainer}>
-            <ActivityIndicator color={colors.primary[600]} />
+            <ActivityIndicator color={colors.heading} />
           </View>
         ) : channels.length === 0 ? (
           <View style={styles.notGroupContainer}>
