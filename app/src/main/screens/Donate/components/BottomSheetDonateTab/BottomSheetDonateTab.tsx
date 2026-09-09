@@ -5,12 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // components
 import BottomSheetCustom from 'components/BottomSheetCustom/BottomSheetCustom';
 
-// icons
-import { IconArrowLeft } from 'assets/icons-auto/components';
 
 // styles
 import styles from './BottomSheetDonateTab.styles';
-import colors from 'styles/colors';
 
 type BottomSheetDonateTabProps = {
   onClose: () => void;
@@ -43,18 +40,9 @@ const BottomSheetDonateTab: FunctionComponent<BottomSheetDonateTabProps> = ({
           paddingBottom: bottom,
         }}
       >
+        {/* No back arrow — the grabber closes it. See BottomSheetProfileTab. */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
-          </TouchableOpacity>
           <Text style={styles.titleHeader}>{title}</Text>
-          <TouchableOpacity
-            disabled
-            onPress={onClose}
-            style={styles.buttonHideHeader}
-          >
-            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
-          </TouchableOpacity>
         </View>
         {children}
       </View>

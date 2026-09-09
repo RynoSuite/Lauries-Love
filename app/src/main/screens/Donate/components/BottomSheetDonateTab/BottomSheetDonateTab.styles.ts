@@ -4,8 +4,6 @@ import { FONT_BEHIND_THE_NINETIES_500, FONT_RALEWAY_600 } from 'styles/fonts';
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 14.5,
     paddingBottom: 20,
@@ -15,9 +13,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 36,
     color: colors.heading,
-  },
-  buttonHideHeader: {
-    opacity: 0,
   },
   buttons: {
     flexDirection: 'row',

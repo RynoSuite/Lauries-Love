@@ -72,6 +72,9 @@ const BottomSheetCustom: FunctionComponent<BottomSheetCustomProps> = ({
         index={index}
         onClose={onClose}
         enableContentPanningGesture={dynamic}
+        // Without this the handle is a decoration: dragging the sheet down
+        // would rubber-band back instead of dismissing it.
+        enablePanDownToClose
         onChange={index => {
           if (index === 0) onClose();
         }}

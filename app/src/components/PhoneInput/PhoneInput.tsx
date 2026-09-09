@@ -14,7 +14,6 @@ import BottomSheetCustom from 'components/BottomSheetCustom/BottomSheetCustom';
 import Searchbar from 'components/Searchbar/Searchbar';
 
 // icons
-import { IconArrowLeft } from 'assets/icons-auto/components';
 
 // styles
 import styles from './PhoneInput.styles';
@@ -151,10 +150,8 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
             snapPoints={[HEIGH * 0.4]}
           >
             <View style={styles.modalContainer}>
+              {/* No back arrow — the grabber closes it. */}
               <View style={styles.headerModal}>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
-                </TouchableOpacity>
                 <Text style={styles.titleTextModal}>
                   Select country or region
                 </Text>

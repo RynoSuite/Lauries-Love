@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
   },
   titleTextModal: {
     flex: 1,
-    paddingRight: 30,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     color: colors.heading,

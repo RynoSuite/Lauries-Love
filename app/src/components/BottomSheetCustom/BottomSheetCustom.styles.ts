@@ -26,8 +26,15 @@ const styles = StyleSheet.create({
     shadowRadius: 17.4 / 2,
     shadowOpacity: 0.15,
   },
+  // The grabber. A sheet is dismissed by dragging it down, and it has to say
+  // so: hidden, the only way out was a back arrow in each sheet's header,
+  // which reads as navigation into a previous screen rather than as closing a
+  // panel over the current one.
   handleIndicator: {
-    display: 'none',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.lineStrong,
   },
   scrollViewContainer: {
     width: WIDTH,

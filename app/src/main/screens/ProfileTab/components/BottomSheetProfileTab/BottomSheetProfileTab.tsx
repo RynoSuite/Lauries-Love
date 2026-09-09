@@ -11,12 +11,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // components
 import BottomSheetCustom from 'components/BottomSheetCustom/BottomSheetCustom';
 
-// icons
-import { IconArrowLeft } from 'assets/icons-auto/components';
 
 // styles
 import styles from './BottomSheetProfileTab.styles';
-import colors from 'styles/colors';
 
 type BottomSheetProfileTabProps = {
   onClose: () => void;
@@ -56,18 +53,11 @@ const BottomSheetProfileTab: FunctionComponent<BottomSheetProfileTabProps> = ({
           paddingBottom: bottom,
         }}
       >
+        {/* No back arrow. A sheet sits on top of the screen you are already
+            on; an arrow implies you are leaving that screen for a previous
+            one. The grabber above and Cancel below are the two ways out. */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onClose}>
-            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
-          </TouchableOpacity>
           <Text style={styles.titleHeader}>{title}</Text>
-          <TouchableOpacity
-            disabled
-            onPress={onClose}
-            style={styles.buttonHideHeader}
-          >
-            <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
-          </TouchableOpacity>
         </View>
         {children}
         <View style={[styles.buttons, buttonsStyle]}>
