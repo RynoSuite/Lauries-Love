@@ -59,11 +59,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.transparent,
     borderRadius: 2,
     borderWidth: 2,
-    borderColor: colors.neutral[600],
+    borderColor: colors.lineStrong,
   },
   checkboxContainerSelected: {
     backgroundColor: colors.magenta,
-    borderColor: colors.primary[500],
+    borderColor: colors.magenta,
   },
   checkboxContainerFriends: {
     flexDirection: 'row',

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   buttonContainer: {
-    backgroundColor: colors.quaternary20070,
+    backgroundColor: colors.surface,
   },
   label: {
     color: colors.muted,

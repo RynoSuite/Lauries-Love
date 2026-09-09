@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   userContainer: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: colors.neutral[600],
+    backgroundColor: colors.surface2,
     borderRadius: 8,
   },
   userTitle: {

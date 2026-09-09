@@ -73,7 +73,7 @@ const ButtonModalTabs: FunctionComponent<ButtonModalTabsProps> = ({
           <Icon
             width={18}
             height={18}
-            stroke={danger ? colors.danger : colors.magentaText}
+            stroke={danger ? colors.danger : colors.heading}
             strokeWidth={2}
             {...iconProps}
           />

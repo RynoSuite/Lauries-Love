@@ -165,7 +165,7 @@ const PostImageModal: FunctionComponent<PostImageModalProps> = ({
             <IconClose
               width={30}
               height={30}
-              stroke={colors.neutral[700]}
+              stroke={colors.heading}
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2.857}
