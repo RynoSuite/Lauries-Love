@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import styles from './LoggedIn.styles';
+import { useUnreadMessages } from 'presentation/hooks';
 import { ConnectNavigator } from '../connect';
 import { LIST_HIDE_TAB_BAR } from '../navigators.const';
 import HomeTabStacks from '../HomeTabStacks/HomeTabStacks';
@@ -32,6 +33,7 @@ type BottomTabNavigatorProps = {
 const BottomTabNavigator: FunctionComponent<BottomTabNavigatorProps> = ({
   currentRouteName,
 }) => {
+  const { unreadMessages } = useUnreadMessages();
 
   const isHideTabBar = useMemo(
     () => currentRouteName && LIST_HIDE_TAB_BAR.includes(currentRouteName),
@@ -98,6 +100,11 @@ const BottomTabNavigator: FunctionComponent<BottomTabNavigatorProps> = ({
           tabBarIcon: MessagesTabIcon,
           title: 'Messages',
           headerShown: false,
+          // The same signal the bell gives for notifications: a magenta count
+          // on the icon. Undefined rather than 0 — react-navigation renders a
+          // badge for any defined value, including an empty one.
+          tabBarBadge: unreadMessages > 0 ? unreadMessages : undefined,
+          tabBarBadgeStyle: styles.tabBadge,
           tabBarButton: props => (
             <TouchableOpacity {...(props as TouchableOpacityProps)} />
           ),

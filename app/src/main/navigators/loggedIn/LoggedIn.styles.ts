@@ -24,6 +24,13 @@ const styles = StyleSheet.create({
   tabBarHide: {
     display: 'none',
   },
+  // Matches the notification bell's counter: magenta disc, white figure.
+  tabBadge: {
+    backgroundColor: colors.magenta,
+    color: colors.white,
+    fontSize: 11,
+    fontWeight: '700',
+  },
 });
 
 export default styles;

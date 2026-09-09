@@ -83,6 +83,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
+  // Choosing which group a post goes to. Replaces a full-width sentence that
+  // described the audience the app had derived for you.
+  groupPicker: {
+    gap: 8,
+  },
+  groupPickerLabel: {
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.muted,
+  },
+  groupChips: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 16,
+  },
+  groupChip: {
+    maxWidth: 200,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  groupChipActive: {
+    backgroundColor: colors.magenta,
+    borderColor: colors.magentaText,
+  },
+  groupChipText: {
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 14,
+    color: colors.body,
+  },
+  groupChipTextActive: {
+    fontFamily: FONT_RALEWAY_600,
+    color: colors.white,
+  },
   footerText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,

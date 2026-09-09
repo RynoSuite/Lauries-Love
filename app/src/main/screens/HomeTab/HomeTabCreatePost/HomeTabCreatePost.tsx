@@ -29,7 +29,10 @@ import { useGetUsersReq } from 'presentation/services/react-query/user.query';
 
 // backend v2
 import { SUPABASE_ENABLED } from 'services/supabase/backend.config';
-import { createPost } from 'services/supabase/supabase.social';
+import {
+  createPost,
+  getMyGroupChannels,
+} from 'services/supabase/supabase.social';
 import { uploadImageBase64, publicUrlFor } from 'services/supabase/supabase.storage';
 
 // components
@@ -69,6 +72,28 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
   const [postText, setPostText] = useState('');
   const [readyInput, setReadyInput] = useState(false);
   const [visibility, setVisibility] = useState<'public' | 'group'>('public');
+  // The groups this member belongs to, and which one the post is going to.
+  // "My Groups" used to mean "people whose profile carries the same role and
+  // diagnosis tags as mine" — a Sendbird-era audience rule with no group in
+  // it at all. Web posts into an actual group, and so does this now.
+  const [myGroups, setMyGroups] = useState<any[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!SUPABASE_ENABLED) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const groups = await getMyGroupChannels();
+        if (!cancelled) setMyGroups(groups ?? []);
+      } catch (error) {
+        if (__DEV__) console.warn('Error loading my groups', error);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const bottomFooterRef = useRef(new Animated.Value(10)).current;
   const inputRef = useRef<TextInput>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -149,7 +174,7 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
           );
         }
         const audienceTags =
-          visibility === 'group'
+          visibility === 'group' && !selectedGroupId
             ? ([
                 userDB?.role?.description,
                 ...((userDB?.diagnosisTypes ?? []) as any[]).map(
@@ -161,7 +186,12 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
         const mentionIds = selectedMentions
           .filter(m => postText.includes(`@${m.handle}`))
           .map(m => m.id);
-        await createPost(postText, { imagePath, audienceTags, mentionIds });
+        await createPost(postText, {
+          imagePath,
+          audienceTags,
+          mentionIds,
+          groupId: visibility === 'group' ? selectedGroupId : null,
+        });
         getPosts();
         navigation.navigate(PATHS_HOME_TAB.homeTabMain);
         setIsLoading(false);
@@ -325,19 +355,49 @@ const HomeTabCreatePost: FunctionComponent<HomeTabCreatePostProps> = ({
                 setVisibility={setVisibility}
               />
               {visibility === 'group' && (
-                <Text style={styles.footerText}>
-                  {(() => {
-                    const tags = [
-                      userDB?.role?.description,
-                      ...((userDB?.diagnosisTypes ?? []) as any[]).map(
-                        (d: any) => d?.description,
-                      ),
-                    ].filter(Boolean);
-                    return tags.length > 0
-                      ? `Shared with your community: ${tags.join(' \u00b7 ')}`
-                      : 'Shared with members who match your profile';
-                  })()}
-                </Text>
+                <View style={styles.groupPicker}>
+                  {myGroups.length > 0 ? (
+                    <>
+                      <Text style={styles.groupPickerLabel}>Post to</Text>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.groupChips}
+                      >
+                        {myGroups.map(group => {
+                          const active = selectedGroupId === group.url;
+                          return (
+                            <TouchableOpacity
+                              key={group.url}
+                              onPress={() =>
+                                setSelectedGroupId(active ? null : group.url)
+                              }
+                              style={[
+                                styles.groupChip,
+                                active && styles.groupChipActive,
+                              ]}
+                            >
+                              <Text
+                                numberOfLines={1}
+                                style={[
+                                  styles.groupChipText,
+                                  active && styles.groupChipTextActive,
+                                ]}
+                              >
+                                {group.name}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </ScrollView>
+                    </>
+                  ) : (
+                    <Text style={styles.groupPickerLabel}>
+                      You have not joined any groups yet. This will be shared
+                      with members who match your profile.
+                    </Text>
+                  )}
+                </View>
               )}
               <Animated.View
                 style={[

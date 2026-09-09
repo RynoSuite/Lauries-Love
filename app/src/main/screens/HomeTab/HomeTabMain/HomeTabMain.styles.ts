@@ -167,6 +167,10 @@ const styles = StyleSheet.create({
   // rather than another quiet pill beside Trending and New.
   exploreButton: {
     marginLeft: 'auto',
+    // The row has no alignItems, so children stretch to the tallest pill.
+    // This button was shorter than Trending and New, so it stretched and its
+    // label sat at the top with the slack underneath.
+    justifyContent: 'center',
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,
