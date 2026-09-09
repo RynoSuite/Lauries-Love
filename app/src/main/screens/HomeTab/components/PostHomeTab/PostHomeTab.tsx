@@ -11,7 +11,6 @@ import React, {
 
 import colors from 'styles/colors';
 import styles from './PostHomeTab.styles';
-import defaultAvatar from 'assets/images/avatar-empty.png';
 import { useToastProvider } from 'providers/ToastProvider/ToastProvider';
 import { useGetUsersReq } from 'presentation/services/react-query/user.query';
 import { usePostsProvider } from 'providers/PostsProvider/PostsProvider';
@@ -112,9 +111,16 @@ const PostHomeTab: FunctionComponent<PostHomeTabProps> = ({
       return;
     }
 
-    const userCatch = userFilter[0];
+    // A copy, and an empty string rather than a bundled image. This used to
+    // assign the required PNG straight onto the shared object: require()
+    // returns a Metro asset NUMBER, and profilePicture is a storage path, so
+    // publicUrlFor() later called .startsWith on a number and threw. It also
+    // mutated a row owned by the query cache, so the bad value followed that
+    // member into the list, the map and their profile. Both screens already
+    // fall back to a placeholder when there is no picture.
+    const userCatch = { ...userFilter[0] };
     if (!post.creator?.plainProfileUrl) {
-      userCatch.profilePicture = defaultAvatar;
+      userCatch.profilePicture = '';
     }
 
     navigation.navigate('Connect', {

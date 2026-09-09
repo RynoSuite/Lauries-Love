@@ -79,6 +79,10 @@ export function publicUrlFor(
   path: string | null | undefined,
 ): string | null {
   if (!path) return null;
+  // Callers reach this with values from several differently-shaped user
+  // objects, and one of them was passing a require()d image (a number).
+  // A stored path is a string or it is nothing.
+  if (typeof path !== 'string') return null;
   if (path.startsWith('http')) return path;
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl ?? null;

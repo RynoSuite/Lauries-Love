@@ -55,7 +55,6 @@ import { PATHS_HOME_TAB } from 'main/navigators/paths';
 import { customShowError } from 'utils/other';
 
 // images
-import defaultAvatar from 'assets/images/avatar-empty.png';
 
 // icons
 import {
@@ -494,9 +493,16 @@ const HomeTabPost: FunctionComponent<HomeTabPostProps> = ({ navigation }) => {
       return;
     }
 
-    const userCatch = userFilter[0];
+    // A copy, and an empty string rather than a bundled image. This used to
+    // assign the required PNG straight onto the shared object: require()
+    // returns a Metro asset NUMBER, and profilePicture is a storage path, so
+    // publicUrlFor() later called .startsWith on a number and threw. It also
+    // mutated a row owned by the query cache, so the bad value followed that
+    // member into the list, the map and their profile. Both screens already
+    // fall back to a placeholder when there is no picture.
+    const userCatch = { ...userFilter[0] };
     if (!sender?.plainProfileUrl) {
-      userCatch.profilePicture = defaultAvatar;
+      userCatch.profilePicture = '';
     }
 
     navigationRedirect.navigate('Connect', {
