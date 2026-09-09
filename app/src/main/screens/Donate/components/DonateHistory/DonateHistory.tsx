@@ -18,9 +18,13 @@ export default function DonateHistory({ historyOpen = false }) {
     <>
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
-        style={{ padding: 8, backgroundColor: 'white', borderRadius: '100%' }}
+        style={{
+          padding: 8,
+          backgroundColor: colors.magenta,
+          borderRadius: 100,
+        }}
       >
-        <IconHistory width={24} height={24} fill={colors.heading} />
+        <IconHistory width={24} height={24} fill={colors.white} />
       </TouchableOpacity>
       {isOpen && (
         <BottomSheetDonateTab

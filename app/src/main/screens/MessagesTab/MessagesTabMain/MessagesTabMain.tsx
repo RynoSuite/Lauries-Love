@@ -434,7 +434,7 @@ const MessagesTabMain: FunctionComponent<MessagesTabMainProps> = ({
           <InputSearch
             search={search}
             setSearch={setSearch}
-            placeholder={'Search conversation'}
+            placeholder={'Search conversations'}
             styleContainer={styles.inputSearchContainer}
             styleInput={styles.inputSearch}
             iconProps={{ width: 24, height: 24, strokeWidth: 2.1 }}

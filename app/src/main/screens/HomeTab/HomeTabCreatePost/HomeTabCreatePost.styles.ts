@@ -87,8 +87,10 @@ const styles = StyleSheet.create({
   // described the audience the app had derived for you.
   groupPicker: {
     gap: 8,
+    paddingTop: 4,
   },
   groupPickerLabel: {
+    paddingHorizontal: 16,
     fontFamily: FONT_RALEWAY_500,
     fontSize: 14,
     lineHeight: 20,
@@ -97,6 +99,7 @@ const styles = StyleSheet.create({
   groupChips: {
     flexDirection: 'row',
     gap: 8,
+    paddingLeft: 16,
     paddingRight: 16,
   },
   groupChip: {

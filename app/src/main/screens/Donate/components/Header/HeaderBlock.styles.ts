@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
   },
   shareButton: {
     padding: 8,
-    backgroundColor: 'white',
-    borderRadius: '100%',
+    backgroundColor: colors.magenta,
+    borderRadius: 100,
   },
   titleHeader: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,

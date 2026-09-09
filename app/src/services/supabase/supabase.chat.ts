@@ -63,6 +63,7 @@ const msgShape = (m: any, senderProfile: any, attachmentUrl?: string | null) => 
 
 // conversation row (+members' profiles) -> legacy chat channel shape
 const conversationToChannel = (
+  unread: number,
   conv: any,
   memberProfiles: any[],
   meId: string,
@@ -85,7 +86,7 @@ const conversationToChannel = (
     members: memberProfiles.map(senderFromProfile),
     creator: null,
     lastMessage: lastMessage,
-    unreadMessageCount: 0,
+    unreadMessageCount: unread,
     data: '',
   };
 };
@@ -143,6 +144,22 @@ export async function getMyConversations(meIdHint?: string) {
       .in('conversation_id', convIds),
   ]);
 
+  // Which threads are waiting for me. A function because the read marker is
+  // on conversation_members while the messages are in another table, and a
+  // member cannot select rows in conversations they are not part of.
+  const unreadByConv: Record<string, number> = {};
+  try {
+    const { data: unreadRows } = await supabase.rpc(
+      'my_unread_by_conversation',
+    );
+    (unreadRows ?? []).forEach((r: any) => {
+      unreadByConv[r.conversation_id] = Number(r.unread_count) || 0;
+    });
+  } catch {
+    // A missing function must not empty the inbox: every row simply reads as
+    // having nothing unread.
+  }
+
   const membersByConv: Record<string, any[]> = {};
   const profileById: Record<string, any> = {};
   (memberRows ?? []).forEach((r: any) => {
@@ -166,7 +183,13 @@ export async function getMyConversations(meIdHint?: string) {
   });
 
   return (convs ?? []).map(c =>
-    conversationToChannel(c, membersByConv[c.id] ?? [], me, lastByConv[c.id] ?? null),
+    conversationToChannel(
+      unreadByConv[c.id] ?? 0,
+      c,
+      membersByConv[c.id] ?? [],
+      me,
+      lastByConv[c.id] ?? null,
+    ),
   );
 }
 
@@ -403,4 +426,21 @@ export function subscribeToConversation(
   return () => {
     supabase.removeChannel(channel);
   };
+}
+
+/**
+ * Mark a thread read for the caller.
+ *
+ * conversation_members carries no update policy, deliberately: a member must
+ * not be able to rewrite anyone's read state, including their own directly.
+ * The SECURITY DEFINER function is the only way in, and the web app has used
+ * it since the unread work — mobile never called it, so a badge here could
+ * only ever go up.
+ */
+export async function markConversationRead(channelUrl: string) {
+  const conversationId = await resolveThreadId(channelUrl);
+  const { error } = await supabase.rpc('mark_conversation_read', {
+    p_conversation_id: conversationId,
+  });
+  if (error) throw error;
 }

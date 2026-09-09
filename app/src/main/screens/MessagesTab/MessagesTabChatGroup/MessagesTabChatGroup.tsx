@@ -62,6 +62,7 @@ import {
   sendChatMessage,
   sendChatAttachment,
   subscribeToConversation,
+  markConversationRead,
 } from 'services/supabase/supabase.chat';
 import { getGroupMembers } from 'services/supabase/supabase.social';
 import { useToastProvider } from 'providers/ToastProvider/ToastProvider';
@@ -217,7 +218,18 @@ const MessagesTabChatGroup: FunctionComponent<MessagesTabChatGroupProps> = ({
   const renderImageDocument = useCallback(
     (item: BaseMessageSendBirdType) => {
       if (item.messageType !== 'file' || !item.type || !item.url) return null;
-      return (
+    
+  // Opening a thread clears it, which is what takes the count off the Messages
+  // tab. Keyed on the message count as well, so a reply landing while you are
+  // reading does not leave the badge behind.
+  useEffect(() => {
+    if (!SUPABASE_ENABLED || !route.params?.channelUrl) return;
+    markConversationRead(route.params.channelUrl).catch(error => {
+      if (__DEV__) console.warn('mark read failed', error);
+    });
+  }, [route.params?.channelUrl, messagesChannel.length]);
+
+  return (
         <TouchableOpacity
           onPress={() =>
             setOpen({

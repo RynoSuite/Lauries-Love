@@ -110,6 +110,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908320000_group_min_three_v1` | Restores the three-person minimum. **Run this; skip 300000** |
 | `20260909120000_post_delete_trigger_fix_v1` | Deleting any post failed on a BEFORE-trigger conflict; splits the reaction cleanup |
 | `20260909140000_leave_any_conversation_v1` | Swipe-to-delete a conversation: removes it for the caller only |
+| `20260909180000_unread_by_conversation_v1` | Per-thread unread counts, so the Messages list can show which thread is waiting |
 | `20260909160000_moderation_orphan_cleanup_v1` | **Bug.** Reports for deleted content stayed pending forever and inflated the dashboard count; closes them on delete + backfills |
 
 > `20260908220000` was amended after it was first run: `moderation_queue_detailed()`

@@ -12,6 +12,7 @@ import { IconQrWhite } from 'assets/icons-auto/components';
 
 // styles
 import styles from './HeaderTabMain.styles';
+import colors from 'styles/colors';
 
 type HeaderTabMainProps = {
   title: string;
@@ -32,7 +33,9 @@ const HeaderTabMain: FunctionComponent<HeaderTabMainProps> = ({
       {customRightElement}
       {!customRightElement && onPressQR && (
         <TouchableOpacity style={styles.buttonHeader} onPress={onPressQR}>
-          <IconQrWhite width={40} height={40} />
+          <View style={styles.qrPlate}>
+            <IconQrWhite width={24} height={24} fill={colors.white} />
+          </View>
         </TouchableOpacity>
       )}
     </View>
