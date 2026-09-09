@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
   paddedContainer: {
     padding: 20,
-    backgroundColor: "#F1F1EC",
+    backgroundColor: colors.surface2,
     flexDirection: 'column',
     borderRadius: 16,
     gap: 12,

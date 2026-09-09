@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontFamily: FONT_RALEWAY_500,
-    color: colors.neutral[700],
+    color: colors.muted,
   },
   amount: {
     fontSize: 52,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 1000,
-    backgroundColor: '#F4F4F2',
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center'
   },

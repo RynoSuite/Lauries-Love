@@ -34,7 +34,7 @@ export default function JoinTheFight() {
             style={styles.linkButtonIcon}
             width={18}
             height={18}
-            stroke={colors.neutral[600]}
+            stroke={colors.heading}
             strokeWidth={2}
           />
         </TouchableOpacity>

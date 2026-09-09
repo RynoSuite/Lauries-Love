@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.quaternary[200],
+    borderColor: colors.line,
   },
   input: {
     flex: 1,

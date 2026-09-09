@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_HANKEN_GROTESK_700,
   },
   info: {
-    color: colors.neutral[700],
+    color: colors.muted,
     fontSize: 12,
   },
   error: {

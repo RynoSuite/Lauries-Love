@@ -28,7 +28,7 @@ const HeaderBlock: FunctionComponent<HeaderBlockProps> = ({
             <IconShare
               width={24}
               height={24}
-              stroke={colors.neutral[600]}
+              stroke={colors.heading}
               strokeWidth={2.1}
             />
           </TouchableOpacity>

@@ -62,7 +62,7 @@ const InputDonate: FunctionComponent<InputProps & DonateInputProps> = ({
             borderColor: errorMessage
               ? colors.error[400]
               : isOnFocus
-              ? colors.primary[300]
+              ? colors.magentaText
               : 'transparent',
           },
         ]}

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   orLine: {
     height: 1,
     width: 35,
-    backgroundColor: colors.neutral[700],
+    backgroundColor: colors.line,
   },
 });
 
