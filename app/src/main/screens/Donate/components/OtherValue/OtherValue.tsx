@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import BottomSheetDonateTab from '../BottomSheetDonateTab/BottomSheetDonateTab';
 import styles from './OtherValue.styles';
+import colors from 'styles/colors';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import AmountContainer from '../AmountContainer/AmountContainer';
 import { TextInput } from 'react-native';
@@ -50,7 +51,7 @@ export default function OtherValue({
           <Text style={styles.input}>Other amount</Text>
         ) : (
           <LinearGradient
-            colors={['#B25D95', '#FFA23C']}
+            colors={[colors.magenta, colors.magentaHi]}
             locations={[0, 1]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}

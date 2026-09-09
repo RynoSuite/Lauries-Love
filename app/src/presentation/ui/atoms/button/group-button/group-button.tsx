@@ -26,7 +26,12 @@ export default function GroupButton<T>(props: ButtonGroupProps<T>) {
           onPress={() => handleOnChange(option.value)}
           style={[styles.button, selectedOption === option.value && styles.selected]}
         >
-          <Text style={styles.text}>
+          <Text
+            style={[
+              styles.text,
+              selectedOption === option.value && styles.selectedText,
+            ]}
+          >
             {option.label}
           </Text>
         </TouchableOpacity>

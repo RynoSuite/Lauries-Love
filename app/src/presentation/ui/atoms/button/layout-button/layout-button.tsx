@@ -2,6 +2,8 @@ import React from 'react';
 import { LayoutButtonProps } from './layout-button.model';
 import style from './layout-button.styles';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import colors from 'styles/colors';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 export default function LayoutButton<T>(props: LayoutButtonProps<T>) {
@@ -32,7 +34,7 @@ export default function LayoutButton<T>(props: LayoutButtonProps<T>) {
             if (!option) return null;
             return (
               <LinearGradient
-                colors={['#B25D95', '#FFA23C']}
+                colors={[colors.magenta, colors.magentaHi]}
                 locations={[0, 1]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}

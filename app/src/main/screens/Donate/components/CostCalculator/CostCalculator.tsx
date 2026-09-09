@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import BottomSheetDonateTab from '../BottomSheetDonateTab/BottomSheetDonateTab';
 import styles from './CostCalculator.styles';
+import colors from 'styles/colors';
 import { Text, View } from 'react-native';
 import AmountContainer from '../AmountContainer/AmountContainer';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -64,10 +65,7 @@ export default function CostCalculator({
                 {t('donate.tabs.calculator.support')}
               </Text>
               <LinearGradient
-                colors={[
-                  'rgba(178, 93, 149, 0.20)',
-                  'rgba(255, 162, 60, 0.20)',
-                ]}
+                colors={[`${colors.magenta}33`, `${colors.magentaHi}33`]}
                 locations={[0.5, 1]}
                 style={styles.daysContainer}
                 start={{ x: 0, y: 0 }}

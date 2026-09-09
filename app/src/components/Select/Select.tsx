@@ -107,7 +107,7 @@ export default function Select({
   return (
     <View>
       <LinearGradient
-        colors={['rgba(178, 93, 149, 1)', 'rgba(255, 162, 60, 1)']}
+        colors={[colors.magenta, colors.magentaHi]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={[

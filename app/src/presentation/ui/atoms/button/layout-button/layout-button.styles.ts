@@ -15,13 +15,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 20,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface2,
   },
   selected: {
     backgroundColor: 'transparent',
   },
   text: {
-    color: colors.neutral[700],
+    color: colors.body,
     fontFamily: FONT_HANKEN_GROTESK_400,
     fontSize: 16,
   },
