@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   View,
   Image,
@@ -26,7 +31,12 @@ const AvatarMessagesTab: FunctionComponent<AvatarMessagesTabProps> = ({
   resizeMode = 'cover',
   name,
 }) => {
-  const [loading, setLoading] = useState(true);
+  const hasImage = Boolean(imageUrl);
+  const [loading, setLoading] = useState(hasImage);
+
+  useEffect(() => {
+    setLoading(Boolean(imageUrl));
+  }, [imageUrl]);
 
   const showTwoLetters = useMemo(() => {
     const parts = (name ?? '').trim().split(/s+/).filter(Boolean);
@@ -48,7 +58,7 @@ const AvatarMessagesTab: FunctionComponent<AvatarMessagesTabProps> = ({
         },
       ]}
     >
-      {loading && (
+      {loading && hasImage && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator color={colors.primary[100]} />
         </View>
@@ -59,6 +69,7 @@ const AvatarMessagesTab: FunctionComponent<AvatarMessagesTabProps> = ({
           style={styles.avatar}
           resizeMode={resizeMode}
           onLoadEnd={() => setLoading(false)}
+          onError={() => setLoading(false)}
         />
       ) : imageUrl && typeof imageUrl !== 'string' ? (
         <Image

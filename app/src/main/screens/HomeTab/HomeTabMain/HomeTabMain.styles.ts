@@ -163,6 +163,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.heading,
   },
+  // The one action on the Groups tab, so it is the app's action colour
+  // rather than another quiet pill beside Trending and New.
+  exploreButton: {
+    marginLeft: 'auto',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: colors.magenta,
+  },
+  exploreButtonText: {
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 13,
+    color: colors.white,
+  },
 });
 
 export default styles;

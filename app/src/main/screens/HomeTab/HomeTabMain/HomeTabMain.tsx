@@ -1,4 +1,4 @@
-import { useIsFocused, CommonActions, useRoute } from '@react-navigation/native';
+import { useIsFocused, CommonActions, useRoute, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, {
   FunctionComponent,
@@ -22,7 +22,7 @@ import {
 
 import colors from 'styles/colors';
 import styles from './HomeTabMain.styles';
-import { PATHS_HOME_TAB } from 'main/navigators/paths';
+import { PATHS_HOME_TAB, PATHS_MESSAGES_TAB } from 'main/navigators/paths';
 import LoadingLine from 'components/LoadingLine/LoadingLine';
 import PostHomeTab from '../components/PostHomeTab/PostHomeTab';
 import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
@@ -59,6 +59,9 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
   const route = useRoute();
   const { friends, groupChannels } = useChatProvider();
   const { userChat } = useChatProvider();
+  // The screen's own navigation prop is typed to the Home stack; crossing to
+  // another tab needs the root, as HomeTabPost does.
+  const navigationRedirect = useNavigation<any>();
   const { checkGeoLocationCity } = useUserDBProvider();
   const { openIntercom, unreadCount } = useIntercom();
   const { loadingStorage, loadingServer, posts, getPosts, comments } =
@@ -511,6 +514,23 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
                 New
               </Text>
             </TouchableOpacity>
+
+            {/* Only on the Groups tab, where the question a member has is
+                "which groups can I be in", not "how should these posts be
+                sorted". Points at the browse-and-join list until the full
+                groups page exists — see PROJECT-STATUS 1a. */}
+            {selectType === 'groups' && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigationRedirect.navigate('Messages', {
+                    screen: PATHS_MESSAGES_TAB.messagesTabJoinGroup,
+                  })
+                }
+                style={styles.exploreButton}
+              >
+                <Text style={styles.exploreButtonText}>Explore groups</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {loadingServer ? (

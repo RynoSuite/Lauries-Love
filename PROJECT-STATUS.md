@@ -47,7 +47,14 @@ npx wrangler pages deploy dist --project-name lauries-love --branch main
    group visibility, notification types, password rules. Two apps writing the
    same table is only safe if they agree on every field, and the time to find
    out is before 2,200 real members are in it, not after.
-3. **SMTP2GO on Skyway's own details** (decided: our company info, not the
+3. **A real Groups page on mobile, mirroring web.** Web has a Groups
+   directory (My groups / Groups you can join) and a group page with that
+   group's posts, join, leave and members. Mobile has only the browse-and-join
+   list in Messages, and the community wall's Groups tab is a post filter
+   (`visibility === 'group'`), not a directory. The wall's "Explore groups"
+   button points at the join list as a stopgap and should point at the real
+   page once it exists.
+4. **SMTP2GO on Skyway's own details** (decided: our company info, not the
    client's domain). Needed for password reset and moderator alerts. Repoint
    `send-email`, which is hardcoded to SendGrid and has no account behind it.
 
