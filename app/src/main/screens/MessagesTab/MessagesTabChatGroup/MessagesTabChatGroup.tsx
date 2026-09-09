@@ -325,9 +325,19 @@ const MessagesTabChatGroup: FunctionComponent<MessagesTabChatGroupProps> = ({
           </View>
         </View>
         {!isUser && (
-          <Text style={styles.name}>
-            {!isUser ? item.sender?.nickname || item.sender?.userId : ' '}
-          </Text>
+          <View style={styles.senderRow}>
+            <AvatarMessagesTab
+              imageUrl={item.sender?.plainProfileUrl || ''}
+              name={item.sender?.nickname || ''}
+              width={24}
+              height={24}
+            />
+            <Text style={styles.name} numberOfLines={1}>
+              {/* Never the userId: with no nickname that printed a raw uuid
+                  under the message. */}
+              {item.sender?.nickname || 'Member'}
+            </Text>
+          </View>
         )}
         {isNextOtherDay && (
           <Text style={styles.date}>
@@ -548,7 +558,8 @@ const MessagesTabChatGroup: FunctionComponent<MessagesTabChatGroupProps> = ({
               </TouchableOpacity>
               <View style={styles.userContainer}>
                 <AvatarMessagesTab
-                  imageUrl={channel.coverUrl}
+                  imageUrl={channel.coverUrl || ''}
+                  name={channel.name || ''}
                   width={47}
                   height={47}
                 />

@@ -55,14 +55,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 22,
   },
-  name: {
-    fontFamily: FONT_RALEWAY_500,
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors.heading,
-    paddingLeft: 70,
-    textTransform: 'capitalize',
+  // The chip carries the indent now, so the label no longer pads itself off
+  // the left edge.
+  senderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingLeft: 12,
     paddingBottom: 4,
+  },
+  name: {
+    flexShrink: 1,
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.muted,
+    textTransform: 'capitalize',
   },
   messageContainer: {
     position: 'relative',
