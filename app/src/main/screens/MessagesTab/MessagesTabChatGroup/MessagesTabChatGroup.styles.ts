@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingLeft: 12,
+    paddingLeft: 20,
     paddingBottom: 4,
   },
   name: {
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    paddingLeft: 66,
+    paddingLeft: 20,
     paddingRight: 20,
     paddingBottom: 22,
     gap: 10,

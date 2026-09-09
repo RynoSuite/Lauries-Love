@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 // icons
-import { IconQrWhite } from 'assets/icons-auto/components';
+import { IconQr } from 'assets/icons-auto/components';
 
 // styles
 import styles from './HeaderTabMain.styles';
@@ -34,7 +34,11 @@ const HeaderTabMain: FunctionComponent<HeaderTabMainProps> = ({
       {!customRightElement && onPressQR && (
         <TouchableOpacity style={styles.buttonHeader} onPress={onPressQR}>
           <View style={styles.qrPlate}>
-            <IconQrWhite width={24} height={24} fill={colors.white} />
+            {/* IconQrWhite is a white circle with a grey glyph inside it —
+                its own plate. On a magenta plate that reads as a white disc
+                with something in the middle, which is where the golf ball
+                came from. IconQr is the glyph alone. */}
+            <IconQr width={22} height={22} fill={colors.white} />
           </View>
         </TouchableOpacity>
       )}

@@ -71,7 +71,6 @@ import { useToastProvider } from 'providers/ToastProvider/ToastProvider';
 import styles from './MessagesTabChatGroup.styles';
 import colors from 'styles/colors';
 
-import avatarDefault from 'assets/images/avatar-empty.png';
 import { useIntercom } from 'providers/IntercomProvider/IntercomProvider';
 import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
 import { toLocalizedDateString, toLocalizedTimeString } from 'utils/formatDate';
@@ -283,26 +282,12 @@ const MessagesTabChatGroup: FunctionComponent<MessagesTabChatGroupProps> = ({
             isNextOtherDay && styles.messageContainerOtherDay,
           ]}
         >
-          {!isUser && (
-            <View
-              style={[
-                styles.avatarContainer,
-                isPrevOtherDay && !isPrevOtherUser && { bottom: 24 },
-              ]}
-            >
-              <Image
-                source={
-                  item.sender?.profileUrl
-                    ? {
-                        uri: item.sender?.profileUrl,
-                        cache: 'force-cache',
-                      }
-                    : avatarDefault
-                }
-                style={styles.avatar}
-              />
-            </View>
-          )}
+          {/* No avatar beside the bubble. It was a raw Image that fell back to
+              a bundled empty-avatar PNG — a grey disc on every message from
+              anyone without a photo — and the attribution row below already
+              carries the member's chip, which shows their picture when they
+              have one and their initials when they do not. Two avatars per
+              message, one of them a placeholder. */}
           <View
             style={[
               styles.message,
