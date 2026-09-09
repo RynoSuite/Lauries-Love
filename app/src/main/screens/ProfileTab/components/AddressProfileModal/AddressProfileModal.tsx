@@ -8,7 +8,6 @@ import { UserDBType } from 'providers/UserDBProvider/UserDBProvider.types';
 import { ToastType } from 'providers/ToastProvider/ToastProvider.types';
 
 // providers
-import { useKeyboardProvider } from 'providers/KeyboardProvider/KeyboardProvider';
 import MessageToast from 'providers/ToastProvider/components/MessageToast/MessageToast';
 
 // components
@@ -21,6 +20,7 @@ import { useCountry } from 'presentation/hooks';
 
 // styles
 import styles from './AddressProfileModal.styles';
+import colors from 'styles/colors';
 
 type AddressProfileModalProps = {
   title: string;
@@ -37,7 +37,6 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
   onClose,
   onSave,
 }) => {
-  const { showKeyboard } = useKeyboardProvider();
   const { supportedCountries, defaultCountry } = useCountry();
   const [isShowCountries, setIsShowCountries] = useState(false);
   const [search, setSearch] = useState('');
@@ -61,14 +60,12 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
   );
 
   const snapPoints = useMemo(
-    () => ['10%', isShowCountries ? '70%' : showKeyboard ? '40%' : '50%'],
-    [isShowCountries, search, showKeyboard],
+    () => ['10%', isShowCountries ? '70%' : '50%'],
+    [isShowCountries],
   );
 
-  const index = useMemo(
-    () => (isShowCountries ? 2 : 1),
-    [isShowCountries, snapPoints],
-  );
+  // Always the taller of the two points; index 2 did not exist.
+  const index = 1;
 
   const selectCountry = useMemo(
     () =>
@@ -130,6 +127,7 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
       >
         <ButtonInput
           value={selectCountry?.name || ''}
+          placeholder="Country"
           onPress={() => setIsShowCountries(!isShowCountries)}
           isSelect
         />
@@ -148,7 +146,7 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
                   style={styles.item}
                   onPress={() => onSelectedCountry(country.code)}
                 >
-                  <Text>{country.name}</Text>
+                  <Text style={styles.itemText}>{country.name}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -161,6 +159,7 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
                 value={address.city}
                 onChangeText={city => setAddress({ ...address, city })}
                 placeholder="City"
+                placeholderTextColor={colors.faint}
                 maxLength={21}
               />
             </View>
@@ -173,6 +172,7 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
                   setAddress({ ...address, zipCode });
                 }}
                 placeholder="Zip code"
+                placeholderTextColor={colors.faint}
                 autoCapitalize="characters"
               />
             </View>

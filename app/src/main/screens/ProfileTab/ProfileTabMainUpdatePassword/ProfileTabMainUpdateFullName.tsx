@@ -16,7 +16,9 @@ import Input from 'components/Input/Input';
 import Button from 'components/Button/Button';
 
 // constants
-import { REGEX_MAIN_PASSWORD } from 'constants/regexp';
+import PasswordRequirements, {
+  isPasswordValid,
+} from 'components/PasswordRequirements/PasswordRequirements';
 
 // styles
 import styles from './ProfileTabMainUpdatePassword.styles';
@@ -47,7 +49,7 @@ const ProfileTabMainUpdatePassword: FunctionComponent<
       passwords.newPassword !== '' &&
       passwords.confirmPassword !== '' &&
       passwords.newPassword === passwords.confirmPassword &&
-      REGEX_MAIN_PASSWORD.test(passwords.newPassword),
+      isPasswordValid(passwords.newPassword),
     [passwords],
   );
 
@@ -63,7 +65,7 @@ const ProfileTabMainUpdatePassword: FunctionComponent<
         newPassword:
           passwords.newPassword === ''
             ? 'Required'
-            : !REGEX_MAIN_PASSWORD.test(passwords.newPassword)
+            : !isPasswordValid(passwords.newPassword)
             ? 'Password must contain at least 8 characters, 1 number, 1 special character and a combination of uppercase and lowercase'
             : '',
       }));
@@ -153,6 +155,7 @@ const ProfileTabMainUpdatePassword: FunctionComponent<
               errorMessage={errorMessages.newPassword}
               maxLength={24}
             />
+            <PasswordRequirements password={passwords.newPassword} />
             <View style={styles.lastInput}>
               <Input
                 value={passwords.confirmPassword}

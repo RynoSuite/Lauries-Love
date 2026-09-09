@@ -44,6 +44,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },
+  itemText: {
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 16,
+    color: colors.heading,
+  },
   item: {
     backgroundColor: colors.surface2,
     padding: 15,

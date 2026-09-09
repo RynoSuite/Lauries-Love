@@ -4,22 +4,24 @@ import { FONT_RALEWAY_500 } from 'styles/fonts';
 
 const styles = StyleSheet.create({
   container: {
+    gap: 8,
+    paddingTop: 4,
+  },
+  row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 13,
-    paddingLeft: 20,
-    backgroundColor: colors.surface2,
-    borderRadius: 10,
+    gap: 8,
   },
-  value: {
+  label: {
+    flex: 1,
     fontFamily: FONT_RALEWAY_500,
-    fontSize: 16,
+    fontSize: 13,
     lineHeight: 18,
-    color: colors.heading,
+    color: colors.body,
   },
-  placeholder: {
-    color: colors.faint,
+  // Met rules recede: what is left to do should be what stands out.
+  labelMet: {
+    color: colors.muted,
   },
 });
 

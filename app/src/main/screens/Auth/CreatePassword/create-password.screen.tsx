@@ -30,6 +30,9 @@ import { IconArrowLeft } from 'assets/icons-auto/components';
 // styles
 import colors from 'styles/colors';
 import { styles } from './create-password.styles';
+import PasswordRequirements, {
+  isPasswordValid,
+} from 'components/PasswordRequirements/PasswordRequirements';
 
 export default function CreatePasswordScreen() {
   const navigation = useNavigation();
@@ -65,12 +68,10 @@ export default function CreatePasswordScreen() {
     if (field === 'password') {
       const password = account.password;
 
-      const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&-])[A-Za-z\d@$!%*?&-]{8,}$/;
-
-      if (!passwordRegex.test(password)) {
-        error =
-          'Incomplete Password. Ensure your password includes all required characters for security';
+      // One source of truth: the checklist under the field decides, so the
+      // list and the validation cannot drift apart.
+      if (!isPasswordValid(password)) {
+        error = 'Your password does not meet all the requirements above yet.';
       }
     }
 
@@ -173,9 +174,7 @@ export default function CreatePasswordScreen() {
                 <View style={{ gap: 8 }}>
                   <Text style={styles.title}>Create Password</Text>
                   <Text style={styles.subtitle}>
-                    Create a password with at least 8 characters, 1 number and 1
-                    special character and a combination of uppercase and
-                    lowercase
+                    Choose a password that meets all of the requirements below.
                   </Text>
                 </View>
                 <View style={styles.formSection}>
@@ -192,6 +191,7 @@ export default function CreatePasswordScreen() {
                     onBlur={() => validateField('password')}
                     maxLength={24}
                   />
+                  <PasswordRequirements password={account.password} />
                   <Input
                     value={account.confirmPassword}
                     onChangeText={confirmPassword =>

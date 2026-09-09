@@ -29,7 +29,10 @@ import {
   DEFAULT_DATA,
   DEFAULT_ERROR_MESSAGES,
 } from './ForgotPassword.constants';
-import { REGEX_EMAIL, REGEX_MAIN_PASSWORD } from 'constants/regexp';
+import { REGEX_EMAIL } from 'constants/regexp';
+import PasswordRequirements, {
+  isPasswordValid,
+} from 'components/PasswordRequirements/PasswordRequirements';
 
 // styles
 import styles from './Forgot.styles';
@@ -89,7 +92,7 @@ const ForgotPasswordScreen: FunctionComponent = () => {
     const newErrorMessages = {
       ...DEFAULT_ERROR_MESSAGES,
       code: data.code.length === 6 ? null : 'Code must be 6 characters',
-      newPassword: REGEX_MAIN_PASSWORD.test(data.newPassword)
+      newPassword: isPasswordValid(data.newPassword)
         ? null
         : 'Password must contain at least 8 characters, 1 letter, 1 number, and 1 special character',
       confirmPassword:
@@ -226,6 +229,7 @@ const ForgotPasswordScreen: FunctionComponent = () => {
                         isPassword
                         maxLength={24}
                       />
+                      <PasswordRequirements password={data.newPassword} />
                       <Input
                         value={data.confirmPassword}
                         onChangeText={confirmPassword =>

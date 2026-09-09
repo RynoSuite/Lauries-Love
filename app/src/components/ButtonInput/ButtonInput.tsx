@@ -13,6 +13,8 @@ import colors from 'styles/colors';
 
 type ButtonInputProps = {
   value: string;
+  /** Shown when there is no value yet, so an empty select still says what it selects. */
+  placeholder?: string;
   IconRight?: (originalProps: IconType) => React.JSX.Element;
   isSelect?: boolean;
   onPress: () => void;
@@ -21,6 +23,7 @@ type ButtonInputProps = {
 
 const ButtonInput: FunctionComponent<ButtonInputProps> = ({
   value,
+  placeholder,
   IconRight,
   isSelect = false,
   onPress,
@@ -37,14 +40,16 @@ const ButtonInput: FunctionComponent<ButtonInputProps> = ({
       ]}
       onPress={onPress}
     >
-      <Text style={styles.value}>{value}</Text>
+      <Text style={[styles.value, !value && styles.placeholder]}>
+        {value || placeholder}
+      </Text>
       {IconRight ? (
         <IconRight width={24} height={24} />
       ) : isSelect ? (
         <IconArrowDown
           width={24}
           height={24}
-          stroke={colors.neutral[600]}
+          stroke={colors.muted}
           strokeWidth={2}
         />
       ) : null}
