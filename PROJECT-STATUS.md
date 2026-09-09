@@ -1,11 +1,12 @@
 # Where this project stands
 
-Working notes for the Laurie's Love takeover. Updated 8 Sept 2026.
+Working notes for the Laurie's Love takeover. Updated 9 Sept 2026.
 Read this first when picking the work back up.
 
-Companion docs: `MIGRATION-RUNBOOK.md` (how to reach the legacy data),
-`DEV-SETUP.md` (running the mobile app), `PROJECT-STATE.md` (Aaron's original
-history, partly stale).
+Companion docs: `SESSION-2026-09-09.md` (**everything done on 9 Sept and what
+comes next, in order — read this second**), `MIGRATION-RUNBOOK.md` (how to
+reach the legacy data), `DEV-SETUP.md` (running the mobile app),
+`PROJECT-STATE.md` (Aaron's original history, partly stale).
 
 ---
 
@@ -31,6 +32,9 @@ npx wrangler pages deploy dist --project-name lauries-love --branch main
 ---
 
 ## 1a. Do first, right after the review call
+
+The detail behind each of these, and the full log of what changed on 9 Sept,
+is in `SESSION-2026-09-09.md`.
 
 1. **Web and mobile write different values for the same profile fields.** Age
    ranges: web writes `18-29/30-39/40-49/50-59/60-69/70+`, mobile writes and
