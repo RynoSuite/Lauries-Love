@@ -69,15 +69,9 @@ const LoginScreen: FunctionComponent = () => {
         setErrorMessages(newErrorMessages);
         return;
       } else setErrorMessages(DEFAULT_ERROR_MESSAGES_LOGIN);
-
-      console.log('[LL] calling authAWS for', data.email);
       const user = await authAWS(data.email, data.password);
-      console.log('[LL] authAWS returned:', JSON.stringify(user));
       if (user) setIsAuth(true);
-      if (!user) {
-        console.log('[LL] authAWS returned falsy — stopping here');
-        return;
-      }
+      if (!user) return;
 
       onCapture({
         typeEvent: 'Login',
@@ -120,7 +114,7 @@ const LoginScreen: FunctionComponent = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView scrollEnabled={false} contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
-          <Image source={logo} style={styles.image} resizeMode="cover" />
+          <Image source={logo} style={styles.image} resizeMode="contain" />
           <View style={styles.bottomSheet}>
             <LinearGradient
               colors={[colors.ground, colors.surface, colors.surface2]}

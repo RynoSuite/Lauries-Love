@@ -112,18 +112,6 @@ const ApplicationNavigator: FunctionComponent<ApplicationNavigatorProps> = ({
     );
   }
 
-  console.log('[LL] gate:', JSON.stringify({
-    isOnboarding,
-    hasUserDB: !!userDB,
-    role: !!userDB?.role,
-    diagnosisTypes: userDB?.diagnosisTypes?.length ?? 0,
-    age: userDB?.age ?? null,
-    gender: userDB?.gender ?? null,
-    city: userDB?.city ?? null,
-    country: userDB?.country ?? null,
-    isRegistrationFull: !!isRegistrationFull,
-  }));
-
   return (
     <>
       <StatusBar barStyle="light-content" />

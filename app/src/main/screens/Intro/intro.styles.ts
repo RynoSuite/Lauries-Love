@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 0 : 20,
   },
   logoContainer: {
+    alignItems: 'center',
     paddingVertical: 24,
   },
   flatListContainer: {
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     textAlign: 'center',
     width: 325,
+    color: colors.body,
   },
   paginationContainer: {
     flexDirection: 'row',

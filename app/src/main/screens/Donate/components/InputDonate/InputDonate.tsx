@@ -76,7 +76,7 @@ const InputDonate: FunctionComponent<InputProps & DonateInputProps> = ({
             style={styles.input}
             textContentType={textContentType}
             keyboardType={keyboardType}
-            placeholderTextColor={colors.neutral[600]}
+            placeholderTextColor={colors.faint}
             autoCapitalize={autoCapitalize}
             onFocus={() => setIsOnFocus(true)}
             onBlur={() => {
@@ -92,7 +92,7 @@ const InputDonate: FunctionComponent<InputProps & DonateInputProps> = ({
             style={styles.input}
             textContentType={textContentType}
             keyboardType={keyboardType}
-            placeholderTextColor={colors.neutral[600]}
+            placeholderTextColor={colors.faint}
             autoCapitalize={autoCapitalize}
             onFocus={() => setIsOnFocus(true)}
             onBlur={() => {

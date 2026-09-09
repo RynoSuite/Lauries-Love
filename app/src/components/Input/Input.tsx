@@ -90,7 +90,7 @@ const Input: FunctionComponent<InputProps> = ({
             textContentType={textContentType}
             keyboardType={keyboardType}
             secureTextEntry={isPassword && isSecureTextEntry}
-            placeholderTextColor={colors.neutral[600]}
+            placeholderTextColor={colors.faint}
             autoCapitalize={autoCapitalize}
             onFocus={() => setIsOnFocus(true)}
             onBlur={() => {
@@ -108,7 +108,7 @@ const Input: FunctionComponent<InputProps> = ({
             textContentType={textContentType}
             keyboardType={keyboardType}
             secureTextEntry={isPassword && isSecureTextEntry}
-            placeholderTextColor={colors.neutral[600]}
+            placeholderTextColor={colors.faint}
             autoCapitalize={autoCapitalize}
             onFocus={() => setIsOnFocus(true)}
             onBlur={() => {

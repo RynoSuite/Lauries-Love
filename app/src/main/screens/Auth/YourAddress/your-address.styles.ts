@@ -79,6 +79,6 @@ export const styles = StyleSheet.create({
   modalText: {
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
-    color: colors.neutral[1000],
+    color: colors.heading,
   },
 });

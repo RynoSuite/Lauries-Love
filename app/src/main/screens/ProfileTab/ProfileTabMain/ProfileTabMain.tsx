@@ -249,7 +249,7 @@ const ProfileTabMain: FunctionComponent<ClientsMainScreenProps> = ({
               <ProfileBlock setSelectTypeModal={setSelectTypeModal} />
             </View>
             {isStaff && (
-              <View style={{ marginTop: 8 }}>
+              <View style={{ marginTop: 8, paddingHorizontal: 16 }}>
                 <ButtonModalTabs
                   Icon={IconMessages}
                   label="Support inbox"

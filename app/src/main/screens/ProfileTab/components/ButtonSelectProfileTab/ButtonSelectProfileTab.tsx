@@ -20,7 +20,7 @@ const ButtonSelectProfileTab: FunctionComponent<
   ButtonSelectProfileTabProps
 > = ({ title, onPress, isSelected, isCheckbox = false }) => (
   <LinearGradient
-    colors={[colors.primary[200], colors.secondary[500]]}
+    colors={[colors.magenta, colors.magentaHi]}
     locations={[0, 0.8]}
     style={styles.universalContainer}
     start={{ x: 0, y: 0 }}

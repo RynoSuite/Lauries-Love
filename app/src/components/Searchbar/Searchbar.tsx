@@ -46,7 +46,7 @@ export default function Searchbar({
           value={value}
           onChangeText={text => onChangeText(text)}
           onSubmitEditing={handleSearch}
-          placeholderTextColor={colors.neutral[700]}
+          placeholderTextColor={colors.faint}
         />
       ) : (
         <TextInput
@@ -55,7 +55,7 @@ export default function Searchbar({
           value={value}
           onSubmitEditing={handleSearch}
           onChangeText={text => onChangeText(text)}
-          placeholderTextColor={colors.neutral[700]}
+          placeholderTextColor={colors.faint}
         />
       )}
 

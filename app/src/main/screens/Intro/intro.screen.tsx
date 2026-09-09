@@ -96,15 +96,18 @@ export default function IntroScreen() {
 
   return (
     <LinearGradient
-      colors={[colors.secondary[100], colors.quaternary[100]]}
-      locations={[0.8, 1]}
+      colors={[colors.ground, colors.surface, colors.deepwater]}
+      locations={[0, 0.6, 1]}
       style={{ flex: 1 }}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
       <SafeAreaView style={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={require('assets/images/lauries-love.png')} />
+          <Image
+            source={require('assets/images/lauries-love.png')}
+            style={{ width: 180, height: 180, resizeMode: 'contain' }}
+          />
         </View>
         <View style={{ gap: 24 }}>
           <View style={styles.flatListContainer}>

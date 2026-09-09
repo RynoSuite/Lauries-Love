@@ -13,10 +13,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     position: 'relative',
+    backgroundColor: colors.deepwater,
+  },
+  // The sheet fills whatever is left below the logo, so it always reaches the
+  // bottom edge rather than stopping at a fixed height.
+  sheetFill: {
+    flex: 1,
   },
   image: {
-    width: WIDTH,
-    height: HEIGHT > 1000 ? 400 : 300,
+    alignSelf: 'center',
+    width: 180,
+    height: 180,
+    marginTop: HEIGHT > 1000 ? 72 : 48,
+    marginBottom: 24,
   },
   containerGradient: {
     flex: 1,
@@ -25,11 +34,12 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   bottomSheet: {
-    top: -70,
+    marginTop: -20,
     width: WIDTH,
+    flex: 1,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    minHeight: HEIGHT * 0.74,
+    minHeight: HEIGHT * 0.56,
     // Was white. The approved design is a dark ground, and a white sheet on
     // it reads as an unstyled system screen rather than the product.
     backgroundColor: colors.surface,

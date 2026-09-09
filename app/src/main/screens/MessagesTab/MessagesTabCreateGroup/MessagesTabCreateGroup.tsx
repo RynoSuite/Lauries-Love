@@ -35,6 +35,7 @@ import { PATHS_MESSAGES_TAB } from 'main/navigators/paths';
 // styles
 import styles from './MessagesTabCreateGroup.styles';
 import { UserSendBirdType } from 'providers/ChatProvider/ChatProvider.types';
+import { useToastProvider } from 'providers/ToastProvider/ToastProvider';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -45,6 +46,7 @@ type MessagesTabCreateGroupProps = {
 const MessagesTabCreateGroup: FunctionComponent<
   MessagesTabCreateGroupProps
 > = ({ navigation }) => {
+  const { showToast } = useToastProvider();
   const { getChannels } = useChatProvider();
   const [selectedTab, setSelectedTab] = useState(0);
   const [newGroup, setNewGroup] = useState(DEFAULT_NEW_GROUP);
@@ -84,7 +86,9 @@ const MessagesTabCreateGroup: FunctionComponent<
 
   const createGroup = async () => {
     try {
-      if (!newGroup.name || !newGroup.permissions || isLoading) {
+      if (isLoading) return;
+      if (!newGroup.name?.trim()) {
+        showToast({ type: 'error', message: 'Give the group a name first.' });
         setIsCreateGroup(false);
         return;
       }
@@ -120,7 +124,11 @@ const MessagesTabCreateGroup: FunctionComponent<
         return; // `finally` still clears the loading/create flags
       }
     } catch (error) {
-      if (__DEV__) console.warn('error', error);
+      showToast({
+        type: 'error',
+        message:
+          error instanceof Error ? error.message : 'Could not create the group.',
+      });
     } finally {
       setIsLoading(false);
       setIsCreateGroup(false);

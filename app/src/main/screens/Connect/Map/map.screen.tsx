@@ -266,14 +266,6 @@ export default function MapScreen() {
 
       const adjustedFriends = offsetOverlappingMarkers(usersWithLocation);
 
-      console.log('[LL map]', JSON.stringify({
-        fetched: usersData.data.length,
-        withLocation: usersData.data.filter(
-          (u: any) => u.geoLocation?.latitude && u.geoLocation?.longitude,
-        ).length,
-        insideBounds: usersWithLocation.length,
-        afterOffset: adjustedFriends.length,
-      }));
 
       setAllFriends(adjustedFriends);
       setIsLoading(false);
@@ -571,7 +563,6 @@ export default function MapScreen() {
   // children: rebuilding the page on every change would throw away the pan and
   // zoom the member had set.
   const pushMarkersToMap = useCallback(() => {
-    console.log('[LL map] pushing markers:', (friends ?? []).length);
     const list = (friends ?? [])
       .filter(u => u.geoLocation?.latitude != null && u.geoLocation?.longitude != null)
       .map(u => ({

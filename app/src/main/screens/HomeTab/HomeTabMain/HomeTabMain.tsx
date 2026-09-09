@@ -429,16 +429,17 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
           <NotificationButtonHomeTab navigation={navigation} />
         </View>
 
-        <InputSearch
-          search={search}
-          setSearch={setSearch}
-          placeholder="Search Community"
-          styleContainer={styles.inputSearchContainer}
-          styleInput={styles.inputSearch}
-          iconProps={{ width: 20, height: 20, strokeWidth: 2.1 }}
-          placeholderTextColor={colors.neutral[600]}
-          onClear={() => setSearch('')}
-        />
+        <View style={styles.searchContainer}>
+          <InputSearch
+            search={search}
+            setSearch={setSearch}
+            placeholder="Search Community"
+            styleContainer={styles.inputSearchContainer}
+            styleInput={styles.inputSearch}
+            iconProps={{ width: 20, height: 20, strokeWidth: 2.1 }}
+            onClear={() => setSearch('')}
+          />
+        </View>
         {!showResultPage && (
           <ThreeButtonsHomeTab
             selectType={selectType}

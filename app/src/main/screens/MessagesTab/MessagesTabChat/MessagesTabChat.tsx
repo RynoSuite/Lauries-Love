@@ -557,12 +557,7 @@ const MessagesTabChat: FunctionComponent<MessagesTabChatProps> = ({
                 }}
                 style={styles.buttonHeader}
               >
-                <IconArrowLeft
-                  width={28}
-                  height={28}
-                  stroke={colors.heading}
-                  strokeWidth={2}
-                />
+                <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
               </TouchableOpacity>
               <View style={styles.userContainer}>
                 <AvatarMessagesTab

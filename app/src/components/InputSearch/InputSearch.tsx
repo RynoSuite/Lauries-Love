@@ -43,7 +43,9 @@ const InputSearch: FunctionComponent<InputSearchProps> = ({
   styleContainer,
   styleInput,
   iconProps,
-  placeholderTextColor,
+  // Defaulted rather than left undefined: an omitted value renders the
+  // platform's own placeholder grey, which disappears against the dark input.
+  placeholderTextColor = colors.faint,
   isHideIcon = false,
   onClear,
   isDisabled = false,

@@ -235,11 +235,7 @@ const MessagesTabProfile: FunctionComponent<MessagesTabProfileProps> = ({
         <View style={styles.container}>
           <View style={styles.backButton}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
-              <IconArrowLeft
-                width={30}
-                height={30}
-                stroke={colors.neutral[1000]}
-              />
+              <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
             </TouchableOpacity>
             <View style={styles.profileContainer}>
               <View style={styles.profileDetails}>

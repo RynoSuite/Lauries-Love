@@ -150,12 +150,7 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
         ]}
       >
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-          <IconArrowLeft
-            width={28}
-            height={28}
-            stroke={colors.heading}
-            strokeWidth={2}
-          />
+          <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
         </TouchableOpacity>
         <Text numberOfLines={1} style={styles.headerTitle}>
           {fullName}
@@ -164,12 +159,7 @@ const OpenFileModal: FunctionComponent<OpenFileModalProps> = ({
           onPress={onClose}
           style={[styles.closeButton, styles.closeButtonHidden]}
         >
-          <IconArrowLeft
-            width={28}
-            height={28}
-            stroke={colors.heading}
-            strokeWidth={2}
-          />
+          <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
         </TouchableOpacity>
       </View>
       <ScrollView

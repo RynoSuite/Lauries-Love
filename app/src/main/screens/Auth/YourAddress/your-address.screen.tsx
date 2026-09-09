@@ -147,11 +147,7 @@ export default function YourAddressScreen() {
 
   return (
     <LinearGradient
-      colors={[
-        'rgba(255, 227, 195, 0.70)',
-        colors.neutral[100],
-        colors.secondary[300],
-      ]}
+      colors={[colors.ground, colors.surface, colors.deepwater]}
       locations={[0, 0.4, 1]}
       style={styles.linearGradient}
       start={{ x: 0, y: 0 }}
@@ -170,11 +166,7 @@ export default function YourAddressScreen() {
                   onPress={onPressBack}
                   style={{ alignSelf: 'flex-start' }}
                 >
-                  <IconArrowLeft
-                    width={30}
-                    height={30}
-                    stroke={colors.neutral[1000]}
-                  />
+                  <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
               <View style={{ gap: 24 }}>
@@ -194,7 +186,7 @@ export default function YourAddressScreen() {
                         styles.countryText,
                         {
                           color: address.country
-                            ? colors.neutral[1000]
+                            ? colors.heading
                             : colors.neutral[600],
                         },
                       ]}

@@ -249,11 +249,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
 
   return (
     <LinearGradient
-      colors={[
-        colors.secondary[200],
-        colors.neutral[100],
-        colors.tertiary[100],
-      ]}
+      colors={[colors.ground, colors.surface, colors.deepwater]}
       locations={[0, 0.4, 1]}
       style={{ flex: 1 }}
       start={{ x: 0, y: 0 }}
@@ -264,11 +260,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
           <View style={styles.container}>
             <View style={styles.backButton}>
               <TouchableOpacity onPress={handleBack}>
-                <IconArrowLeft
-                  width={30}
-                  height={30}
-                  stroke={colors.neutral[1000]}
-                />
+                <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
               </TouchableOpacity>
 
               <View style={styles.profileContainer}>

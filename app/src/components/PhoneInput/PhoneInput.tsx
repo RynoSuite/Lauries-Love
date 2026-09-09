@@ -153,7 +153,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
             <View style={styles.modalContainer}>
               <View style={styles.headerModal}>
                 <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <IconArrowLeft width={30} height={30} />
+                  <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
                 </TouchableOpacity>
                 <Text style={styles.titleTextModal}>
                   Select country or region

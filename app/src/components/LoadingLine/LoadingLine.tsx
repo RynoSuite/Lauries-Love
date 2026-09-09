@@ -17,7 +17,7 @@ const LoadingLine: FunctionComponent = () => {
 
   const config: LinearGradientBackgroundScreenType = useMemo(
     () => ({
-      colors: [colors.tertiary[100], colors.primary[300]],
+      colors: [colors.magenta, colors.magentaText],
       locations: [0, 1],
       start: { x: 0, y: 0 },
       end: { x: 1, y: 0 },

@@ -97,10 +97,7 @@ const UserDBProvider: FunctionComponent<UserDBProviderProps> = ({
           },
         },
       );
-
-      console.log('[LL] getUserDB result:', result ? 'got profile' : 'NULL');
       if (!result) {
-        console.log('[LL] getUserDB returned nothing — userDB stays null');
         return;
       }
 

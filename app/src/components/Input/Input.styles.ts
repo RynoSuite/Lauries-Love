@@ -17,6 +17,9 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     paddingLeft: 13,
     paddingRight: 16,
+    // Without this the typed text is the platform default — black, on a dark
+    // field. This one component backs every form in the app.
+    color: colors.heading,
   },
   containerError: {
     position: 'relative',

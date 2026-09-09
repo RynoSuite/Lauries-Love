@@ -44,7 +44,7 @@ const GroupChannelCardCheckbox: React.FC<GroupChannelCardCheckboxProps> = ({ cha
             height: 40,
             borderRadius: 20,
             marginRight: 12,
-            backgroundColor: colors.secondary[600],
+            backgroundColor: colors.magenta,
             justifyContent: 'center',
             alignItems: 'center',
           }}

@@ -48,49 +48,6 @@ const NewGroupCreateGroup: FunctionComponent<NewGroupCreateGroupProps> = ({
   setNewGroup,
   setIsShowImageModal,
 }) => {
-  const [visible, setVisible] = useState(false);
-
-  const toggleMenu = () => {
-    setVisible(!visible);
-  };
-
-  const buttonAnchor = useMemo(
-    () => (
-      <LinearGradient
-        colors={[colors.magentaText, colors.tertiary[500]]}
-        style={[
-          styles.permissionsButtonGradient,
-          visible && styles.permissionsButtonGradientActive,
-        ]}
-      >
-        <Pressable
-          onPress={toggleMenu}
-          style={[
-            styles.permissionsButton,
-            visible && styles.permissionsButtonActive,
-          ]}
-        >
-          <View style={styles.background} />
-          <Text
-            style={[
-              styles.permissionsText,
-              newGroup.permissions !== null && styles.permissionsTextSelected,
-            ]}
-          >
-            {newGroup.permissions || 'Group permissions'}
-          </Text>
-          <IconArrowDown
-            width={20}
-            height={20}
-            stroke={'red'}
-            strokeWidth={2}
-          />
-        </Pressable>
-      </LinearGradient>
-    ),
-    [newGroup.permissions, visible],
-  );
-
   return (
     <ScrollView scrollEnabled={false} contentContainerStyle={styles.container}>
       <View style={styles.groupNameContainer}>
@@ -122,35 +79,6 @@ const NewGroupCreateGroup: FunctionComponent<NewGroupCreateGroupProps> = ({
           placeholderTextColor={colors.faint}
         />
       </View>
-      <Menu
-        visible={visible}
-        onDismiss={toggleMenu}
-        anchor={buttonAnchor}
-        anchorPosition={'bottom'}
-        contentStyle={styles.menu}
-      >
-        <Menu.Item
-          onPress={() => {
-            setNewGroup(prev => ({ ...prev, permissions: 'public' }));
-            toggleMenu();
-          }}
-          title={'Public'}
-          contentStyle={styles.itemMenu}
-          titleStyle={styles.titleItemMenu}
-          rippleColor={colors.transparent}
-        />
-        <View style={styles.separatorMenu} />
-        <Menu.Item
-          onPress={() => {
-            setNewGroup(prev => ({ ...prev, permissions: 'private' }));
-            toggleMenu();
-          }}
-          title={'Private'}
-          contentStyle={styles.itemMenu}
-          titleStyle={styles.titleItemMenu}
-          rippleColor={colors.transparent}
-        />
-      </Menu>
       <View style={styles.permissionsContainer}>
         <Text style={styles.permissionsTitle}>
           Group members: {newGroup.members.length}

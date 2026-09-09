@@ -116,13 +116,7 @@ export default function DonateInvoice() {
                 style={[styles.titleContainer, !isNew && { paddingBottom: 40 }]}
               >
                 <TouchableOpacity onPress={goBack}>
-                  <IconArrowLeft
-                    width={28}
-                    height={28}
-                    stroke={colors.heading}
-                    strokeWidth={2}
-                    style={takingScreenshot && styles.backButtonHide}
-                  />
+                  <IconArrowLeft width={28} height={28} stroke={colors.heading} strokeWidth={2} />
                 </TouchableOpacity>
                 {isNew && !takingScreenshot ? (
                   <View style={{ flex: 1, alignItems: 'center' }}>
