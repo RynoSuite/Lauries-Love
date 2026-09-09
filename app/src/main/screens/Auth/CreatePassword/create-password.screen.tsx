@@ -71,7 +71,7 @@ export default function CreatePasswordScreen() {
       // One source of truth: the checklist under the field decides, so the
       // list and the validation cannot drift apart.
       if (!isPasswordValid(password)) {
-        error = 'Your password does not meet all the requirements above yet.';
+        error = 'Your password does not meet all the requirements below yet.';
       }
     }
 

@@ -91,6 +91,8 @@ declare global {
 export type ConnectStackParamList = {
   QRScreen: undefined;
   MapView: { user?: any; filters?: any };
-  ListView: { search?: any; filters: any };
+  // region: the map's current viewport, so the list can show the members
+  // that are actually in view rather than an unrelated page of the community.
+  ListView: { search?: any; filters: any; region?: any };
   DetailView: { user: any; fromExternal?: Boolean };
 };

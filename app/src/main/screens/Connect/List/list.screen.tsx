@@ -23,7 +23,10 @@ import Searchbar from 'components/Searchbar/Searchbar';
 import UserCard from '../components/UserCard/UserCard';
 import FiltersModal from '../components/FiltersModal/FiltersModal';
 import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
-import { useGetUsersReq } from 'presentation/services/react-query/user.query';
+import {
+  useGetUsersInRegionReq,
+  useGetUsersReq,
+} from 'presentation/services/react-query/user.query';
 import {
   IconChevronDown,
   IconMapPin,
@@ -75,15 +78,50 @@ export default function ListScreen() {
   const navigation = useNavigation();
   const route =
     useRoute<
-      RouteProp<{ params: { search: string; filters: Filters } }, 'params'>
+      RouteProp<
+        {
+          params: {
+            search: string;
+            filters: Filters;
+            region?: {
+              latitude: number;
+              longitude: number;
+              latitudeDelta: number;
+              longitudeDelta: number;
+            };
+          };
+        },
+        'params'
+      >
     >();
 
   const userParams = route.params;
 
   const { userDB } = useUserDBProvider();
-  const { data: usersData } = useGetUsersReq();
 
-  const { supportedCountryCodes } = useCountry();
+  // The list is the map's list. Arriving from the map it carries that
+  // viewport, and shows exactly the members the map was showing — zoom into a
+  // state, open the list, and it is that state's members. Reached any other
+  // way there is no viewport, and it falls back to a page of the community.
+  const region = userParams?.region;
+  const { data: regionUsers } = useGetUsersInRegionReq(region ?? null);
+  const { data: allUsers } = useGetUsersReq({ enabled: !region });
+  const usersData = region ? regionUsers : allUsers;
+
+  const { supportedCountries, supportedCountryCodes } = useCountry();
+
+  // A profile may hold either the code or the full name, depending on where it
+  // was written.
+  const isSupportedCountry = useCallback(
+    (country?: string | null) => {
+      if (!country) return false;
+      const value = country.toLowerCase();
+      return supportedCountries.some(
+        c => c.code.toLowerCase() === value || c.name.toLowerCase() === value,
+      );
+    },
+    [supportedCountries],
+  );
 
   const [query, setQuery] = useState(userParams?.search);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -120,11 +158,15 @@ export default function ListScreen() {
       user =>
         user.geoLocation &&
         user.id !== userDB?.id &&
-        supportedCountryCodes.includes(user.country),
+        // A profile stores the country NAME ("United States") while this list
+        // holds CODES ("US"), so a strict includes() matched almost nobody and
+        // the list showed a handful of people out of thousands. Accept either,
+        // case-insensitively — the same fix the map screen already carries.
+        isSupportedCountry(user.country),
     ) as User[];
 
     return offsetOverlappingMarkers(usersWithLocation);
-  }, [usersData, userDB?.id, supportedCountryCodes]);
+  }, [usersData, userDB?.id, isSupportedCountry]);
 
   const isLoading = !allFriends;
 

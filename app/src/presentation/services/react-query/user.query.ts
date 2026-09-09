@@ -56,9 +56,10 @@ type Variables = Partial<User>;
 //   });
 // }
 
-export const useGetUsersReq = () => {
+export const useGetUsersReq = ({ enabled = true }: { enabled?: boolean } = {}) => {
   const url = `${appConfig.apiUrl}/users`;
   return useQuery({
+    enabled,
     queryKey: [RequestKeys.userList],
     queryFn: async () => {
       const res = await makeAxiosHttpClient().request({

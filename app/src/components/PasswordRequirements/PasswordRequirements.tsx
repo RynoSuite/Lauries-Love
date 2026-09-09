@@ -1,12 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { Text, View } from 'react-native';
 
-// icons
-import { IconCheck, IconXMark } from 'assets/icons-auto/components';
-
 // styles
 import styles from './PasswordRequirements.styles';
-import colors from 'styles/colors';
 
 /**
  * The password rules, shown as a live checklist.
@@ -49,6 +45,30 @@ type PasswordRequirementsProps = {
   password: string;
 };
 
+/**
+ * The tick and the cross, drawn from two bars each.
+ *
+ * The icon set's IconCheck is a filled box glyph rather than a tick, and it
+ * takes its colour from `fill`, so a `stroke` prop on it did nothing — it
+ * rendered as a green square. Two rotated bars are unambiguous, size cleanly
+ * at 14px, and take whatever colour they are given.
+ */
+const Mark: FunctionComponent<{ met: boolean }> = ({ met }) => (
+  <View style={styles.mark}>
+    {met ? (
+      <>
+        <View style={[styles.bar, styles.tickShort]} />
+        <View style={[styles.bar, styles.tickLong]} />
+      </>
+    ) : (
+      <>
+        <View style={[styles.bar, styles.crossA]} />
+        <View style={[styles.bar, styles.crossB]} />
+      </>
+    )}
+  </View>
+);
+
 const PasswordRequirements: FunctionComponent<PasswordRequirementsProps> = ({
   password,
 }) => (
@@ -59,21 +79,7 @@ const PasswordRequirements: FunctionComponent<PasswordRequirementsProps> = ({
       const met = password.length > 0 && rule.test(password);
       return (
         <View key={rule.label} style={styles.row}>
-          {met ? (
-            <IconCheck
-              width={14}
-              height={14}
-              stroke={colors.successText}
-              strokeWidth={3}
-            />
-          ) : (
-            <IconXMark
-              width={14}
-              height={14}
-              stroke={colors.heading}
-              strokeWidth={2.5}
-            />
-          )}
+          <Mark met={met} />
           <Text style={[styles.label, met && styles.labelMet]}>
             {rule.label}
           </Text>

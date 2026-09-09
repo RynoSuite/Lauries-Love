@@ -432,6 +432,9 @@ export default function MapScreen() {
     navigation.navigate('Connect', {
       screen: 'ListView',
       params: {
+        // The list shows the people the map is showing, so it needs to know
+        // what the map is looking at.
+        region: viewRegion ?? region ?? initialRegion,
         search: query,
         filters: {
           country,
