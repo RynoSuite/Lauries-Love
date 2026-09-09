@@ -150,13 +150,27 @@ const MessagesTabCreateGroup: FunctionComponent<
           <HeaderCreateGroup
             title={titleHeader}
             labelRight={
-              selectedTab === 0 ? 'Next' : isLoading ? 'Creating...' : 'Create'
+              selectedTab === 0
+                ? newGroup.members.length < 2
+                  ? `Add ${2 - newGroup.members.length} more`
+                  : 'Next'
+                : isLoading
+                ? 'Creating...'
+                : 'Create'
             }
             onPressRight={() => {
               if (selectedTab === 0) setSelectedTab(1);
               else setIsCreateGroup(true);
             }}
-            isRightDisabled={isLoading || isCreateGroup}
+            // Two others minimum, three people counting yourself. That is
+            // the rule the database enforces in create_group_conversation, so
+            // letting Next through with fewer only produces a failure two
+            // screens later. Below the minimum the header says how many more.
+            isRightDisabled={
+              isLoading ||
+              isCreateGroup ||
+              (selectedTab === 0 && newGroup.members.length < 2)
+            }
             onPressLeft={() => {
               if (selectedTab === 0) navigation.goBack();
               else setSelectedTab(0);

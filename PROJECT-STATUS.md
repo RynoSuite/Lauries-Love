@@ -30,6 +30,27 @@ npx wrangler pages deploy dist --project-name lauries-love --branch main
 
 ---
 
+## 1a. Do first, right after the review call
+
+1. **Web and mobile write different values for the same profile fields.** Age
+   ranges: web writes `18-29/30-39/40-49/50-59/60-69/70+`, mobile writes and
+   filters on `18-34/35-44/45-59/60-plus`. Gender: web writes `Female/Male/
+   Non-binary/Prefer not to say`, mobile `female/male`. A member who completes
+   their profile on one is invisible to the other's filters — silently, with no
+   error. Pick one set (mobile's is the likelier canon: it is what the 2,200
+   legacy members already use), change `web/src/components/ProfileFields.tsx`,
+   and migrate existing rows. `supabase/seed/demo_align_filter_values.sql`
+   patched the demo members only.
+2. **A full web/mobile parity audit, before the data import.** The age and
+   gender divergence was found by accident, which means nobody has checked the
+   rest: role ids, diagnosis types and subtypes, diagnosis year, city/state,
+   group visibility, notification types, password rules. Two apps writing the
+   same table is only safe if they agree on every field, and the time to find
+   out is before 2,200 real members are in it, not after.
+3. **SMTP2GO on Skyway's own details** (decided: our company info, not the
+   client's domain). Needed for password reset and moderator alerts. Repoint
+   `send-email`, which is hardcoded to SendGrid and has no account behind it.
+
 ## 2. Blocked on the client
 
 Nothing here can be finished without them. Chase as one list.

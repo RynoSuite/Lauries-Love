@@ -6,7 +6,7 @@ import styles from './HeaderCreateGroup.styles';
 
 type HeaderCreateGroupProps = {
   title: 'Add Members' | 'New Group';
-  labelRight: 'Next' | 'Create' | 'Creating...';
+  labelRight: string;
   onPressRight: () => void;
   isRightDisabled: boolean;
   onPressLeft: () => void;

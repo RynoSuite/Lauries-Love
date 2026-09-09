@@ -153,6 +153,7 @@ const MessagesTabDetailsGroup: FunctionComponent<
           <View style={styles.userContainer}>
             <AvatarMessagesTab
               imageUrl={channel?.coverUrl || ''}
+              name={channel?.name || ''}
               width={120}
               height={120}
             />

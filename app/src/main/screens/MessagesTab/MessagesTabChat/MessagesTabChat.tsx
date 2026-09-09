@@ -564,6 +564,10 @@ const MessagesTabChat: FunctionComponent<MessagesTabChatProps> = ({
                   imageUrl={
                     friend?.plainProfileUrl || channel.coverUrl || ''
                   }
+                  // Without a name the chip has nothing to draw but '?'. With
+                  // one it falls through to initials on magenta, the same chip
+                  // the rest of the app uses when there is no photo.
+                  name={friend?.nickname || channel.name || ''}
                   width={47}
                   height={47}
                 />
