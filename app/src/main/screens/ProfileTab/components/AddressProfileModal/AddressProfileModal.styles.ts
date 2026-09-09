@@ -22,10 +22,6 @@ const styles = StyleSheet.create({
     color: colors.heading,
     paddingVertical: 15,
   },
-  buttons: {
-    paddingVertical: 0,
-    paddingBottom: 21,
-  },
   error: {
     color: colors.error[400],
     fontFamily: FONT_RALEWAY_500,

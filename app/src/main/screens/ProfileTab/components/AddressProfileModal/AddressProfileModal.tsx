@@ -123,7 +123,6 @@ const AddressProfileModal: FunctionComponent<AddressProfileModalProps> = ({
       onSubmit={onSubmit}
       snapPoints={snapPoints}
       isInputs
-      buttonsStyle={styles.buttons}
       isLoading={isLoading}
     >
       <View

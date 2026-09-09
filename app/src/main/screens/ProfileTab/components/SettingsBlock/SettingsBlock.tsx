@@ -30,6 +30,7 @@ const SettingsBlock: FunctionComponent<SettingsBlockProps> = ({
         Icon={item.Icon}
         label={item.title}
         onPress={() => setSelectTypeModal(item.type)}
+        tone={item.type === 'deleteAccount' ? 'danger' : 'default'}
       />
     ))}
   </View>

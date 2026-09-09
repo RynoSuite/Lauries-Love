@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     gap: 20,
+    paddingTop: 16,
     height: HEIGH * 0.8,
     paddingLeft: 12,
     paddingRight: 17,
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
   },
   titleTextModal: {
     flex: 1,
+    textAlign: 'center',
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     color: colors.heading,

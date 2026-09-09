@@ -6,10 +6,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     paddingHorizontal: 14.5,
+    // Clear of the grabber. With the back arrows gone the header had nothing
+    // holding it off the sheet's top edge.
+    paddingTop: 16,
     paddingBottom: 20,
   },
   titleHeader: {
-    flex: 1,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 24,
     lineHeight: 36,
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   disabledButton: {
-    backgroundColor: colors.line,
+    opacity: 0.45,
   },
 });
 
