@@ -99,6 +99,13 @@ export default function RequestNotification({
     confirmFriend();
   }
 
+  // Empty rather than a placeholder image: AvatarMessagesTab falls through to
+  // initials on magenta, matching every other avatar in the app. This was
+  // referencing an `avatarUrl` that was never declared — a ReferenceError as
+  // soon as the row rendered, which it never got to do while no notification
+  // type routed here.
+  const avatarUrl = profilePicture ? profilePicture.toString() : '';
+
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>

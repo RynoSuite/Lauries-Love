@@ -190,17 +190,16 @@ export default function NotificationsScreen() {
       sender => sender.senderId === notification.senderId,
     );
 
+    // Two vocabularies reach this screen. The database triggers emit
+    // POST_REACTION / POST_COMMENT / MESSAGE / FRIEND_REQUEST / FRIEND_ACCEPT;
+    // the app's own sendNotification still writes the older NEW_* names. This
+    // build only knew the older ones, and everything else fell through to
+    // `default: return null` — so a bell reading 42 opened onto an empty
+    // screen. Both vocabularies are handled, and the default now renders the
+    // row rather than dropping it: a notification nobody can see is worse than
+    // one with imperfect wording.
     switch (notification.description) {
-      case 'NEW_LIKE':
-      case 'NEW_MESSAGE':
-      case 'NEW_MENTION':
-      case 'WELCOME':
-        return (
-          <PostNotification
-            notification={notification}
-            getNotifications={getNotifications}
-          />
-        );
+      case 'FRIEND_REQUEST':
       case 'NEW_FRIEND_REQUEST':
         return (
           <RequestNotification
@@ -220,7 +219,12 @@ export default function NotificationsScreen() {
           />
         );
       default:
-        return null;
+        return (
+          <PostNotification
+            notification={notification}
+            getNotifications={getNotifications}
+          />
+        );
     }
   }
 
@@ -245,16 +249,19 @@ export default function NotificationsScreen() {
     if (section === 'all') {
       return true;
     }
-    if (section === 'posts') {
+    if (section === 'requests') {
       return (
-        notification.description === 'NEW_MESSAGE' ||
-        notification.description === 'NEW_LIKE' ||
-        notification.description === 'NEW_MENTION' ||
-        notification.description === 'WELCOME'
+        notification.description === 'FRIEND_REQUEST' ||
+        notification.description === 'NEW_FRIEND_REQUEST'
       );
     }
-    if (section === 'requests') {
-      return notification.description === 'NEW_FRIEND_REQUEST';
+    if (section === 'posts') {
+      // Everything that is not a request belongs here, rather than a list of
+      // known types that silently drops the rest.
+      return (
+        notification.description !== 'FRIEND_REQUEST' &&
+        notification.description !== 'NEW_FRIEND_REQUEST'
+      );
     }
     return false;
   });

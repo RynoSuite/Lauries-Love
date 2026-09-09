@@ -28,6 +28,44 @@ type Props = {
   getNotifications: () => Promise<void>;
 };
 
+// What the row says after the actor's name.
+//
+// The database writes both a type and a complete sentence, and that sentence
+// starts with the actor's name — which this row already renders in bold beside
+// it. So the phrase comes from the type, and the sentence is only the fallback
+// for a type this build has not seen. Both the database's vocabulary and the
+// app's older NEW_* names are covered, because both reach this screen.
+const PHRASES: Record<string, string> = {
+  POST_REACTION: 'liked your post.',
+  NEW_LIKE: 'liked your post.',
+  POST_COMMENT: 'commented on your post.',
+  NEW_MESSAGE: 'commented on your post.',
+  MESSAGE: 'sent you a message.',
+  NEW_MENTION: 'mentioned you in a post.',
+  FRIEND_ACCEPT: 'accepted your friend request.',
+};
+
+function phraseFor(notification: {
+  description?: string;
+  content?: string | null;
+  firstName?: string | null;
+}) {
+  const known = PHRASES[notification.description ?? ''];
+  if (known) return known;
+
+  if (notification.description === 'WELCOME') {
+    return notification.content || 'Welcome to the community.';
+  }
+
+  // Unknown type: say what the server said, minus the name already shown.
+  const content = (notification.content ?? '').trim();
+  const name = (notification.firstName ?? '').trim();
+  if (name && content.toLowerCase().startsWith(name.toLowerCase())) {
+    return content.slice(name.length).trim();
+  }
+  return content;
+}
+
 export default function PostNotification({
   notification,
   getNotifications,
@@ -100,20 +138,7 @@ export default function PostNotification({
               {notification.firstName}
             </Text>{' '}
             <Text style={[styles.typeText, { width: '30%' }]}>
-              {notification.description === 'NEW_LIKE' && 'liked your post.'}
-              {notification.description === 'NEW_MESSAGE' &&
-                'commented on your post.'}
-              {notification.description === 'NEW_MENTION' &&
-                'mentioned you in a post.'}
-              {notification.description === 'WELCOME' &&
-                (notification.content || 'Welcome to the community.')}
-              {/* {notification.description === 'NEW_MESSAGE' &&
-              notification.content &&
-              notification.content.length > 40
-                ? notification.content.substring(0, 40) + '...'
-                : notification.description === 'NEW_MESSAGE'
-                ? notification.content
-                : ''} */}
+              {phraseFor(notification)}
               <Text style={styles.timeText}>
                 {' '}
                 {formatTime(notification.createdAt)}
