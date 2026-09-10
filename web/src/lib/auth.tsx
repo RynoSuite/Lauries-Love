@@ -2,9 +2,11 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 
@@ -34,6 +36,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<StaffRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const lastUserId = useRef<string | null>(null);
+
+  /**
+   * Throw away every cached query when the signed-in account changes.
+   *
+   * Signing out ended the Supabase session but left the React Query cache
+   * untouched, and none of the query keys carry a user id — so the next
+   * account walked into a cache full of the previous one's data and saw it
+   * instantly on every screen it had already visited. A full page load fixed
+   * it only because that discards the in-memory cache.
+   *
+   * Cleared on the transition away from a signed-in user, which covers both
+   * signing out and switching accounts. The first sign-in of a page load is
+   * not a transition and does not clear, so it never cancels the queries a
+   * freshly loaded page has already started.
+   */
+  useEffect(() => {
+    const id = session?.user?.id ?? null;
+    const previous = lastUserId.current;
+    lastUserId.current = id;
+    if (previous && previous !== id) queryClient.clear();
+  }, [session?.user?.id, queryClient]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -100,6 +125,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     async signOut() {
       await supabase.auth.signOut();
+      // Also here, not only in the effect above: this runs before the auth
+      // listener fires, so nothing renders the departing account's data in
+      // the gap.
+      queryClient.clear();
     },
   };
 

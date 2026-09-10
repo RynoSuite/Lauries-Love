@@ -11,6 +11,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { customShowError } from 'utils/other';
 // import { RootState } from 'presentation/store';
@@ -82,6 +83,8 @@ const UserDBProvider: FunctionComponent<UserDBProviderProps> = ({
   const { defaultCountry } = useCountry();
 
   const [userDB, setUserDB] = useState<UserDBType | null>(null);
+
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(true);
 
   const getUserDB = async (id: string, token?: JWT) => {
@@ -208,6 +211,11 @@ const UserDBProvider: FunctionComponent<UserDBProviderProps> = ({
     if (!userDB) return false;
     try {
       setUserDB(null);
+      // Every cached query belongs to the account that just left. None of the
+      // keys carry a user id, so without this the next person to sign in on
+      // this device walks into the previous member's feed, map and
+      // conversations until each query happens to refetch.
+      queryClient.clear();
       return await signOutAWS();
     } catch (error) {
       customShowError({
@@ -231,6 +239,11 @@ const UserDBProvider: FunctionComponent<UserDBProviderProps> = ({
         },
       });
       setUserDB(null);
+      // Every cached query belongs to the account that just left. None of the
+      // keys carry a user id, so without this the next person to sign in on
+      // this device walks into the previous member's feed, map and
+      // conversations until each query happens to refetch.
+      queryClient.clear();
       return await signOutAWS();
     } catch (error) {
       customShowError({
