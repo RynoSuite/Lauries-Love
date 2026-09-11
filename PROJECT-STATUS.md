@@ -214,8 +214,13 @@ column shell, real logo, Fraunces/Figtree.
   in place but is not being extended. If this comes back it is two jobs, not
   one: static UI strings, which need no key, and on-demand translation of
   member posts, which does.
-- **Groups have no visibility flag.** Every group is live the moment it is
-  created; no draft or archive state.
+- **Groups are live on creation, by decision (11 Sept).** No draft or archive
+  state, and none is wanted. The only lifecycle a group has is **create and
+  delete, both admin-only** — deletion is not built yet on either platform.
+  Worth thinking about before it is: a group's posts carry `group_id` with
+  `on delete set null`, so deleting a group today would leave its posts
+  behind as ordinary public posts rather than removing them. That is almost
+  certainly not what an admin deleting a private support group expects.
 - **Column-level lock on coordinates is still pending.** Locations are now
   rounded on write, so the exact value no longer exists anywhere. The remaining
   hardening is `revoke select (latitude, longitude) on public.profiles from

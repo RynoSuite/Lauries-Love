@@ -75,8 +75,15 @@ const BottomSheetCustom: FunctionComponent<BottomSheetCustomProps> = ({
         // Without this the handle is a decoration: dragging the sheet down
         // would rubber-band back instead of dismissing it.
         enablePanDownToClose
-        onChange={index => {
-          if (index === 0) onClose();
+        onChange={i => {
+          // Only where index 0 is a deliberate "collapsed" point beneath the
+          // real one — the convention the profile sheets use. A sheet with a
+          // single snap point settles at index 0 the moment it opens, so this
+          // used to close it on arrival: it appeared, then vanished on its
+          // own. Dragging one of those away still closes it, through
+          // enablePanDownToClose and the onClose prop.
+          if (i === 0 && Array.isArray(snapPoints) && snapPoints.length > 1)
+            onClose();
         }}
         backgroundStyle={styles.background}
         backdropComponent={props => (

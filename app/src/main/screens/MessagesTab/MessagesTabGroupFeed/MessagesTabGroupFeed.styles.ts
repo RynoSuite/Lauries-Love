@@ -88,19 +88,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.white,
   },
-  // Leaving is deliberately the quieter control of the two.
-  leaveButton: {
-    alignItems: 'center',
-    paddingVertical: 13,
-    borderRadius: 26,
-    borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.surface,
+  // Opposite the back arrow, on the cover. It carries the same alert colour
+  // as the confirm it opens, so the two read as one action.
+  leaveOnHero: {
+    position: 'absolute',
+    top: 52,
+    right: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: `${colors.danger}E6`,
   },
-  leaveText: {
+  leaveOnHeroText: {
     fontFamily: FONT_RALEWAY_600,
-    fontSize: 15,
-    color: colors.body,
+    fontSize: 14,
+    color: colors.white,
   },
 
   empty: {
@@ -159,6 +161,65 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_600,
     fontSize: 15,
     color: colors.white,
+  },
+  // Faces, overlapping slightly, then a counter. Names here would turn the
+  // roster into a block of text competing with the group itself; in the sheet
+  // you are reading a list, so the names come back.
+  roster: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+  },
+  rosterFace: {
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: colors.ground,
+  },
+  rosterMore: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
+  },
+  rosterMoreText: {
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 12,
+    color: colors.body,
+  },
+
+  membersSheet: {
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    height: '100%',
+  },
+  membersTitle: {
+    fontFamily: FONT_BEHIND_THE_NINETIES_500,
+    fontSize: 22,
+    color: colors.heading,
+    paddingBottom: 12,
+  },
+  membersCount: {
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 14,
+    color: colors.faint,
+  },
+  memberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 9,
+  },
+  memberName: {
+    flex: 1,
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 15,
+    color: colors.heading,
   },
 });
 

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  ScrollView,
   Image,
   Text,
   TouchableOpacity,
@@ -14,6 +15,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
 import PostHomeTab from 'main/screens/HomeTab/components/PostHomeTab/PostHomeTab';
 import BottomSheetCustom from 'components/BottomSheetCustom/BottomSheetCustom';
+import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 
 // icons
 import { IconArrowLeft } from 'assets/icons-auto/components';
@@ -21,6 +23,7 @@ import { IconArrowLeft } from 'assets/icons-auto/components';
 // services
 import {
   getGroupById,
+  getGroupMembers,
   getPostsByGroup,
   joinGroup,
   leaveGroup,
@@ -67,16 +70,24 @@ export default function MessagesTabGroupFeed() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [members, setMembers] = useState<any[]>([]);
+  const [showMembers, setShowMembers] = useState(false);
+
+  // How many faces fit before the strip stops reading as people and starts
+  // reading as a wall. The rest become a counter.
+  const PREVIEW = 6;
 
   const load = useCallback(async () => {
     if (!SUPABASE_ENABLED || !groupId) return;
     try {
-      const [groupData, groupPosts] = await Promise.all([
+      const [groupData, groupPosts, groupMembers] = await Promise.all([
         getGroupById(groupId),
         getPostsByGroup(groupId),
+        getGroupMembers(groupId),
       ]);
       setGroup(groupData);
       setPosts(groupPosts as any[]);
+      setMembers(groupMembers as any[]);
       // Membership comes from the route rather than another round trip: the
       // list that opened this screen already knows.
       setJoined(Boolean(route.params?.joined));
@@ -171,6 +182,16 @@ export default function MessagesTabGroupFeed() {
           />
         </TouchableOpacity>
 
+        {joined ? (
+          <TouchableOpacity
+            disabled={busy}
+            onPress={() => setConfirmLeave(true)}
+            style={styles.leaveOnHero}
+          >
+            <Text style={styles.leaveOnHeroText}>Leave</Text>
+          </TouchableOpacity>
+        ) : null}
+
         <View style={styles.heroText}>
           <Text style={styles.name}>{group?.name ?? ''}</Text>
           <Text style={styles.members}>
@@ -185,16 +206,33 @@ export default function MessagesTabGroupFeed() {
         </View>
       </View>
 
-      <View style={styles.actions}>
-        {joined ? (
-          <TouchableOpacity
-            disabled={busy}
-            onPress={() => setConfirmLeave(true)}
-            style={styles.leaveButton}
-          >
-            <Text style={styles.leaveText}>Leave group</Text>
-          </TouchableOpacity>
-        ) : (
+      {members.length > 0 && (
+        <View style={styles.roster}>
+          {members.slice(0, PREVIEW).map((m: any) => (
+            <View key={m.userId} style={styles.rosterFace}>
+              <AvatarMessagesTab
+                imageUrl={m.plainProfileUrl || ''}
+                name={m.nickname || ''}
+                width={32}
+                height={32}
+              />
+            </View>
+          ))}
+          {members.length > PREVIEW && (
+            <TouchableOpacity
+              onPress={() => setShowMembers(true)}
+              style={styles.rosterMore}
+            >
+              <Text style={styles.rosterMoreText}>
+                +{members.length - PREVIEW} more
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+
+      {!joined && (
+        <View style={styles.actions}>
           <TouchableOpacity
             disabled={busy}
             onPress={onJoin}
@@ -202,8 +240,8 @@ export default function MessagesTabGroupFeed() {
           >
             <Text style={styles.joinText}>Join group</Text>
           </TouchableOpacity>
-        )}
-      </View>
+        </View>
+      )}
     </>
   );
 
@@ -231,6 +269,36 @@ export default function MessagesTabGroupFeed() {
             </View>
           }
         />
+      )}
+
+      {showMembers && (
+        <BottomSheetCustom
+          onClose={() => setShowMembers(false)}
+          snapPoints={['70%']}
+          index={0}
+        >
+          <View style={styles.membersSheet}>
+            <Text style={styles.membersTitle}>
+              Members{' '}
+              <Text style={styles.membersCount}>({members.length})</Text>
+            </Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {members.map((m: any) => (
+                <View key={m.userId} style={styles.memberRow}>
+                  <AvatarMessagesTab
+                    imageUrl={m.plainProfileUrl || ''}
+                    name={m.nickname || ''}
+                    width={38}
+                    height={38}
+                  />
+                  <Text numberOfLines={1} style={styles.memberName}>
+                    {m.nickname || 'Member'}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </BottomSheetCustom>
       )}
 
       {confirmLeave && (

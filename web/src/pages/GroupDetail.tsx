@@ -6,6 +6,7 @@ import { useFeatureFlags } from '../lib/featureFlags';
 import { IconComment, IconHeart, IconHeartFilled } from '../components/Icons';
 import { Avatar } from '../components/Avatar';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { MemberListDialog } from '../components/MemberListDialog';
 
 // Covers live in the public 'avatars' bucket under the uploader's uid prefix.
 function coverUrl(path: string | null | undefined): string | null {
@@ -17,7 +18,13 @@ function coverUrl(path: string | null | undefined): string | null {
 
 // A single group: info, members, and a group-scoped feed (visibility='group').
 // RLS shows group posts only to members; the composer is shown only to members.
-type Member = { id: string; display_name: string | null; first_name: string | null; avatar_path: string | null };
+type Member = {
+  id: string;
+  display_name: string | null;
+  first_name: string | null;
+  last_name?: string | null;
+  avatar_path: string | null;
+};
 type GroupPost = {
   id: string;
   body: string;
@@ -41,7 +48,7 @@ async function fetchGroup(id: string) {
     // the wire for a group that succeeds.
     supabase
       .from('group_members')
-      .select('profile:profiles(id, display_name, first_name, avatar_path)')
+      .select('profile:profiles(id, display_name, first_name, last_name, avatar_path)')
       .eq('group_id', id)
       .limit(MEMBER_PREVIEW),
     supabase
@@ -256,7 +263,7 @@ export function GroupDetail() {
 
         {group.memberCount > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
-            {(showAllMembers ? (allMembers.data ?? group.members) : group.members).map(
+            {group.members.map(
               (m) => {
                 const nm = m.display_name || m.first_name || 'Member';
                 return (
@@ -280,23 +287,12 @@ export function GroupDetail() {
             {/* An overflow counter rather than every face. A group with three
                 hundred members would otherwise bury the group itself under a
                 wall of chips. */}
-            {!showAllMembers && group.memberCount > group.members.length && (
+            {group.memberCount > group.members.length && (
               <button
                 onClick={() => setShowAllMembers(true)}
                 className="rounded-full border border-line px-2 py-1 text-xs text-muted transition-colors hover:border-magenta hover:text-magenta-text"
               >
                 +{group.memberCount - group.members.length} more
-              </button>
-            )}
-            {showAllMembers && allMembers.isLoading && (
-              <span className="text-xs text-faint">Loading members…</span>
-            )}
-            {showAllMembers && !allMembers.isLoading && (
-              <button
-                onClick={() => setShowAllMembers(false)}
-                className="rounded-full border border-line px-2 py-1 text-xs text-muted transition-colors hover:border-magenta hover:text-magenta-text"
-              >
-                Show fewer
               </button>
             )}
           </div>
@@ -390,6 +386,14 @@ export function GroupDetail() {
           </article>
         );
       })}
+
+      <MemberListDialog
+        open={showAllMembers}
+        members={allMembers.data ?? []}
+        loading={allMembers.isLoading}
+        total={group.memberCount}
+        onClose={() => setShowAllMembers(false)}
+      />
 
       <ConfirmDialog
         open={leaving}
