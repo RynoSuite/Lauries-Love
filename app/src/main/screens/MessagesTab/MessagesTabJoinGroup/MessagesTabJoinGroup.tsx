@@ -1,9 +1,16 @@
-import { ScrollView, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, {
   FunctionComponent,
   useCallback,
   useEffect,
   useState,
+  useMemo,
 } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -15,7 +22,7 @@ import InputSearch from 'components/InputSearch/InputSearch';
 import HeaderTabScreen from 'components/HeaderTabScreen/HeaderTabScreen';
 import { useIntercom } from 'providers/IntercomProvider/IntercomProvider';
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
-import ListChannelsMessageTab from '../components/ListChannelsMessageTab/ListChannelsMessageTab';
+import GroupCard from '../components/GroupCard/GroupCard';
 import { usePostsProvider } from 'providers/PostsProvider/PostsProvider';
 import { useChatProvider } from 'providers/ChatProvider/ChatProvider';
 import { GroupChannelSendBirdType } from 'providers/ChatProvider/ChatProvider.types';
@@ -111,10 +118,48 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
     getRecommendedChannelsHandler();
   }, []);
 
+  const joinedUrls = useMemo(
+    () => new Set([...groupChannels.map(c => c.url), ...justJoined]),
+    [groupChannels, justJoined],
+  );
+
+  // Two sections, as on web: the groups you are in, then the rest. The
+  // heading above the second only earns its place once there is something
+  // above it to tell it apart from — a member of nothing just sees groups.
+  const { myGroups, otherGroups } = useMemo(() => {
+    const all = (channels ?? []) as any[];
+    return {
+      myGroups: all.filter(g => joinedUrls.has(g.url)),
+      otherGroups: all.filter(g => !joinedUrls.has(g.url)),
+    };
+  }, [channels, joinedUrls]);
+
+  const openGroup = useCallback(
+    (group: any) =>
+      (navigation as any).navigate(PATHS_MESSAGES_TAB.messagesTabGroupFeed, {
+        groupId: group.url,
+        joined: joinedUrls.has(group.url),
+      }),
+    [navigation, joinedUrls],
+  );
+
+  const renderGroup = (group: any) => (
+    <GroupCard
+      key={group.url}
+      name={group.name}
+      description={group.lastMessage?.message}
+      coverUrl={group.coverUrl}
+      memberCount={group.memberCount ?? 0}
+      joined={joinedUrls.has(group.url)}
+      onPress={() => openGroup(group)}
+      onJoin={() => onPressJoinGroup(group.url)}
+    />
+  );
+
   return (
     <BackgroundScreen type="messages">
       <HeaderTabScreen
-        title="Join Group"
+        title="Groups"
         onPressLeft={() => navigation.goBack()}
       />
       <ScrollView contentContainerStyle={styles.container}>
@@ -122,32 +167,52 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
           <InputSearch
             search={search}
             setSearch={setSearch}
-            placeholder={'Search group'}
+            placeholder={'Search groups'}
             styleContainer={styles.inputSearchContainer}
             styleInput={styles.inputSearch}
             iconProps={{ width: 24, height: 24, strokeWidth: 2.1 }}
             placeholderTextColor={colors.faint}
           />
         </View>
-        <View>
-          <ListChannelsMessageTab
-            channels={recommendedChannels}
-            onSelect={onPressJoinGroup}
-            isLoading={loading}
-            onPressCreateGroup={onPressCreateGroup}
-            joinedUrls={[...groupChannels.map(c => c.url), ...justJoined]}
+        {loading ? (
+          <ActivityIndicator
+            color={colors.magentaText}
+            style={styles.loading}
           />
-        </View>
-        <View>
-          <ListChannelsMessageTab
-            title="Other Groups chats"
-            channels={channels}
-            onSelect={onPressJoinGroup}
-            isLoading={loading}
-            onPressCreateGroup={onPressCreateGroup}
-            joinedUrls={[...groupChannels.map(c => c.url), ...justJoined]}
-          />
-        </View>
+        ) : (
+          <>
+            {myGroups.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>My groups</Text>
+                {myGroups.map(renderGroup)}
+              </View>
+            )}
+
+            {otherGroups.length > 0 && (
+              <View style={styles.section}>
+                {myGroups.length > 0 && (
+                  <Text style={styles.sectionTitle}>Groups you can join</Text>
+                )}
+                {otherGroups.map(renderGroup)}
+              </View>
+            )}
+
+            {myGroups.length === 0 && otherGroups.length === 0 && (
+              <Text style={styles.empty}>
+                {search.trim()
+                  ? `No groups match "${search.trim()}".`
+                  : 'No groups yet.'}
+              </Text>
+            )}
+
+            <TouchableOpacity
+              onPress={onPressCreateGroup}
+              style={styles.createButton}
+            >
+              <Text style={styles.createText}>Create a group</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </ScrollView>
     </BackgroundScreen>
   );

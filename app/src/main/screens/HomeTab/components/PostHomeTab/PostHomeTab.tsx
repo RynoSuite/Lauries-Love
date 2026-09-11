@@ -19,7 +19,11 @@ import { GroupChannelSendBirdType } from 'providers/ChatProvider/ChatProvider.ty
 import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
 import { toLocalizedDateString } from 'utils/formatDate';
 
-import { IconArrowRight } from 'assets/icons-auto/components';
+import {
+  IconArrowRight,
+  IconChatBubbleLeft,
+  IconTabHeart,
+} from 'assets/icons-auto/components';
 import PostReadMoreButton from '../PostReadMoreButton/PostReadMoreButton';
 import PostFooter from '../PostFooter/PostFooter';
 import RichText from 'components/RichText/RichText';
@@ -225,25 +229,80 @@ const PostHomeTab: FunctionComponent<PostHomeTabProps> = ({
   // useEffect(() => {
   //   setMetadata(sdk, comment, post.url);
   // }, []);
+  /**
+   * A search result.
+   *
+   * This was the post's first line in 24pt type with a "Read full story" link
+   * beside it — no author, no date, no group, no engagement. Searching a
+   * member's name, which is what people actually do here, returned a list of
+   * sentences with no indication of who wrote any of them.
+   *
+   * A result now answers the questions a searcher has, in the order they ask
+   * them: who wrote it, when, where (which group, if any), what it says, and
+   * whether anyone responded — a post with twelve comments is a different
+   * prospect from one with none. The whole card opens the post, so the
+   * separate link is gone: a link inside a tappable card is a smaller target
+   * surrounded by dead space that looks tappable.
+   */
   if (isSearchMode) {
     return (
-      <View style={[styles.searchTitleContainer]}>
-        <Text style={styles.searchHeaderText} numberOfLines={1}>
-          {message}
-        </Text>
-        <TouchableOpacity
-          onPress={handlePressPost}
-          style={styles.searchReadMoreButton}
-        >
-          <Text style={styles.searchReadMoreText}>Read full story</Text>
-          <IconArrowRight
-            width={19}
-            height={19}
-            stroke={colors.heading}
-            strokeWidth={2.5}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={handlePressPost}
+        style={styles.searchCard}
+      >
+        <View style={styles.searchHeader}>
+          <AvatarMessagesTab
+            imageUrl={post.creator?.plainProfileUrl || ''}
+            width={36}
+            height={36}
+            name={post.creator?.nickname || ''}
           />
-        </TouchableOpacity>
-      </View>
+          <View style={styles.searchWho}>
+            <Text numberOfLines={1} style={styles.searchName}>
+              {post.creator?.nickname || 'Member'}
+            </Text>
+            {groupLabel ? (
+              <Text numberOfLines={1} style={styles.searchGroup}>
+                {groupLabel}
+              </Text>
+            ) : null}
+          </View>
+          <Text style={styles.searchDate}>
+            {toLocalizedDateString(post.createdAt, userDB?.country ?? '', {
+              day: 'numeric',
+              month: 'short',
+            })}
+          </Text>
+        </View>
+
+        <View style={styles.searchBody}>
+          <Text numberOfLines={3} style={styles.searchText}>
+            {message}
+          </Text>
+          {postImage && postImage.length > 0 ? (
+            <Image source={{ uri: postImage }} style={styles.searchThumb} />
+          ) : null}
+        </View>
+
+        <View style={styles.searchFooter}>
+          <IconTabHeart
+            width={13}
+            height={13}
+            stroke={isLiked ? colors.magentaText : colors.faint}
+            fill={isLiked ? colors.magentaText : 'transparent'}
+            strokeWidth={2}
+          />
+          <Text style={styles.searchCount}>{likes}</Text>
+          <IconChatBubbleLeft
+            width={13}
+            height={13}
+            stroke={colors.faint}
+            strokeWidth={2}
+          />
+          <Text style={styles.searchCount}>{comments}</Text>
+        </View>
+      </TouchableOpacity>
     );
   }
 

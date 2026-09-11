@@ -11,6 +11,7 @@ import MessagesTabChatGroup from 'main/screens/MessagesTab/MessagesTabChatGroup/
 import MessagesTabDetailsGroup from 'main/screens/MessagesTab/MessagesTabDetailsGroup/MessagesTabDetailsGroup';
 import MessagesTabMediaAndDocs from 'main/screens/MessagesTab/MessagesTabMediaAndDocs/MessagesTabMediaAndDocs';
 import MessagesTabJoinGroup from 'main/screens/MessagesTab/MessagesTabJoinGroup/MessagesTabJoinGroup';
+import MessagesTabGroupFeed from 'main/screens/MessagesTab/MessagesTabGroupFeed/MessagesTabGroupFeed';
 import MessagesTabMembersGroup from 'main/screens/MessagesTab/MessagesTabMembersGroup/MessagesTabMembersGroup';
 import MessagesTabProfile from 'main/screens/MessagesTab/MessagesTabProfile/MessagesTabProfile';
 import MessagesTabSupportTicket from 'main/screens/MessagesTab/MessagesTabSupportTicket/MessagesTabSupportTicket';
@@ -89,6 +90,14 @@ export const LIST_MESSAGES_TAB_SCREENS: Array<{
     component: MessagesTabMediaAndDocs,
     headerShown: false,
     gestureEnabled: false,
+  },
+  {
+    id: PATHS_MESSAGES_TAB.messagesTabGroupFeed,
+    name: PATHS_MESSAGES_TAB.messagesTabGroupFeed,
+    title: PATHS_MESSAGES_TAB.messagesTabGroupFeed,
+    component: MessagesTabGroupFeed,
+    headerShown: false,
+    gestureEnabled: true,
   },
   {
     id: PATHS_MESSAGES_TAB.messagesTabJoinGroup,

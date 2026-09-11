@@ -229,6 +229,43 @@ export async function getPostsByUser(userId: string, limit = 100) {
 }
 
 /**
+ * Posts shared to one group, newest first.
+ *
+ * RLS already limits group posts to that group's members, so a non-member
+ * simply gets nothing back rather than a partial view — which is why the
+ * group screen shows its join prompt in place of the feed rather than an
+ * empty state that looks like a quiet group.
+ */
+export async function getPostsByGroup(groupId: string, limit = 100) {
+  const { data, error } = await supabase
+    .from('posts')
+    .select(FEED_POST_SELECT)
+    .eq('group_id', groupId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return mapPostRowsToChannels(data ?? []);
+}
+
+/**
+ * One group by id, shaped as a legacy channel like the lists are.
+ */
+export async function getGroupById(groupId: string) {
+  const { data, error } = await supabase
+    .from('groups')
+    .select('*')
+    .eq('id', groupId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  const { data: counts } = await supabase.rpc('group_member_counts');
+  const count =
+    (counts ?? []).find((r: any) => r.group_id === groupId)?.member_count ?? 0;
+  return groupToChannel({ ...data, member_count: Number(count) || 0 });
+}
+
+/**
  * Full-text search over posts the caller can see (search_posts RPC is SECURITY
  * INVOKER, so post RLS applies). Re-fetches with the feed select so results
  * render exactly like the main feed, preserving the RPC's rank/recency order.

@@ -123,6 +123,73 @@ const styles = StyleSheet.create({
   withImageFooter: {
     bottom: 5,
   },
+  // Search results. The old layout was the post's opening line at 24pt with
+  // a link beside it; this is a compact card that says who, when, where and
+  // how much conversation there was.
+  searchCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.line,
+    padding: 14,
+    gap: 10,
+  },
+  searchHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  searchWho: {
+    flex: 1,
+    gap: 1,
+  },
+  searchName: {
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 15,
+    lineHeight: 20,
+    color: colors.heading,
+  },
+  searchGroup: {
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 12,
+    color: colors.magentaText,
+  },
+  searchDate: {
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 12,
+    color: colors.faint,
+  },
+  searchBody: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  searchText: {
+    flex: 1,
+    fontFamily: FONT_RALEWAY_500,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.body,
+  },
+  // A thumbnail rather than the full image: in a list of results the picture
+  // is a cue, not the content.
+  searchThumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    backgroundColor: colors.surface2,
+  },
+  searchFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  searchCount: {
+    marginRight: 10,
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 12,
+    color: colors.muted,
+  },
 });
 
 export default styles;

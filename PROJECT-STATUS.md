@@ -51,7 +51,13 @@ is in `SESSION-2026-09-09.md`.
    group visibility, notification types, password rules. Two apps writing the
    same table is only safe if they agree on every field, and the time to find
    out is before 2,200 real members are in it, not after.
-3. **A real Groups page on mobile, mirroring web.** Web has a Groups
+3. ~~**A real Groups page on mobile**~~ — **built 11 Sept.** The groups
+   screen now mirrors web: covers as card backgrounds behind a scrim, My
+   groups then Groups you can join, and a group page with that group's feed,
+   join and leave-behind-a-confirm. Still missing against web: the member list
+   on the group page, and there is still no group visibility flag on either
+   side (every group is live the moment it is created).
+   ~~Old note:~~ Web has a Groups
    directory (My groups / Groups you can join) and a group page with that
    group's posts, join, leave and members. Mobile has only the browse-and-join
    list in Messages, and the community wall's Groups tab is a post filter
@@ -66,14 +72,16 @@ is in `SESSION-2026-09-09.md`.
 
 Nothing here can be finished without them. Chase as one list.
 
-1. **OpenAI API key.** Two features at once: Spanish translation of member
-   posts, and automatic content moderation (`moderate-content` is built and
-   returns 503 until keyed). Under $5/month at current volumes. One account
-   covers both, which is why OpenAI over DeepL despite DeepL's better Spanish.
-2. **SMTP2GO account on the client's own domain.** Password-reset mail to ~2,200
-   members must come from `@laurieslove.org` with SPF/DKIM. Sending from
-   `skywaymediamail.com` will be treated as phishing by a meaningful share of
-   them, and every unclicked reset is a member locked out. Skyway's key exists
+1. ~~**OpenAI API key.**~~ **Dropped by the client, 10 Sept 2026** — no AI
+   translation and no bilingual support for now. Two consequences worth
+   remembering rather than rediscovering: `moderate-content` stays unkeyed and
+   returns 503, so **automatic moderation does not exist** and the only thing
+   flagging content is the keyword heuristic in
+   `heuristic_moderation_flag()` plus member reports; and the i18next
+   scaffolding at `app/src/presentation/translations` is now dead weight
+   unless the decision reverses.
+2. **SMTP2GO — still waiting.** Decided 9 Sept: **Skyway's own details**, not
+   the client's domain. Password-reset mail to ~2,200 members. Skyway's key exists
    and is fine for testing only.
 3. **Post-image privacy decision.** `post-images` is a public bucket, so any
    post photo is readable by URL — including photos in private groups. That was
@@ -201,12 +209,11 @@ column shell, real logo, Fraunces/Figtree.
   (`create_group_conversation`, `add_conversation_member`,
   `leave_conversation`, `rename_conversation`, `my_connections`) because
   `conv_members_insert` is deliberately self-insert only.
-- **Bilingual EN/ES** (client request, blocked on the OpenAI key for post
-  translation, though the UI layer needs no key). Two separate jobs: static UI
-  strings via i18next — mobile already has the scaffolding at
-  `app/src/presentation/translations` but only 6 files use it — and on-demand
-  translation of member posts. Also wanted: a preferred-language field at
-  registration, which needs a column on `profiles`.
+- ~~**Bilingual EN/ES**~~ — **dropped by the client, 10 Sept 2026**. The
+  i18next scaffolding at `app/src/presentation/translations` (6 files) stays
+  in place but is not being extended. If this comes back it is two jobs, not
+  one: static UI strings, which need no key, and on-demand translation of
+  member posts, which does.
 - **Groups have no visibility flag.** Every group is live the moment it is
   created; no draft or archive state.
 - **Column-level lock on coordinates is still pending.** Locations are now

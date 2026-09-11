@@ -8,6 +8,7 @@ export const PATHS_MESSAGES_TAB = {
   messagesTabDetailsGroup: 'messages-tab-details-group',
   messagesTabMediaAndDocs: 'messages-tab-media-and-docs',
   messagesTabJoinGroup: 'messages-tab-join-group',
+  messagesTabGroupFeed: 'messages-tab-group-feed',
   messagesTabMembersGroup: 'messages-tab-members-group',
   messagesTabProfile: 'messages-tab-profile',
   messagesTabSupportTicket: 'messages-tab-support-ticket',
