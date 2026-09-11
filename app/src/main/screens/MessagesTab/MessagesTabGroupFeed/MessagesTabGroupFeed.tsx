@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  ScrollView,
   Image,
   Text,
   TouchableOpacity,
@@ -15,6 +14,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
 import PostHomeTab from 'main/screens/HomeTab/components/PostHomeTab/PostHomeTab';
 import BottomSheetCustom from 'components/BottomSheetCustom/BottomSheetCustom';
+import Modal from 'components/Modal/Modal';
 import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 
 // icons
@@ -271,35 +271,28 @@ export default function MessagesTabGroupFeed() {
         />
       )}
 
-      {showMembers && (
-        <BottomSheetCustom
-          onClose={() => setShowMembers(false)}
-          snapPoints={['70%']}
-          index={0}
-        >
-          <View style={styles.membersSheet}>
-            <Text style={styles.membersTitle}>
-              Members{' '}
-              <Text style={styles.membersCount}>({members.length})</Text>
-            </Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {members.map((m: any) => (
-                <View key={m.userId} style={styles.memberRow}>
-                  <AvatarMessagesTab
-                    imageUrl={m.plainProfileUrl || ''}
-                    name={m.nickname || ''}
-                    width={38}
-                    height={38}
-                  />
-                  <Text numberOfLines={1} style={styles.memberName}>
-                    {m.nickname || 'Member'}
-                  </Text>
-                </View>
-              ))}
-            </ScrollView>
-          </View>
-        </BottomSheetCustom>
-      )}
+      <Modal
+        visible={showMembers}
+        onClose={() => setShowMembers(false)}
+        title={`Members (${members.length})`}
+        fullScreen
+      >
+        <View style={styles.membersSheet}>
+          {members.map((m: any) => (
+            <View key={m.userId} style={styles.memberRow}>
+              <AvatarMessagesTab
+                imageUrl={m.plainProfileUrl || ''}
+                name={m.nickname || ''}
+                width={38}
+                height={38}
+              />
+              <Text numberOfLines={1} style={styles.memberName}>
+                {m.nickname || 'Member'}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </Modal>
 
       {confirmLeave && (
         <BottomSheetCustom

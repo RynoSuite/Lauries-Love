@@ -9,7 +9,7 @@ import {
 const styles = StyleSheet.create({
   container: {
     gap: 16,
-    paddingTop: 8,
+    paddingTop: 20,
     paddingHorizontal: 16,
     paddingBottom: 32,
   },

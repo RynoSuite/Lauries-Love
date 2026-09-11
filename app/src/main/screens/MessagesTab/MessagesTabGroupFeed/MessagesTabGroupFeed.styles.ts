@@ -19,8 +19,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // Matches the community wall. At 40 the last post sat behind the tab bar,
+  // and the overscroll that revealed it snapped straight back.
   list: {
-    paddingBottom: 40,
+    paddingBottom: 180,
   },
 
   hero: {
@@ -51,7 +53,9 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.ground}99`,
   },
   heroText: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 28,
+    paddingBottom: 16,
     gap: 4,
   },
   name: {
@@ -171,7 +175,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 6,
     paddingHorizontal: 16,
-    paddingTop: 4,
+    paddingTop: 14,
+    paddingBottom: 6,
   },
   rosterFace: {
     borderRadius: 16,
@@ -193,10 +198,7 @@ const styles = StyleSheet.create({
   },
 
   membersSheet: {
-    paddingTop: 16,
-    paddingHorizontal: 16,
     paddingBottom: 24,
-    height: '100%',
   },
   membersTitle: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
