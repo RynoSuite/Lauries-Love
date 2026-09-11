@@ -59,8 +59,8 @@ export function AuthLayout({
             So no warrior ever walks alone.
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-body">
-            A community for people facing cancer, the people who love them, and
-            the people who care for them — to connect, share, and find someone
+            A community for people facing cancer, the people who love them,
+            and the people who care for them. Connect, share, and find someone
             who understands.
           </p>
 
@@ -103,7 +103,7 @@ export const AUTH_POINTS = [
   },
   {
     title: 'Members near you',
-    body: 'Find others on the same journey nearby — locations stay approximate, on purpose.',
+    body: 'Find others on the same journey nearby. Locations stay approximate, on purpose.',
   },
   {
     title: 'Groups and messages',

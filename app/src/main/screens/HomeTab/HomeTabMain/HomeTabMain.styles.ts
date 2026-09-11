@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     gap: 12,
     paddingHorizontal: 16,
-    paddingBottom: Platform.OS === 'ios' ? 112 : 64,
   },
   screen: {
     flex: 1,
@@ -70,11 +69,6 @@ const styles = StyleSheet.create({
   buttonTextSelected: {
     // On the magenta fill, not on the ground: white clears 8.34:1 there.
     color: colors.white,
-  },
-  listScroll: {
-    paddingHorizontal: 16,
-    gap: 12,
-    paddingBottom: 180,
   },
   loadingLine: {
     width: '100%',

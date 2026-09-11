@@ -13,6 +13,7 @@ import React, {
   useMemo,
 } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 import colors from 'styles/colors';
 import styles from './MessagesTabJoinGroup.styles';
@@ -52,6 +53,7 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
   const [loading, setLoading] = useState(true);
   // Urls joined during THIS visit — rows light up as 'Joined' in place.
   const [justJoined, setJustJoined] = useState<string[]>([]);
+  const tabBarHeight = useBottomTabBarHeight();
   const { getFilteringUserInfo } = usePostsProvider();
   const { groupChannels, getChannels } = useChatProvider();
 
@@ -102,11 +104,6 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
       }
     },
     [trackIntercom, navigation, getChannels],
-  );
-
-  const onPressCreateGroup = useCallback(
-    () => navigation.navigate(PATHS_MESSAGES_TAB.messagesTabCreateGroup),
-    [navigation],
   );
 
   useEffect(() => {
@@ -162,7 +159,12 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
         title="Groups"
         onPressLeft={() => navigation.goBack()}
       />
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { paddingBottom: tabBarHeight + 16 },
+        ]}
+      >
         <View style={styles.searchContainer}>
           <InputSearch
             search={search}
@@ -205,12 +207,6 @@ const MessagesTabJoinGroup: FunctionComponent<MessagesTabJoinGroupProps> = ({
               </Text>
             )}
 
-            <TouchableOpacity
-              onPress={onPressCreateGroup}
-              style={styles.createButton}
-            >
-              <Text style={styles.createText}>Create a group</Text>
-            </TouchableOpacity>
           </>
         )}
       </ScrollView>

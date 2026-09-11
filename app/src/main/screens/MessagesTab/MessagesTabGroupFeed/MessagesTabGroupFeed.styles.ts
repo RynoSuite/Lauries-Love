@@ -19,11 +19,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Matches the community wall. At 40 the last post sat behind the tab bar,
-  // and the overscroll that revealed it snapped straight back.
-  list: {
-    paddingBottom: 180,
-  },
+  // The bottom padding is applied at render from the measured tab bar
+  // height, since the navigator computes that at runtime.
+  list: {},
 
   // The arrow row sits at the top and the name at the bottom, both in flow.
   // The arrow used to be absolute at top: 52 — but BackgroundScreen already

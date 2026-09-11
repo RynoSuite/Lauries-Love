@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 // components
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
@@ -61,6 +62,7 @@ export default function MessagesTabGroupFeed() {
     >();
   const groupId = route.params?.groupId;
 
+  const tabBarHeight = useBottomTabBarHeight();
   const { getChannels } = useChatProvider();
   const { showToast } = useToastProvider();
 
@@ -259,7 +261,10 @@ export default function MessagesTabGroupFeed() {
           keyExtractor={item => item.url}
           renderItem={renderPost}
           ListHeaderComponent={header}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[
+            styles.list,
+            { paddingBottom: tabBarHeight + 16 },
+          ]}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.empty}>

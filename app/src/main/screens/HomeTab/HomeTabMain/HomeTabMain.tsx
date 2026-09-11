@@ -1,4 +1,5 @@
 import { useIsFocused, CommonActions, useRoute, useNavigation } from '@react-navigation/native';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, {
   FunctionComponent,
@@ -62,6 +63,8 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
   // The screen's own navigation prop is typed to the Home stack; crossing to
   // another tab needs the root, as HomeTabPost does.
   const navigationRedirect = useNavigation<any>();
+  // The exact height of the bar the list scrolls behind.
+  const tabBarHeight = useBottomTabBarHeight();
   const { checkGeoLocationCity } = useUserDBProvider();
   const { openIntercom, unreadCount } = useIntercom();
   const { loadingStorage, loadingServer, posts, getPosts, comments } =
@@ -579,7 +582,10 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
                 </View>
               ) : null
             }
-            contentContainerStyle={styles.contentContainer}
+            contentContainerStyle={[
+              styles.contentContainer,
+              { paddingBottom: tabBarHeight + 16 },
+            ]}
             ListFooterComponent={
               loadingStorage ? (
                 <ActivityIndicator color={colors.magentaText} />
