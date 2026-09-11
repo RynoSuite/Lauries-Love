@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentUserId } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
 import { PageTitle } from '../../components/PageTitle';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 
 // Admin group management. Reads/writes the shared groups table. Writes are
 // owner-gated at the DB (groups_owner_* policies) and in the UI.
@@ -12,6 +13,8 @@ type Group = {
   description: string | null;
   tags: string[] | null;
   cover_path: string | null;
+  /** How many posts go with it, so the confirm can say the real number. */
+  postCount: number;
 };
 
 type GroupForm = {
@@ -25,12 +28,21 @@ type GroupForm = {
 const EMPTY: GroupForm = { id: null, name: '', description: '', tags: '', cover_path: '' };
 
 async function fetchGroups(): Promise<Group[]> {
+  // The post count comes back with the row: deleting a group now deletes its
+  // posts, and an admin should be told how many before confirming, not after.
   const { data, error } = await supabase
     .from('groups')
-    .select('id, name, description, tags, cover_path')
+    .select('id, name, description, tags, cover_path, posts(count)')
     .order('name');
   if (error) throw error;
-  return data ?? [];
+  return ((data ?? []) as any[]).map((g) => ({
+    id: g.id,
+    name: g.name,
+    description: g.description,
+    tags: g.tags,
+    cover_path: g.cover_path,
+    postCount: g.posts?.[0]?.count ?? 0,
+  }));
 }
 
 function parseTags(s: string): string[] {
@@ -55,6 +67,7 @@ export function AdminGroups() {
   const [form, setForm] = useState<GroupForm>(EMPTY);
   const { data, isLoading } = useQuery({ queryKey: ['admin-groups'], queryFn: fetchGroups });
 
+  const [pendingDelete, setPendingDelete] = useState<Group | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -271,9 +284,7 @@ export function AdminGroups() {
                 Edit
               </button>
               <button
-                onClick={() => {
-                  if (confirm(`Delete “${g.name}”?`)) remove.mutate(g.id);
-                }}
+                onClick={() => setPendingDelete(g)}
                 className="text-danger hover:underline"
               >
                 Delete
@@ -282,6 +293,26 @@ export function AdminGroups() {
           </li>
         ))}
       </ul>
+
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title={`Delete "${pendingDelete?.name ?? ''}"?`}
+        body={
+          pendingDelete && pendingDelete.postCount > 0
+            ? `This also deletes the ${pendingDelete.postCount} post${
+                pendingDelete.postCount === 1 ? '' : 's'
+              } shared to this group, along with their comments and likes. Members keep their other posts. This cannot be undone.`
+            : 'This group has no posts. This cannot be undone.'
+        }
+        confirmLabel="Delete group"
+        destructive
+        busy={remove.isPending}
+        onConfirm={() => {
+          if (pendingDelete) remove.mutate(pendingDelete.id);
+          setPendingDelete(null);
+        }}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

@@ -122,6 +122,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260908320000_group_min_three_v1` | Restores the three-person minimum. **Run this; skip 300000** |
 | `20260909120000_post_delete_trigger_fix_v1` | Deleting any post failed on a BEFORE-trigger conflict; splits the reaction cleanup |
 | `20260909140000_leave_any_conversation_v1` | Swipe-to-delete a conversation: removes it for the caller only |
+| `20260911120000_group_delete_cascades_posts_v1` | Deleting a group deletes its posts, instead of republishing them to everyone |
 | `20260909180000_unread_by_conversation_v1` | Per-thread unread counts, so the Messages list can show which thread is waiting |
 | `20260909160000_moderation_orphan_cleanup_v1` | **Bug.** Reports for deleted content stayed pending forever and inflated the dashboard count; closes them on delete + backfills |
 
@@ -218,14 +219,13 @@ column shell, real logo, Fraunces/Figtree.
   state, and none is wanted. Create, edit and delete all live in the admin
   console (`web/src/pages/admin/Groups.tsx`, owner-only) and nowhere else —
   mobile deliberately has no create button.
-- **Deleting a group leaves its posts behind as public ones.** Admin delete is
-  a plain `delete from groups`, and `posts.group_id` is `on delete set
-  null`, so every post that was shared to that group becomes an ordinary
-  wall post visible to everyone. For a private support group that is close to
-  the opposite of what deleting it should mean. Decide the intent — delete the
-  posts with the group, or refuse to delete a group that still has any — and
-  enforce it in the database rather than in the console, so the rule holds
-  whatever calls it.
+- **Deleting a group deletes its posts** (decided and built, 11 Sept).
+  `posts.group_id` is `on delete cascade` now, so the rule holds whatever
+  does the deleting rather than only the admin console. The console states the
+  post count in the confirmation before it happens. Comments, reactions and
+  pending moderation reports are cleared by the existing per-post triggers,
+  which fire on cascaded deletes exactly as on direct ones. Migration:
+  `20260911120000_group_delete_cascades_posts_v1`.
 - **Column-level lock on coordinates is still pending.** Locations are now
   rounded on write, so the exact value no longer exists anywhere. The remaining
   hardening is `revoke select (latitude, longitude) on public.profiles from
