@@ -200,10 +200,14 @@ Volume not yet measured. Destination is Supabase Storage (`avatars`,
 ## 8. Order of work
 
 1. Solve the extraction blocker (§3) — try the public-subnet CloudShell first.
-2. Re-run the dump, pull `ll.sql` down.
-3. Write the importer: MySQL → `profiles` + `profiles_private`, creating
-   Supabase auth users via the Admin API. **Rehearse against staging**
-   (`hcvyknwbixnlwqozmkas`) before production.
+   **This is the only thing still blocking the import.**
+2. Export with `scripts/export-legacy.sql` (NDJSON, one member per line) and
+   get the files out.
+3. ~~Write the importer~~ — built: `scripts/import-legacy.mjs`. Run it with
+   `--dry-run` first, which needs no database and no install and reports the
+   rows that will be skipped and the age/gender values that did not map. Then
+   `--limit 25` against **staging** (`hcvyknwbixnlwqozmkas`), then the full
+   run. It is idempotent on `legacy_id`, so a run that dies can be repeated.
 4. Sendbird posts → `posts` + `reactions`, joined on `cognito_id`. Cheap script,
    not a full importer — it is 494 rows.
 5. S3 → Supabase Storage.

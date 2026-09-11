@@ -49,4 +49,5 @@ web/tsconfig.tsbuildinfo
 !supabase/migrations/*.sql
 !api/libs/database/src/migrations/*.sql
 ll.sql
+*.ndjson
 users.tsv
