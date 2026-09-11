@@ -25,10 +25,22 @@ const styles = StyleSheet.create({
     paddingBottom: 180,
   },
 
+  // The arrow row sits at the top and the name at the bottom, both in flow.
+  // The arrow used to be absolute at top: 52 — but BackgroundScreen already
+  // offsets this screen by the safe area plus 30, so that 52 was added to
+  // padding that was already there, and the name's clearance depended on
+  // whatever height the cover happened to have.
   hero: {
-    minHeight: 220,
-    justifyContent: 'flex-end',
+    minHeight: 190,
+    justifyContent: 'space-between',
     backgroundColor: colors.surface,
+  },
+  heroTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingTop: 8,
   },
   cover: {
     ...StyleSheet.absoluteFillObject,
@@ -42,9 +54,6 @@ const styles = StyleSheet.create({
   // Over the cover rather than above it: the image runs to the top of the
   // screen, so the control has to sit on it.
   back: {
-    position: 'absolute',
-    top: 52,
-    left: 12,
     width: 40,
     height: 40,
     alignItems: 'center',
@@ -54,7 +63,7 @@ const styles = StyleSheet.create({
   },
   heroText: {
     paddingHorizontal: 16,
-    paddingTop: 48,
+    paddingTop: 44,
     paddingBottom: 16,
     gap: 4,
   },
@@ -95,9 +104,6 @@ const styles = StyleSheet.create({
   // Opposite the back arrow, on the cover. It carries the same alert colour
   // as the confirm it opens, so the two read as one action.
   leaveOnHero: {
-    position: 'absolute',
-    top: 52,
-    right: 12,
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 20,

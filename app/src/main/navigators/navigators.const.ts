@@ -20,7 +20,6 @@ export const LIST_HIDE_TAB_BAR: string[] = [
   PATHS_MESSAGES_TAB.messagesTabChatGroup,
   PATHS_MESSAGES_TAB.messagesTabDetailsGroup,
   PATHS_MESSAGES_TAB.messagesTabMediaAndDocs,
-  PATHS_MESSAGES_TAB.messagesTabJoinGroup,
   PATHS_MESSAGES_TAB.messagesTabMembersGroup,
   PATHS_MESSAGES_TAB.messagesTabProfile,
   // donate tab

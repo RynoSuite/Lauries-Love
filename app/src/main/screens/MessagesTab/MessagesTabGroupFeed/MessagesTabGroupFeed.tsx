@@ -170,27 +170,29 @@ export default function MessagesTabGroupFeed() {
           </>
         ) : null}
 
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.back}
-        >
-          <IconArrowLeft
-            width={26}
-            height={26}
-            stroke={colors.heading}
-            strokeWidth={2}
-          />
-        </TouchableOpacity>
-
-        {joined ? (
+        <View style={styles.heroTop}>
           <TouchableOpacity
-            disabled={busy}
-            onPress={() => setConfirmLeave(true)}
-            style={styles.leaveOnHero}
+            onPress={() => navigation.goBack()}
+            style={styles.back}
           >
-            <Text style={styles.leaveOnHeroText}>Leave</Text>
+            <IconArrowLeft
+              width={26}
+              height={26}
+              stroke={colors.heading}
+              strokeWidth={2}
+            />
           </TouchableOpacity>
-        ) : null}
+
+          {joined ? (
+            <TouchableOpacity
+              disabled={busy}
+              onPress={() => setConfirmLeave(true)}
+              style={styles.leaveOnHero}
+            >
+              <Text style={styles.leaveOnHeroText}>Leave</Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
 
         <View style={styles.heroText}>
           <Text style={styles.name}>{group?.name ?? ''}</Text>
