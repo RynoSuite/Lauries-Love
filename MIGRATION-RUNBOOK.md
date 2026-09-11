@@ -91,22 +91,37 @@ mysqldump -h $H -u cesgicid -p --single-transaction --no-tablespaces laurieslove
 If the terminal starts echoing commands without running them, it has a paste
 backlog — Ctrl+C a few times until the prompt is clean.
 
-### ⚠️ The one unsolved blocker
+### Getting the file out
 
-**Getting the file out.** CloudShell VPC environments have **no file download**,
-and the subnet is private with no NAT gateway or S3 endpoint, so
-`aws s3 cp` hangs indefinitely with no error.
+CloudShell VPC environments have **no file upload or download** — a documented
+limitation of VPC environments, not something a different subnet fixes. The
+environment's ENI also never gets a public IP, so a public subnet gives it no
+internet egress either; only a NAT gateway would, and this VPC has none. An
+earlier draft of this runbook said to try a public subnet first. It would not
+have worked.
 
-Two fixes, neither attempted yet:
+**The route that works: an S3 gateway endpoint.** Free, not a running resource
+— just an entry in the route table — and removable afterwards. Traffic to S3
+stays on the AWS network and never crosses the internet, which for 2,221
+people's diagnoses is the point.
 
-- **(A) Recreate the CloudShell VPC environment in a *public* subnet.** Changes
-  no infrastructure. Should still reach the DB (same VPC, security group
-  permitting). **Try this first.**
-- **(B) Add an S3 **Gateway** VPC endpoint.** Free, and a gateway endpoint is
-  just a route-table entry rather than a running resource — but it does modify
-  production networking, so it needs a deliberate decision.
+1. **VPC → Endpoints → Create endpoint.** Service category "AWS services",
+   search `s3`, choose the one of **Type: Gateway** (there is an Interface
+   one too; that costs money and is not what you want). Pick the cluster's
+   VPC, tick the route tables for the DB subnets, create.
+2. Back in CloudShell, `aws s3 cp` works.
+3. Copy the export up, download it from the S3 console, then **delete the
+   object.** It is unencrypted PII sitting in a bucket.
+4. Remove the endpoint afterwards if you would rather leave the VPC as found.
 
-Everything up to this point is proven. Only the extraction route is open.
+Check first whether the VPC already has one: **VPC → Endpoints**, filtered by
+the VPC. If `com.amazonaws.us-east-1.s3` is there as a Gateway, the route
+table for the CloudShell subnet may simply not be associated with it.
+
+**Fallback if networking changes are refused:** RDS → Snapshots → manual
+snapshot → **Export to Amazon S3**. Fully managed, changes no networking,
+writes Parquet. It costs a little and the output needs a Parquet reader, so it
+is the second choice rather than the first.
 
 ---
 
