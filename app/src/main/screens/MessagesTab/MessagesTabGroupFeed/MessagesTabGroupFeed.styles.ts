@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   heroText: {
     paddingHorizontal: 16,
-    paddingTop: 28,
+    paddingTop: 48,
     paddingBottom: 16,
     gap: 4,
   },
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 16,
     paddingTop: 14,
-    paddingBottom: 6,
+    paddingBottom: 14,
   },
   rosterFace: {
     borderRadius: 16,

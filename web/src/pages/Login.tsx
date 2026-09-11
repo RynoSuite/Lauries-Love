@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { AuthLayout, AUTH_POINTS } from '../components/AuthLayout';
 
 export function Login() {
   const { signIn, session } = useAuth();
@@ -27,57 +28,78 @@ export function Login() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-ground px-4">
-      <form
-        onSubmit={onSubmit}
-        className="w-full max-w-sm rounded-2xl bg-surface p-8 shadow-lg ring-1 ring-line"
-      >
-        <div className="mb-5 flex flex-col items-center text-center">
-          <div className="mb-3 grid h-16 w-16 place-items-center rounded-full bg-surface-2">
-            <img src="/logo.png" alt="Laurie’s Love" className="h-12 w-12 object-contain" />
-          </div>
-          <h1 className="font-serif text-2xl font-semibold text-heading">Laurie’s Love</h1>
-          <hr className="my-3 h-[3px] w-24 rounded-full border-0 bg-magenta" />
-          <p className="text-sm text-muted">So no warrior ever walks alone.</p>
-        </div>
-        <label className="mb-1 block text-sm font-medium text-heading">Email</label>
+    <AuthLayout points={AUTH_POINTS}>
+      <h2 className="font-serif text-2xl text-heading">Welcome back</h2>
+      <p className="mt-1 text-sm text-muted">
+        Sign in to pick up where you left off.
+      </p>
+
+      <form onSubmit={onSubmit} className="mt-6">
+        <label
+          htmlFor="login-email"
+          className="mb-1 block text-sm font-medium text-heading"
+        >
+          Email
+        </label>
         <input
+          id="login-email"
           type="email"
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mb-4 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta focus:ring-1 focus:ring-magenta"
+          className="mb-4 w-full rounded-lg border border-line bg-surface-2 px-3 py-2.5 text-heading outline-none transition-colors placeholder:text-faint focus:border-magenta focus:ring-1 focus:ring-magenta"
         />
-        <label className="mb-1 block text-sm font-medium text-heading">Password</label>
+
+        <div className="mb-1 flex items-baseline justify-between">
+          <label
+            htmlFor="login-password"
+            className="block text-sm font-medium text-heading"
+          >
+            Password
+          </label>
+          {/* Beside the field it belongs to, where it is looked for, rather
+              than under the button after the attempt has already failed. */}
+          <Link
+            to="/forgot-password"
+            className="text-sm text-magenta-text hover:underline"
+          >
+            Forgot it?
+          </Link>
+        </div>
         <input
+          id="login-password"
           type="password"
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="mb-4 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta focus:ring-1 focus:ring-magenta"
+          className="mb-4 w-full rounded-lg border border-line bg-surface-2 px-3 py-2.5 text-heading outline-none transition-colors focus:border-magenta focus:ring-1 focus:ring-magenta"
         />
-        {error && <p className="mb-3 text-sm text-danger">{error}</p>}
+
+        {error && (
+          <p role="alert" className="mb-3 text-sm text-danger">
+            {error}
+          </p>
+        )}
+
         <button
           disabled={busy}
-          className="w-full rounded-lg bg-magenta py-2.5 font-semibold text-seamist transition-colors hover:bg-magenta-hi disabled:opacity-60"
+          className="w-full rounded-lg bg-magenta py-3 font-semibold text-white transition-colors hover:bg-magenta-hi disabled:opacity-60"
         >
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
-        <p className="mt-4 text-center text-sm">
-          <Link
-            to="/forgot-password"
-            className="font-medium text-magenta-text hover:underline"
-          >
-            Forgot your password?
-          </Link>
-        </p>
-        <p className="mt-2 text-center text-sm text-faint">
-          New here?{' '}
-          <Link to="/signup" className="font-medium text-magenta-text hover:underline">
-            Create an account
-          </Link>
-        </p>
       </form>
-    </div>
+
+      <p className="mt-6 border-t border-line pt-5 text-center text-sm text-muted">
+        New here?{' '}
+        <Link
+          to="/signup"
+          className="font-semibold text-magenta-text hover:underline"
+        >
+          Create an account
+        </Link>
+      </p>
+    </AuthLayout>
   );
 }

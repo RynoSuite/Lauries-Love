@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { AuthLayout } from '../components/AuthLayout';
 
 // Step 2 of password recovery. Handles BOTH routes into this page, because the
 // two surfaces send people here differently and one email template serves both:
@@ -92,15 +93,8 @@ export function ResetPassword() {
     'mb-4 w-full rounded-lg border border-line px-3 py-2 outline-none focus:border-magenta focus:ring-1 focus:ring-magenta';
 
   return (
-    <div className="grid min-h-screen place-items-center bg-ground px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-surface p-8 shadow-lg ring-1 ring-line">
-        <div className="mb-5 flex flex-col items-center text-center">
-          <img src="/logo.png" alt="" className="mb-2 h-16 w-16 object-contain" />
-          <h1 className="font-serif text-2xl font-semibold text-heading">
-            Choose a new password
-          </h1>
-          <hr className="my-3 h-[3px] w-24 rounded-full border-0 bg-magenta" />
-        </div>
+    <AuthLayout>
+      <h2 className="mb-5 font-serif text-2xl text-heading">Choose a new password</h2>
 
         {done ? (
           <p className="text-center text-sm leading-relaxed text-muted">
@@ -181,7 +175,6 @@ export function ResetPassword() {
             </Link>
           </form>
         )}
-      </div>
-    </div>
+    </AuthLayout>
   );
 }

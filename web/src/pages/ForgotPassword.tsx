@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { AuthLayout } from '../components/AuthLayout';
 
 // Step 1 of password recovery: ask Supabase to send the recovery email.
 //
@@ -44,15 +45,8 @@ export function ForgotPassword() {
   }
 
   return (
-    <div className="grid min-h-screen place-items-center bg-ground px-4">
-      <div className="w-full max-w-sm rounded-2xl bg-surface p-8 shadow-lg ring-1 ring-line">
-        <div className="mb-5 flex flex-col items-center text-center">
-          <img src="/logo.png" alt="" className="mb-2 h-16 w-16 object-contain" />
-          <h1 className="font-serif text-2xl font-semibold text-heading">
-            Reset your password
-          </h1>
-          <hr className="my-3 h-[3px] w-24 rounded-full border-0 bg-magenta" />
-        </div>
+    <AuthLayout>
+      <h2 className="mb-5 font-serif text-2xl text-heading">Reset your password</h2>
 
         {sent ? (
           <>
@@ -106,7 +100,6 @@ export function ForgotPassword() {
             </Link>
           </form>
         )}
-      </div>
-    </div>
+    </AuthLayout>
   );
 }
