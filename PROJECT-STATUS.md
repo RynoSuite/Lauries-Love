@@ -215,12 +215,17 @@ column shell, real logo, Fraunces/Figtree.
   one: static UI strings, which need no key, and on-demand translation of
   member posts, which does.
 - **Groups are live on creation, by decision (11 Sept).** No draft or archive
-  state, and none is wanted. The only lifecycle a group has is **create and
-  delete, both admin-only** — deletion is not built yet on either platform.
-  Worth thinking about before it is: a group's posts carry `group_id` with
-  `on delete set null`, so deleting a group today would leave its posts
-  behind as ordinary public posts rather than removing them. That is almost
-  certainly not what an admin deleting a private support group expects.
+  state, and none is wanted. Create, edit and delete all live in the admin
+  console (`web/src/pages/admin/Groups.tsx`, owner-only) and nowhere else —
+  mobile deliberately has no create button.
+- **Deleting a group leaves its posts behind as public ones.** Admin delete is
+  a plain `delete from groups`, and `posts.group_id` is `on delete set
+  null`, so every post that was shared to that group becomes an ordinary
+  wall post visible to everyone. For a private support group that is close to
+  the opposite of what deleting it should mean. Decide the intent — delete the
+  posts with the group, or refuse to delete a group that still has any — and
+  enforce it in the database rather than in the console, so the rule holds
+  whatever calls it.
 - **Column-level lock on coordinates is still pending.** Locations are now
   rounded on write, so the exact value no longer exists anywhere. The remaining
   hardening is `revoke select (latitude, longitude) on public.profiles from
