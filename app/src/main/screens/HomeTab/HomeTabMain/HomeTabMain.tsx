@@ -527,6 +527,12 @@ const HomeTabMain: FunctionComponent<HomeTabMainProps> = ({ navigation }) => {
                 onPress={() =>
                   navigationRedirect.navigate('Messages', {
                     screen: PATHS_MESSAGES_TAB.messagesTabJoinGroup,
+                    // initial: false keeps the Messages tab's own first
+                    // screen underneath. Without it the tab's stack becomes
+                    // just this one screen, so Messages is left showing
+                    // groups with nothing to go back to — the same way the
+                    // Connect tab used to strand on a member profile.
+                    initial: false,
                   })
                 }
                 style={styles.exploreButton}

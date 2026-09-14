@@ -145,6 +145,9 @@ export default function MessagesTabGroupFeed() {
     (channelUrl: string) =>
       navigation.navigate('Home', {
         screen: PATHS_HOME_TAB.homeTabPost,
+        // The community wall stays underneath, or the Home tab is left on a
+        // single post with no way back to the feed.
+        initial: false,
         params: { channelUrl },
       }),
     [navigation],
