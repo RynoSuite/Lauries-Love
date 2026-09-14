@@ -14,15 +14,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   activeMark: {
-    borderColor: colors.primary['500'],
+    borderColor: colors.magentaText,
     opacity: 0.8,
     borderWidth,
     borderRadius: 50,
-    backgroundColor: colors.primary['500'],
+    backgroundColor: colors.magentaText,
     height: 16,
   },
   inactiveMark: {
-    borderColor: colors.primary['500'],
+    borderColor: colors.magentaText,
     borderWidth,
     borderRadius: 100,
   },
@@ -34,13 +34,15 @@ export const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 50,
+    borderWidth: 3,
+    borderColor: colors.ground,
   },
 });
 
 export const sliderStyles = {
-  maximumTrackTintColor: 'rgba(137, 103, 128, 0.08)',
-  thumbTintColor: colors.primary['500'],
-  minimumTrackTintColor: colors.primary['500'],
+  maximumTrackTintColor: colors.lineStrong,
+  thumbTintColor: colors.magentaText,
+  minimumTrackTintColor: colors.magentaText,
   trackStyle: styles.track,
   thumbStyle: styles.thumb,
 };

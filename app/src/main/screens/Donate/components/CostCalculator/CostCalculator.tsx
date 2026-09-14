@@ -65,7 +65,7 @@ export default function CostCalculator({
                 {t('donate.tabs.calculator.support')}
               </Text>
               <LinearGradient
-                colors={[`${colors.magenta}33`, `${colors.magentaHi}33`]}
+                colors={[`${colors.magenta}59`, `${colors.magentaHi}59`]}
                 locations={[0.5, 1]}
                 style={styles.daysContainer}
                 start={{ x: 0, y: 0 }}

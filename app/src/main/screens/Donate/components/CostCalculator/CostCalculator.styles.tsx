@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     fontFamily: FONT_RALEWAY_600,
-    color: colors.heading,
+    color: colors.body,
   },
   paddedContainer: {
     padding: 20,
@@ -42,6 +42,9 @@ const styles = StyleSheet.create({
   },
   daysContainer: {
     borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.magentaText,
+    paddingHorizontal: 18,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -52,7 +55,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     lineHeight: 44,
     fontFamily: FONT_HANKEN_GROTESK_700,
-    color: colors.heading,
+    color: colors.magentaText,
   },
   daysText: {
     fontSize: 22,
