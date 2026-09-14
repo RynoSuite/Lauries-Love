@@ -300,6 +300,27 @@ keystore. A new keystore cannot update an existing Play listing.
 
 ---
 
+## 5a. Native config is not real until something builds it
+
+Learned the hard way on 13 Sept. `newArchEnabled` was changed from true to
+false on 8 Sept and nobody noticed for five days, because every change since
+was JavaScript and Metro reloads it onto whatever binary is already on the
+phone. The first thing to actually compile that flag was a release build for a
+client review, which failed: **react-native-mmkv 3.x is
+New-Architecture-only** — its module extends a codegen class that is not
+generated when the old architecture is selected, so it cannot compile at all.
+
+Two rules follow:
+
+1. **Anything touching `android/`, `ios/`, `app.json` or a native
+   dependency needs a build before it counts as done.** The splash screen sat
+   unverified the same way, for the same reason.
+2. **The build profile matters.** The only Android build that had ever
+   succeeded was `development`, which is a debug build that loads its
+   JavaScript from Metro. `staging` — the standalone one an external
+   reviewer needs — had never been run. A profile nobody has built is a
+   profile that does not work yet.
+
 ## 6. Decisions already made, so they are not relitigated
 
 - **Magenta leads the interface**, over the brand guide's "one vivid stroke"
