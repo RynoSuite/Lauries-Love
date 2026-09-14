@@ -1,4 +1,4 @@
-import { Region } from 'react-native-maps';
+import type { Region } from 'react-native-maps';
 import { Text, TouchableOpacity, View } from 'react-native';
 import AvatarMessagesTab from 'main/screens/MessagesTab/components/AvatarMessagesTab/AvatarMessagesTab';
 import { CommonActions, useNavigation } from '@react-navigation/native';
