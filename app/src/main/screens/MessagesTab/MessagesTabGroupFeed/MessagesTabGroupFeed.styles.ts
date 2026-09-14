@@ -21,14 +21,24 @@ const styles = StyleSheet.create({
   },
   // The bottom padding is applied at render from the measured tab bar
   // height, since the navigator computes that at runtime.
-  list: {},
+  // Same rhythm as the community wall, so a post sits in the same frame
+  // wherever it is read. This went empty when the bottom padding moved to a
+  // measured value at render, taking the gap and the side margins with it —
+  // the cards ran edge to edge and into each other.
+  list: {
+    gap: 12,
+    paddingHorizontal: 16,
+  },
 
   // The arrow row sits at the top and the name at the bottom, both in flow.
   // The arrow used to be absolute at top: 52 — but BackgroundScreen already
   // offsets this screen by the safe area plus 30, so that 52 was added to
   // padding that was already there, and the name's clearance depended on
   // whatever height the cover happened to have.
+  // Full-bleed: the list pads every row by 16, and the cover is meant to run
+  // to the edges of the screen, so the hero cancels it.
   hero: {
+    marginHorizontal: -16,
     minHeight: 190,
     justifyContent: 'space-between',
     backgroundColor: colors.surface,
@@ -85,7 +95,6 @@ const styles = StyleSheet.create({
   },
 
   actions: {
-    paddingHorizontal: 16,
     paddingVertical: 14,
   },
   joinButton: {
@@ -114,7 +123,7 @@ const styles = StyleSheet.create({
   },
 
   empty: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 8,
     paddingTop: 32,
   },
   emptyText: {
@@ -178,7 +187,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 6,
-    paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 14,
   },
