@@ -6,14 +6,16 @@ const WIDTH = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 20,
-    borderColor: "#EFEFEF",
+    borderColor: colors.line,
     borderWidth: 1,
     padding: 20,
   },
+  // A cancelled donation recedes rather than turning pale.
   inactive: {
-    backgroundColor: colors.neutral[300],
+    backgroundColor: colors.surface2,
+    opacity: 0.7,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -24,14 +26,14 @@ const styles = StyleSheet.create({
     fontFamily: FONT_HANKEN_GROTESK_700,
     fontSize: 32,
     lineHeight: 48,
-    color: colors.black,
+    color: colors.heading,
   },
   cardType: {
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
     fontSize: 16,
     lineHeight: 24,
-    color: "#7B7B7B",
-    backgroundColor: "#EBEBEB",
+    color: colors.body,
+    backgroundColor: colors.surface2,
     paddingHorizontal: 13,
     borderRadius: 16,
   },
@@ -45,19 +47,19 @@ const styles = StyleSheet.create({
     fontFamily: FONT_RALEWAY_500,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.primary[600],
+    color: colors.muted,
   },
   accountNumber: {
     fontFamily: FONT_HANKEN_GROTESK_400,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.primary[600],
+    color: colors.muted,
   },
   cancelledDonation: {
     fontFamily: FONT_RALEWAY_600,
     fontSize: 16,
     lineHeight: 24,
-    color: colors.error[500],
+    color: colors.danger,
   },
 });
 

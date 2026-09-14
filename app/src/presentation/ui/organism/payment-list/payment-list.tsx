@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
+import colors from 'styles/colors';
 
 // import { Loader } from 'presentation/ui/atoms';
 import { PaymentListProps } from './payment-list.model';
@@ -86,7 +87,9 @@ export default function PaymentList(props: PaymentListProps) {
         />
       ) : (
         <View>
-          <Text>{t('donate.history.empty')}</Text>
+          <Text style={{ color: colors.muted, fontSize: 15 }}>
+            {t('donate.history.empty')}
+          </Text>
         </View>
       )}
     </View>
