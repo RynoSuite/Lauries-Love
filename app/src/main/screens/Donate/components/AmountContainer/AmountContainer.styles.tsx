@@ -11,11 +11,13 @@ const styles = StyleSheet.create({
     fontSize: 52,
     lineHeight: 86,
     fontFamily: FONT_HANKEN_GROTESK_700,
+    color: colors.heading,
   },
   amountCents: {
     fontSize: 22,
     lineHeight: 28,
     fontFamily: FONT_HANKEN_GROTESK_700,
+    color: colors.heading,
   },
   info: {
     color: colors.muted,

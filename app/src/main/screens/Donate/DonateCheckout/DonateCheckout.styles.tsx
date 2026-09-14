@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     lineHeight: 40,
     fontFamily: FONT_BEHIND_THE_NINETIES_500,
+    color: colors.heading,
   },
   titleContainer: {
     flexDirection: 'row',

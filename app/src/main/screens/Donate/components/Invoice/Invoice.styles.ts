@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
   },
   numeric: {
     fontFamily: FONT_HANKEN_GROTESK_500,
+    color: colors.heading,
   }
 });
 

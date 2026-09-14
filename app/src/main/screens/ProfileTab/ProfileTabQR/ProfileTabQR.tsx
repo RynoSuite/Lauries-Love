@@ -29,19 +29,24 @@ const ProfileTabQR: FunctionComponent<ProfileTabQRProps> = ({ navigation }) => {
   };
 
   return (
-    <BackgroundScreen type="profile-QR">
+    <BackgroundScreen type="home-main">
       <View style={styles.container}>
         <TouchableOpacity
           onPress={onPressBack}
           style={styles.backgroundButton}
         />
         <Text style={styles.title}>{'Share\nLaurie’s Love'}</Text>
-        <QRCode
-          size={200}
-          value={qrCode}
-          fgColor={colors.white}
-          bgColor={colors.transparent}
-        />
+        <View style={styles.card}>
+          <QRCode
+            size={200}
+            value={qrCode}
+            fgColor={colors.ground}
+            bgColor={colors.white}
+          />
+        </View>
+        <Text style={styles.hint}>
+          Have someone scan this to find you on Laurie&rsquo;s Love.
+        </Text>
       </View>
     </BackgroundScreen>
   );

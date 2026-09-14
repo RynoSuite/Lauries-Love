@@ -11,7 +11,6 @@ const SCREEN_TOP_GAP = 30;
 import { LinearGradientBackgroundScreenType } from './BackgroundScreen.types';
 
 // images
-import BackgroundProfileQr from 'assets/images/background-profile-QR.png';
 
 // styles
 import colors from 'styles/colors';
@@ -22,7 +21,6 @@ type BackgroundScreenProps = {
   type?:
     | 'profile'
     | 'updateProfile'
-    | 'profile-QR'
     | 'messages'
     | 'friendBlock'
     | 'home-main'
@@ -121,21 +119,6 @@ const BackgroundScreen: FunctionComponent<BackgroundScreenProps> = ({
       end: { x: 0, y: 1 },
     };
   }, [type]);
-
-  if (type === 'profile-QR')
-    return (
-      <View
-        style={[
-          styles.universalContainer,
-          {
-            paddingTop: topPad,
-          },
-        ]}
-      >
-        <Image source={BackgroundProfileQr} style={styles.image} />
-        {children}
-      </View>
-    );
 
   if (type === 'home-post')
     return (
