@@ -20,6 +20,17 @@ const styles = StyleSheet.create({
     width: WIDTH,
     height: HEIGHT,
   },
+  // Above the full-screen back target, or the target would swallow its taps.
+  // Positioned where every other screen in the app puts its back arrow.
+  back: {
+    position: 'absolute',
+    top: 8,
+    left: 12,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   // White, because the code needs a light field to be scanned reliably. The
   // padding is part of that: a QR wants a quiet border around it.
   card: {

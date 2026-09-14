@@ -9,6 +9,9 @@ import { RootProfileTabParamList } from 'main/navigators/ProfileTabStacks/Profil
 // components
 import BackgroundScreen from 'components/BackgroundScreen/BackgroundScreen';
 
+// icons
+import { IconArrowLeft } from 'assets/icons-auto/components';
+
 // styles
 import styles from './ProfileTabQR.styles';
 import colors from 'styles/colors';
@@ -35,6 +38,18 @@ const ProfileTabQR: FunctionComponent<ProfileTabQRProps> = ({ navigation }) => {
           onPress={onPressBack}
           style={styles.backgroundButton}
         />
+        <TouchableOpacity
+          onPress={onPressBack}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={styles.back}
+        >
+          <IconArrowLeft
+            width={28}
+            height={28}
+            stroke={colors.heading}
+            strokeWidth={2}
+          />
+        </TouchableOpacity>
         <Text style={styles.title}>{'Share\nLaurie’s Love'}</Text>
         <View style={styles.card}>
           <QRCode
