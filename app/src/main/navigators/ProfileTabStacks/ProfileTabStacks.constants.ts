@@ -9,9 +9,6 @@ import ProfileTabUpdatePhone from 'main/screens/ProfileTab/ProfileTabUpdatePhone
 import ProfileTabMainUpdatePassword from 'main/screens/ProfileTab/ProfileTabMainUpdatePassword/ProfileTabMainUpdateFullName';
 import ProfileTabMainUpdateFullName from 'main/screens/ProfileTab/ProfileTabMainUpdateFullName/ProfileTabMainUpdateFullName';
 import ProfileTabQR from 'main/screens/ProfileTab/ProfileTabQR/ProfileTabQR';
-import ProfileTabSupportInbox from 'main/screens/ProfileTab/ProfileTabSupportInbox/ProfileTabSupportInbox';
-import ProfileTabSupportTicket from 'main/screens/ProfileTab/ProfileTabSupportTicket/ProfileTabSupportTicket';
-import ProfileTabSupportStaff from 'main/screens/ProfileTab/ProfileTabSupportStaff/ProfileTabSupportStaff';
 
 // constants
 import { PATHS_PROFILE_TAB } from '../paths';
@@ -77,30 +74,6 @@ export const LIST_PROFILE_TAB_SCREENS: Array<{
     name: PATHS_PROFILE_TAB.profileTabQR,
     title: PATHS_PROFILE_TAB.profileTabQR,
     component: ProfileTabQR,
-    headerShown: false,
-    gestureEnabled: false,
-  },
-  {
-    id: PATHS_PROFILE_TAB.profileTabSupportInbox,
-    name: PATHS_PROFILE_TAB.profileTabSupportInbox,
-    title: PATHS_PROFILE_TAB.profileTabSupportInbox,
-    component: ProfileTabSupportInbox,
-    headerShown: false,
-    gestureEnabled: false,
-  },
-  {
-    id: PATHS_PROFILE_TAB.profileTabSupportTicket,
-    name: PATHS_PROFILE_TAB.profileTabSupportTicket,
-    title: PATHS_PROFILE_TAB.profileTabSupportTicket,
-    component: ProfileTabSupportTicket,
-    headerShown: false,
-    gestureEnabled: false,
-  },
-  {
-    id: PATHS_PROFILE_TAB.profileTabSupportStaff,
-    name: PATHS_PROFILE_TAB.profileTabSupportStaff,
-    title: PATHS_PROFILE_TAB.profileTabSupportStaff,
-    component: ProfileTabSupportStaff,
     headerShown: false,
     gestureEnabled: false,
   },

@@ -300,6 +300,24 @@ keystore. A new keystore cannot update an existing Play listing.
 
 ---
 
+## 5b. Staff and admin functions live on the web, not in the app
+
+Decided 11 Sept for group creation, extended 14 Sept to support. The mobile
+app is for members. Anything that acts on other people's data belongs in the
+admin console, where access is already gated and the screen is big enough to
+do the job properly.
+
+Removed from mobile on 14 Sept: the **Support inbox**, the **ticket detail**
+and the **support staff management** screens. All three were staff-gated on
+`getIsSupportStaff()`, all three duplicated `web/src/pages/admin/
+SupportInbox.tsx`, and the inbox listed every reporter's **email and phone
+number** — `profiles_private` data, on a phone, behind nothing but a role
+check.
+
+**"Contact support" in the Messages tab stays.** That is the member-facing
+route: it creates a ticket and the reply arrives in the member's own messages.
+It is not an admin screen and must not be removed with them.
+
 ## 5a. Native config is not real until something builds it
 
 Learned the hard way on 13 Sept. `newArchEnabled` was changed from true to

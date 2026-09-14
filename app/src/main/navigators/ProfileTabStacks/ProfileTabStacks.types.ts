@@ -26,16 +26,4 @@ export type RootProfileTabParamList = {
     string | number | boolean
   >;
   [PATHS_PROFILE_TAB.profileTabQR]?: Record<string, string | number | boolean>;
-  [PATHS_PROFILE_TAB.profileTabSupportInbox]?: Record<
-    string,
-    string | number | boolean
-  >;
-  [PATHS_PROFILE_TAB.profileTabSupportTicket]?: Record<
-    string,
-    string | number | boolean
-  > & { ticketId: string };
-  [PATHS_PROFILE_TAB.profileTabSupportStaff]?: Record<
-    string,
-    string | number | boolean
-  >;
 };
