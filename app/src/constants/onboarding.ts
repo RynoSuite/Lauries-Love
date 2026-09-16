@@ -155,6 +155,9 @@ export const CANCER_TYPES = [
   },
 ];
 
+// The canonical gender vocabulary. The web app mirrors these exact ids in
+// `web/src/components/ProfileFields.tsx`; both write to the same column, so
+// they have to agree character for character.
 export const GENRES = [
   {
     id: 'male',
@@ -163,6 +166,13 @@ export const GENRES = [
   {
     id: 'female',
     label: 'Female',
+  },
+  {
+    // Offered on web since launch. Added here rather than dropped there:
+    // taking an answer away from members who already chose it is the worse
+    // side of that trade.
+    id: 'non-binary',
+    label: 'Non-binary',
   },
   {
     id: 'prefer-not-to-say',

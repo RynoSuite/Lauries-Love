@@ -33,10 +33,15 @@ export const DIAGNOSIS_OPTIONS = [
   }),
 ];
 
+// Filter options, so every value a member can STORE has to be filterable —
+// otherwise choosing non-binary or prefer-not-to-say quietly removes you from
+// the map for everyone using the gender filter.
 export const GENDER_OPTIONS = [
   { id: 'no-preference', label: 'No preference' },
   { id: 'female', label: 'Female' },
   { id: 'male', label: 'Male' },
+  { id: 'non-binary', label: 'Non-binary' },
+  { id: 'prefer-not-to-say', label: 'Prefer not to say' },
 ];
 
 export const CANCER_OPTIONS = [

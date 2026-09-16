@@ -101,6 +101,13 @@ function normaliseAge(value) {
 
   const compact = raw.replace(/\s|_/g, '');
   if (compact === '60+' || compact === '60plus') return '60-plus';
+
+  // '55-59' is not a bracket anyone was ever offered. The mobile profile
+  // editor listed it under a label reading "45-59" — a typo in
+  // ProfileTab.constants.ts, fixed 16 Sept. The 6 members carrying it in the
+  // export tapped the 45-59 row, so that is what they meant.
+  if (compact === '55-59') return '45-59';
+
   if (AGE_RANGES.includes(compact)) return compact;
   return null;
 }

@@ -12,8 +12,34 @@ import { useDefinitions } from '../lib/useDefinitions';
 // member who typed their name wrong at signup, or changed it, had no way to
 // fix it.
 
-export const AGE_RANGES = ['18-29', '30-39', '40-49', '50-59', '60-69', '70+'];
-export const GENDERS = ['Female', 'Male', 'Non-binary', 'Prefer not to say'];
+// ── The shared vocabulary ───────────────────────────────────────────────────
+//
+// These ids are the SAME STRINGS the mobile app writes, and they are stored,
+// not displayed — the label is for the member, the id is for the database.
+// Mirror file: `app/src/constants/onboarding.ts`. Changing one without the
+// other silently splits the community in half again.
+//
+// Mobile's vocabulary is the canon rather than web's, and not by preference:
+// the 2,221 legacy members already carry these values, and web's old buckets
+// could not represent them. `45-59` — 930 real members — has no equivalent in
+// 18-29/30-39/40-49/50-59/60-69/70+, so importing them through web's set would
+// have destroyed the answer rather than converted it.
+//
+// Filters compare with strict equality, so a member holding a value from the
+// other list matches nothing at all — no error, no empty state, just absence.
+export const AGE_RANGES = [
+  { value: '18-34', label: '18 – 34' },
+  { value: '35-44', label: '35 – 44' },
+  { value: '45-59', label: '45 – 59' },
+  { value: '60-plus', label: '60+' },
+];
+
+export const GENDERS = [
+  { value: 'female', label: 'Female' },
+  { value: 'male', label: 'Male' },
+  { value: 'non-binary', label: 'Non-binary' },
+  { value: 'prefer-not-to-say', label: 'Prefer not to say' },
+];
 
 const THIS_YEAR = new Date().getFullYear();
 // Far enough back to cover long survivorship without an endless list.
@@ -338,8 +364,8 @@ export function ProfileFields({
             >
               <option value="">Prefer not to say</option>
               {AGE_RANGES.map((a) => (
-                <option key={a} value={a}>
-                  {a}
+                <option key={a.value} value={a.value}>
+                  {a.label}
                 </option>
               ))}
             </select>
@@ -351,10 +377,13 @@ export function ProfileFields({
               onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
               className={inputClass}
             >
-              <option value="">Prefer not to say</option>
+              {/* "Prefer not to say" is a real stored value now, so the blank
+                  option means unanswered rather than declined — two different
+                  things that used to share a label. */}
+              <option value="">Select…</option>
               {GENDERS.map((g) => (
-                <option key={g} value={g}>
-                  {g}
+                <option key={g.value} value={g.value}>
+                  {g.label}
                 </option>
               ))}
             </select>
