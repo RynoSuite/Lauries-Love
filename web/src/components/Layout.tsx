@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { useBranding } from '../lib/branding';
 import { useUnread } from '../lib/useUnread';
+import { DailyQuote } from './DailyQuote';
 import { TaraStory } from './TaraStory';
 import { CompleteProfileBanner } from './CompleteProfileBanner';
 import { UpdateBanner } from './UpdateBanner';
@@ -171,23 +172,7 @@ export function Layout() {
         {/* Left rail */}
         <aside className="hidden lg:block">
           <div className="sticky top-[92px] space-y-4">
-            <section className="overflow-hidden rounded-2xl border border-line bg-surface">
-              <img
-                src="/you-matter.png"
-                alt=""
-                className="h-32 w-full object-cover"
-              />
-              <div className="px-4 pb-4 pt-3 text-center">
-                <h2 className="font-serif text-lg leading-tight text-magenta-text">
-                  Connect. Empower. Inspire.
-                </h2>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted">
-                  A safe space to share, connect, and support one another on the
-                  cancer journey.
-                </p>
-                <IconHeart className="mx-auto mt-2 h-5 w-5 text-magenta-text" />
-              </div>
-            </section>
+            <DailyQuote />
 
             <nav className="space-y-1 rounded-2xl border border-line bg-surface p-2">
               {RAIL.map(({ to, label, Icon, end }) => (
