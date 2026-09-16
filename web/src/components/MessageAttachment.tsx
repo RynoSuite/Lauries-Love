@@ -94,7 +94,11 @@ export function MessageAttachment({
       rel="noreferrer noopener"
       className={
         'flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm underline ' +
-        (mine ? 'bg-white/10 text-white' : 'bg-ground/40 text-heading')
+        // `bg-ground` was a darker hole punched in the bubble; on the light
+        // theme the ground is paler than the bubble, so the chip vanished.
+        // `bg-surface` is the card colour and steps away from surface-2 in
+        // both directions.
+        (mine ? 'bg-white/10 text-white' : 'bg-surface text-heading')
       }
     >
       <span aria-hidden="true">📎</span>

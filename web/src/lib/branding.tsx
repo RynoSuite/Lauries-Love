@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { supabase } from './supabase';
 import { applyTheme } from './theme';
+import { useColorMode } from './colorMode';
 
 // Runtime branding. Loads the single branding_settings row (public read, so it
 // works before sign-in too) and exposes app name / tagline / logo, plus paints
@@ -43,6 +44,9 @@ type Row = {
 
 export function BrandingProvider({ children }: { children: ReactNode }) {
   const [branding, setBranding] = useState<Branding>(DEFAULT_BRANDING);
+  // The palette is the org's theme resolved against the member's light/dark
+  // choice, so both inputs paint through the same single call below.
+  const { mode } = useColorMode();
 
   useEffect(() => {
     let active = true;
@@ -80,8 +84,8 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   // Paint the palette. Runs on every change so the admin console's live
   // preview and a normal page load go through exactly the same path.
   useEffect(() => {
-    applyTheme(branding.theme);
-  }, [branding.theme]);
+    applyTheme(branding.theme, mode);
+  }, [branding.theme, mode]);
 
   useEffect(() => {
     document.title = branding.appName;

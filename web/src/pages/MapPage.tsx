@@ -13,8 +13,29 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { useColorMode } from '../lib/colorMode';
 import { useFeatureFlags } from '../lib/featureFlags';
 import { PageTitle } from '../components/PageTitle';
+
+// Marker colours, per theme. Leaflet writes these onto the SVG as attributes,
+// so they cannot be `var(--c-magenta)` like the rest of the app — they have to
+// be resolved here.
+//
+// The basemap inverts to a dark map on the dark theme and stays light on the
+// light one, so the ring flips with it: white separates a pin from dark tiles,
+// and ink separates it from pale ones. The fill follows the same logic — the
+// bright #F45FAF stop is the one that survives a dark ground, while on a light
+// map the deeper #911766 is what reads.
+const MARKERS = {
+  dark: {
+    focus: { color: '#FFFFFF', weight: 3, fillColor: '#F45FAF', fillOpacity: 1 },
+    member: { color: '#F45FAF', weight: 2, fillColor: '#911766', fillOpacity: 0.85 },
+  },
+  light: {
+    focus: { color: '#0A2A2D', weight: 3, fillColor: '#911766', fillOpacity: 1 },
+    member: { color: '#FFFFFF', weight: 2, fillColor: '#911766', fillOpacity: 0.9 },
+  },
+} as const;
 
 // Community map.
 //
@@ -186,6 +207,7 @@ function Filter({
 
 export function MapPage() {
   const { isEnabled } = useFeatureFlags();
+  const { mode } = useColorMode();
   const [markers, setMarkers] = useState<Marker[]>([]);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [located, setLocated] = useState<boolean | null>(null);
@@ -359,12 +381,7 @@ export function MapPage() {
                 focused?.longitude ?? focus.lng,
               ]}
               radius={11}
-              pathOptions={{
-                color: '#FFFFFF',
-                weight: 3,
-                fillColor: '#F45FAF',
-                fillOpacity: 1,
-              }}
+              pathOptions={MARKERS[mode].focus}
             >
               <Tooltip permanent direction="top" offset={[0, -10]}>
                 {focused?.display_name || focused?.first_name || 'This member'}
@@ -391,12 +408,7 @@ export function MapPage() {
                 key={m.id}
                 center={[m.latitude, m.longitude]}
                 radius={8}
-                pathOptions={{
-                  color: '#F45FAF',
-                  weight: 2,
-                  fillColor: '#911766',
-                  fillOpacity: 0.85,
-                }}
+                pathOptions={MARKERS[mode].member}
               >
                 <Popup>
                   <Link

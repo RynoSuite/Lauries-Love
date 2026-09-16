@@ -117,6 +117,92 @@ export const DEFAULT_THEME: Record<string, string> = Object.fromEntries(
   ALL_TOKENS.map((t) => [t.key, t.default]),
 );
 
+// ── Light mode ─────────────────────────────────────────────────────────────
+//
+// Only the tokens that DEPEND on the ground being dark are listed. Surfaces,
+// the four text steps and the status colours all flip; the brand fill, gold
+// and teal do not, because they are the brand and it does not change with the
+// lights.
+//
+// These values are duplicated in index.css under `:root[data-theme='light']`,
+// which is what paints the first frame before React has mounted. This copy is
+// what `applyTheme` writes as inline styles, because an org's saved theme is
+// also written inline and would otherwise win over the stylesheet — see the
+// note in applyTheme.
+//
+// Every text step clears 4.5:1 on the white card and on the page ground:
+// heading 15.2, body 13.6, muted 5.8, faint 5.5.
+export const LIGHT_TOKENS: Record<string, string> = {
+  ground: '#F4F7F7',
+  surface: '#FFFFFF',
+  'surface-2': '#EAF0F1',
+  line: '#D8E2E3',
+  'line-strong': '#C2D2D3',
+  // The header. White against the near-white ground, separated by its rule.
+  harbor: '#FFFFFF',
+
+  heading: '#0A2A2D',
+  body: '#123239',
+  muted: '#4F6A6E',
+  faint: '#546E71',
+
+  // The dark theme's reds and greens were lightened to survive a dark ground;
+  // on white the same values are washed out, so they come back down.
+  danger: '#B3262B',
+  'danger-hi': '#8E1B20',
+  success: '#1B7A47',
+  warn: '#8A6100',
+
+  // Teal is an accent that also has to be readable as a link.
+  lagoon: '#0F6E88',
+  'lagoon-hi': '#0B5A70',
+};
+
+/** The light theme's card, which brand type has to be readable against. */
+const LIGHT_CARD = '#FFFFFF';
+
+/**
+ * The two brand tokens that are defined by the ground they sit on, recomputed
+ * for the light theme.
+ *
+ * `magenta-text` exists because #911766 scores 1.82:1 on the dark card, so the
+ * dark theme lightens it to #F45FAF. On white that inverts exactly — #F45FAF
+ * scores 2.3:1 — so here the stop is DARKENED until it clears 4.5:1 instead.
+ * The fill itself already passes at 8.34:1 and is usually the answer.
+ *
+ * `magenta-plate` is the disc behind sidebar icons: a dark maroon on the dark
+ * theme, a pale tint of the same hue here, with the icon drawn in the text
+ * stop over it (6.8:1 at the defaults).
+ */
+export function lightBrandTokens(fillHex: string): Record<string, string> {
+  const hsl = hexToHsl(fillHex);
+  if (!hsl) return {};
+  const [h, s, l] = hsl;
+
+  let text = fillHex.toUpperCase();
+  for (let i = 0; i < 24; i++) {
+    const ratio = contrastRatio(text, LIGHT_CARD);
+    if (ratio !== null && ratio >= 4.5) break;
+    // Walk down in lightness rather than trusting a fixed offset, so a pale or
+    // desaturated brand colour still lands somewhere readable.
+    text = hslToHex(h, Math.min(1, s * 1.05), Math.max(0.12, l - (i + 1) * 0.04));
+  }
+
+  return {
+    'magenta-text': text,
+    // A tint, not a wash: pale enough to sit on a white card, saturated enough
+    // to still read as a disc rather than as nothing.
+    'magenta-plate': hslToHex(h, Math.min(1, s * 0.8), 0.9),
+  };
+}
+
+/** The full light-mode token set, including the brand stops derived from
+ *  whatever fill the org has saved. */
+export function lightThemeFor(theme: Record<string, string> | null | undefined) {
+  const fill = theme?.magenta || DEFAULT_THEME.magenta;
+  return { ...LIGHT_TOKENS, ...lightBrandTokens(fill) };
+}
+
 /** "#911766" -> "145 23 102". Tailwind needs channels, not hex, for alpha. */
 export function hexToChannels(hex: string): string | null {
   let h = hex.trim().replace(/^#/, '');
@@ -130,15 +216,31 @@ export function isValidHex(hex: string): boolean {
   return hexToChannels(hex) !== null;
 }
 
+export type ColorMode = 'dark' | 'light';
+
 /**
  * Writes a theme onto the document. Unknown keys are ignored and invalid hex
  * is skipped rather than clearing the variable, so a malformed value in the
  * database degrades to the compiled default instead of an unstyled page.
+ *
+ * In light mode the light value WINS over the org's saved one for the tokens
+ * that flip. That is deliberate: every colour in the branding console was
+ * picked against the dark ground, so honouring a saved #0A2A2D "card" here
+ * would paint black cards on a white page. The brand fill, gold and the rest
+ * of the palette still come from the org's theme — those are the brand.
+ *
+ * It also has to be written INLINE rather than left to the `[data-theme]`
+ * rules in index.css: a saved theme is itself inline, and an inline value beats
+ * any stylesheet rule no matter how specific.
  */
-export function applyTheme(theme: Record<string, string> | null | undefined) {
+export function applyTheme(
+  theme: Record<string, string> | null | undefined,
+  mode: ColorMode = 'dark',
+) {
   const root = document.documentElement;
+  const light = mode === 'light' ? lightThemeFor(theme) : null;
   for (const token of ALL_TOKENS) {
-    const value = theme?.[token.key];
+    const value = light?.[token.key] ?? theme?.[token.key];
     if (!value) {
       root.style.removeProperty(`--c-${token.key}`);
       continue;

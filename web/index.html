@@ -13,6 +13,19 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Figtree:wght@400..700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      // Light/dark, before the first paint. The app sets this again once React
+      // mounts, but that is several hundred milliseconds of a dark page for a
+      // member who chose light — long enough to read as a bug. Inline and
+      // synchronous on purpose; a deferred script is already too late.
+      // Key must match COLOR_MODE_KEY in src/lib/colorMode.tsx.
+      try {
+        if (localStorage.getItem('ll.color-mode') === 'light') {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.style.colorScheme = 'light';
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

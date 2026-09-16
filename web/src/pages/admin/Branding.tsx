@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, currentOrgId } from '../../lib/supabase';
 import { useAuth } from '../../lib/auth';
+import { useColorMode } from '../../lib/colorMode';
 import { PageTitle } from '../../components/PageTitle';
 import { ColorField } from '../../components/ColorField';
 import {
@@ -72,10 +73,13 @@ export function AdminBranding() {
     setTheme({ ...DEFAULT_THEME, ...(data.theme ?? {}) });
   }, [data]);
 
-  // Live preview.
+  // Live preview. Painted through the member's own light/dark choice, the same
+  // as everywhere else — otherwise editing colours here snaps the console back
+  // to the dark palette while you work.
+  const { mode } = useColorMode();
   useEffect(() => {
-    if (dirty) applyTheme(theme);
-  }, [theme, dirty]);
+    if (dirty) applyTheme(theme, mode);
+  }, [theme, dirty, mode]);
 
   // On unmount, drop back to whatever is saved so an abandoned edit does not
   // leave the rest of the admin console repainted. Reads the saved theme from
@@ -83,9 +87,14 @@ export function AdminBranding() {
   // fire on every refetch, repainting mid-edit with the stale value.
   const savedThemeRef = useRef<Record<string, string> | null>(null);
   savedThemeRef.current = data?.theme ?? null;
+  // `mode` goes through a ref for the same reason the saved theme does: the
+  // cleanup must not re-run when it changes, but the unmount paint still has
+  // to use whatever mode is current.
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
   useEffect(
     () => () => {
-      applyTheme(savedThemeRef.current);
+      applyTheme(savedThemeRef.current, modeRef.current);
     },
     [],
   );
@@ -413,7 +422,7 @@ export function AdminBranding() {
                 support_email: data?.support_email ?? '',
                 logo_url: data?.logo_url ?? '',
               });
-              applyTheme(data?.theme ?? null);
+              applyTheme(data?.theme ?? null, mode);
               setDirty(false);
             }}
             className="text-sm text-muted hover:text-heading hover:underline"

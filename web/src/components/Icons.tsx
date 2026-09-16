@@ -118,6 +118,23 @@ export function IconSignOut({ className = 'h-[18px] w-[18px]' }: IconProps) {
     </svg>
   );
 }
+// The light/dark pair in the account menu. Each shows the mode you would be
+// switching TO, so the glyph is the destination, not the current state.
+export function IconSun({ className = 'h-[18px] w-[18px]' }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+    </svg>
+  );
+}
+export function IconMoon({ className = 'h-[18px] w-[18px]' }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M20 13.5A8 8 0 0 1 10.5 4a8 8 0 1 0 9.5 9.5Z" />
+    </svg>
+  );
+}
 export function IconBook({ className = 'h-[18px] w-[18px]' }: IconProps) {
   return (
     <svg {...base} className={className}>

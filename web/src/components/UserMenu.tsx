@@ -1,10 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth';
+import { useColorMode } from '../lib/colorMode';
 import { useMyAvatar } from '../lib/useMyAvatar';
 import { useAdminCounts } from '../lib/useAdminCounts';
 import { Avatar } from './Avatar';
-import { IconAdmin, IconProfile, IconSignOut, IconSupport } from './Icons';
+import {
+  IconAdmin,
+  IconMoon,
+  IconProfile,
+  IconSignOut,
+  IconSun,
+  IconSupport,
+} from './Icons';
 
 // The account chip in the header. Profile, Support, Admin and Sign out used to
 // sit in the top nav; they are personal/account actions rather than places in
@@ -15,6 +23,7 @@ import { IconAdmin, IconProfile, IconSignOut, IconSupport } from './Icons';
 // wiring so it behaves for keyboard and screen-reader users too.
 export function UserMenu() {
   const { session, isStaff, signOut } = useAuth();
+  const { mode, toggle } = useColorMode();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -100,6 +109,37 @@ export function UserMenu() {
               )}
             </Link>
           )}
+
+          {/* A setting, not a destination, so it sits below the links and keeps
+              the menu open — flipping the theme is something you want to see
+              happen, and to be able to undo in the same gesture. */}
+          <button
+            onClick={toggle}
+            role="menuitemcheckbox"
+            aria-checked={mode === 'light'}
+            className={itemClass + ' w-full border-t border-line text-left'}
+          >
+            {mode === 'light' ? (
+              <IconMoon className="h-[18px] w-[18px] shrink-0 text-magenta-text" />
+            ) : (
+              <IconSun className="h-[18px] w-[18px] shrink-0 text-magenta-text" />
+            )}
+            {mode === 'light' ? 'Dark mode' : 'Light mode'}
+            <span
+              aria-hidden
+              className={
+                'ml-auto flex h-[18px] w-8 shrink-0 items-center rounded-full p-0.5 transition-colors ' +
+                (mode === 'light' ? 'bg-magenta' : 'bg-line-strong')
+              }
+            >
+              <span
+                className={
+                  'h-[14px] w-[14px] rounded-full bg-white transition-transform ' +
+                  (mode === 'light' ? 'translate-x-[14px]' : '')
+                }
+              />
+            </span>
+          </button>
 
           <button
             onClick={() => {
