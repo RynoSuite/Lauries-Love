@@ -51,3 +51,6 @@ web/tsconfig.tsbuildinfo
 ll.sql
 *.ndjson
 users.tsv
+
+# Supabase CLI scratch
+supabase/.temp/

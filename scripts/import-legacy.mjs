@@ -34,6 +34,7 @@ import { createReadStream } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createInterface } from 'node:readline';
 import { randomUUID } from 'node:crypto';
+import { deriveState, coordinatesAreCredible } from './zip-state.mjs';
 
 const args = process.argv.slice(2);
 const arg = (name, fallback = null) => {
@@ -162,6 +163,9 @@ const stats = {
   failed: 0,
   unmappedAge: 0,
   unmappedGender: 0,
+  stateDerived: 0,
+  stateMissing: 0,
+  coordinatesRejected: 0,
 };
 const failures = [];
 const seenEmails = new Set();
@@ -190,7 +194,22 @@ async function importMember(row) {
   if (row.age && !age) stats.unmappedAge += 1;
   if (row.gender && !gender) stats.unmappedGender += 1;
 
-  const { latitude, longitude } = parseGeo(row.geo_location);
+  const zip = clean(row.zip_code);
+  let { latitude, longitude } = parseGeo(row.geo_location);
+
+  // The ZIP decides the state; the coordinates only survive if they agree with
+  // it. See scripts/zip-state.mjs — the legacy geocoder resolved city names
+  // without a state, so 500 members carry a point in the wrong place.
+  const derivedState = deriveState({ zip, country: clean(row.country) }).state;
+  if (derivedState) stats.stateDerived += 1;
+  else stats.stateMissing += 1;
+
+  if ((latitude != null || longitude != null) &&
+      !coordinatesAreCredible({ zip, latitude, longitude, country: clean(row.country) })) {
+    stats.coordinatesRejected += 1;
+    latitude = null;
+    longitude = null;
+  }
 
   if (DRY_RUN) {
     stats.created += 1;
@@ -242,7 +261,10 @@ async function importMember(row) {
       gender,
       description: clean(row.description),
       city: clean(row.city),
-      state: clean(row.state),
+      // The legacy platform never stored state — NULL for all 2,221 — so it is
+      // derived from the ZIP and only kept when the member's coordinates agree.
+      // See deriveState(); anything unverified is left blank and counted.
+      state: derivedState,
       country: clean(row.country),
       latitude,
       longitude,
