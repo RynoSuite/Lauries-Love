@@ -11,8 +11,12 @@ mistake is the useful part:
 - **§3 — the database is publicly accessible.** It was described as
   VPC-only, which sent two sessions toward CloudShell and S3 gateway endpoints
   that were never needed.
-- **§5 — 160 of the 494 posts did not survive**, not 0. And 740 of 783
-  comments are gone.
+- **§5 — not all 494 post bodies survived Sendbird.** 160 were missing there
+  and 740 of 783 comments with them. **§5a is the sequel: most came back** from
+  the legacy notification tables, which had quoted the text all along. Final
+  figures are 406 posts and 884 comments. Two corrections in opposite
+  directions, and the second one is the more useful lesson — when one system
+  says the data is deleted, check whether another system quoted it.
 - **§6 — post images are done; the 222 avatars are in a private bucket** and
   are now the only thing still needing AWS access.
 
@@ -28,9 +32,9 @@ as of 18 Sept. Where they differ, §5 explains why.
 | Thing | Existed | Migrated | Notes |
 |---|---|---|---|
 | **Members** | **2,221** | **2,219** | NOT ~10k. That figure is repeated everywhere and is wrong. The 2 are our own already-registered accounts. |
-| Community posts | 495 channels | **318** | 160 have no recoverable body; 17 by deleted accounts. Feed spans 2025-03-18 → 2026-09-09. |
+| Community posts | 495 channels | **406** | 74 unrecoverable, 15 by deleted accounts. Feed spans 2025-01-17 → 2026-09-09. See §5a. |
 | Likes | 1,108 | **1,028** | The rest belong to deleted accounts. |
-| Comments | 783 claimed | **43** | 740 were messages, and retention deleted them. Unrecoverable. |
+| Comments | 783 claimed | **884** | Sendbird kept 43; the rest came from the notification tables (§5a). |
 | Friendships | 292 | **284** | 66 accepted, 218 still pending. |
 | Post images | 40 | **39** | |
 | Profile avatars | 222 | **0** | Private S3 bucket — the one remaining blocker. See §6. |
@@ -301,20 +305,24 @@ Of **495 post channels**:
 
 | | |
 |---|---|
-| **316 imported** | body present, author resolvable |
-| **160 unrecoverable** | no `firstMessage`, no `firstMessageId`, zero messages left in the channel |
-| 17 skipped | author exists in Sendbird but not in the member table — deleted accounts |
-| 2 | image-only; imported with the post images |
+| **406 imported** | 316 from Sendbird, **88 recovered from the notification tables** (§5a), 2 image-only |
+| **74 unrecoverable** | no `firstMessage`, no message left in the channel, and no notification ever quoted them |
+| 15 skipped | author exists in Sendbird but not in the member table — deleted accounts |
 
-The 160 were created between **Dec 2024 and mid-March 2025**. The two
+> **A second correction, 18 Sept.** This section first said 160 posts and 740
+> comments were gone. **Most of them were not** — see §5a. The error was
+> stopping at Sendbird: no message, no cached body, therefore deleted. Nobody
+> asked whether anything else had kept a copy. Something had.
+
+The gap was created between **Dec 2024 and mid-March 2025**. The two
 populations meet in March 2025, which is evidently when the old app started
 caching the body into channel `data`; before that the body lived only as a
-message, and retention deleted it long ago. **They are gone** — the API has
-nothing left to give.
+message, and Sendbird's retention deleted it. **Sendbird has nothing left to
+give for those — but MySQL does. See §5a.**
 
-**Comments are worse: 783 claimed in `commentQty`, 43 survive.** Comments only
-ever existed as messages, so only the last ~6 months remain. The gap is not
-recoverable.
+**Comments in Sendbird: 783 claimed in `commentQty`, 43 survive**, because
+comments only ever existed as messages. **884 are now in the database**, again
+via §5a.
 
 Likes are fine — 1,108 in channel `data`, 1,028 imported (the rest belong to
 deleted accounts).
@@ -331,6 +339,49 @@ Author is `created_by.user_id` on the channel — the Cognito sub, and therefore
 have real group visibility.
 
 Scripts: `scripts/export-sendbird.mjs` then `scripts/import-sendbird.mjs`.
+
+---
+
+## 5a. The notification tables kept a copy of everything
+
+**This is where most of the "lost" feed came back from**, and the lesson
+generalises: when one system says the data is deleted, check whether another
+system quoted it.
+
+The old platform copied the TEXT of every notification into MySQL. So a post
+body survives in the notification announcing a like on it, and a comment
+survives in the notification announcing the comment:
+
+```
+notification_object.redirect          'sendbird/<channel_url>'   <- the join
+notification_object.content           the text (longtext, 3,142 non-empty rows)
+notification_object.entity_type_id -> values_definition.description:
+    NEW_LIKE            content is the POST BODY, actor is the liker
+    NEW_MESSAGE         content is the COMMENT,   actor is the commenter
+    NEW_FRIEND_REQUEST  not useful here
+notification_change.actor_id       -> user.id   (joins on all 3,457 rows)
+```
+
+`user.id` is what the member import stored as `profiles.legacy_id`, so a
+recovered comment attributes to a real account. A recovered POST does not carry
+its author here — the actor on a NEW_LIKE is whoever pressed like — so the
+author comes from the Sendbird channel's `created_by`, which survived for all
+495. **Neither source can rebuild a post alone.** That is why it is a separate
+pass: `scripts/export-notification-content.mjs` then
+`scripts/import-recovered-content.mjs`.
+
+Result: **posts 318 → 406, comments 43 → 884**, and the feed reaches back to
+2025-01-17 instead of 2025-03-18.
+
+What is still gone, now for a reason rather than an assumption: **68 posts that
+no notification ever quoted** — nobody liked them, so nothing copied them — and
+6 whose author deleted their account. 71 recovered comments hang on those posts
+and have nothing to attach to.
+
+Two details that matter if this is ever re-run: where several notifications
+quote the same post the **longest** copy wins (a couple are ellipsis-truncated),
+and comments are deduplicated on **post + author + text**, because one comment
+generated one notification per recipient.
 
 ---
 

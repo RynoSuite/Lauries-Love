@@ -5,8 +5,8 @@ Read this first when picking the work back up.
 
 ## The headline, 18 Sept
 
-**The legacy community is in staging.** 2,219 members, 318 posts, 1,028 likes,
-43 comments, 284 friendships and 39 post images — the real thing, not seed
+**The legacy community is in staging.** 2,219 members, 406 posts, 1,028 likes,
+884 comments, 284 friendships and 39 post images — the real thing, not seed
 data. Everything that can move without AWS credentials has moved.
 
 Also done since 9 Sept: the Supabase project now belongs to **the client's
@@ -42,13 +42,14 @@ original history, partly stale).
 | **Backend** | Supabase **staging** `hcvyknwbixnlwqozmkas` (production is `iwbfsbriippzmdyrsmsu`, untouched) |
 | **Ownership** | `lauries-love-staging` was **transferred to the client's Supabase organisation, 17 Sept.** The ref, URL and keys are unchanged, so no code moved. The `FCM_SERVICE_ACCOUNT` secret survived; there were no others to lose. |
 
+| Test login | `jeremy@skyway.media` — password in `PARALLEL-AUDIT-2026-08-23.md`. **Rotate it**; it is committed in plaintext and the account is a support owner. |
+
 > **The project names are backwards — do not trust them.**
 > `lauries-love-staging` (`hcvyknwbixnlwqozmkas`) is where **everything** is:
 > all 53 migrations, the buckets, the demo data and now the real community.
 > `Lauries Love` (`iwbfsbriippzmdyrsmsu`) is labelled production and is
 > **empty** — zero migrations have ever been run on it. Match on the ref, which
 > cannot be edited, not the name, which can.
-| Test login | `jeremy@skyway.media` — password in `PARALLEL-AUDIT-2026-08-23.md`. **Rotate it**; it is committed in plaintext and the account is a support owner. |
 
 ### Credentials due for rotation
 

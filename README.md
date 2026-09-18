@@ -71,7 +71,7 @@ npx wrangler pages deploy dist --project-name lauries-love --branch main
 ## The legacy migration
 
 The old platform's data has been migrated into **staging** (16–18 Sept 2026):
-2,219 members, 318 posts, 1,028 likes, 284 friendships. Production has not been
+2,219 members, 406 posts, 1,028 likes, 284 friendships. Production has not been
 cut over.
 
 `MIGRATION-RUNBOOK.md` is the full account, including what did **not** survive
