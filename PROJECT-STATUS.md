@@ -126,9 +126,42 @@ is in `SESSION-2026-09-09.md`.
    (`visibility === 'group'`), not a directory. The wall's "Explore groups"
    button points at the join list as a stopgap and should point at the real
    page once it exists.
-4. **SMTP2GO on Skyway's own details** (decided: our company info, not the
-   client's domain). Needed for password reset and moderator alerts. Repoint
-   `send-email`, which is hardcoded to SendGrid and has no account behind it.
+4. **SMTP2GO — DNS done 18 Sept, waiting on credentials.**
+
+   > **Decision reversed.** This previously read "SMTP2GO on Skyway's own
+   > details, not the client's domain". It is **the client's domain and the
+   > client's SMTP2GO account** — which is the better answer anyway: 2,200
+   > people receiving a password reset are far likelier to trust
+   > `laurieslove.org` than `skyway.media`, and the `send-email` function was
+   > already coded to send from `no-reply@laurieslove.org`.
+
+   Three CNAMEs are live in Route 53 (`laurieslove.org`, zone
+   `Z07397542W1982COOGOQ0`) and verified: `em909124` → `return.smtp2go.net`,
+   `s909124._domainkey` → `dkim.smtp2go.net`, `link` → `track.smtp2go.net`.
+   The DKIM chain returns a real RSA key, and the domain's existing DMARC uses
+   relaxed alignment (`adkim=r`), so subdomain DKIM satisfies it.
+
+   **SPF and DMARC were deliberately left alone.** The domain has *no* SPF
+   record at all (only a Google site-verification TXT), and MX points at Google
+   Workspace — so adding SPF touches live business mail and wants its own
+   decision. `v=spf1 include:_spf.google.com include:spf.smtp2go.com ~all` is
+   the likely answer. **Leave DMARC at `p=none` until after the reset
+   campaign**: tightening it first risks silently binning the one email 2,200
+   people need to get back into the app.
+
+   Still needed, all from the client's SMTP2GO account:
+   a dedicated **SMTP user** (for Supabase Auth), an **API key** (for the
+   `send-email` function, which POSTs to an HTTP API rather than speaking SMTP),
+   and the plan's **hourly/monthly send limits**.
+
+   Two things that bite even with perfect credentials: **Supabase Auth has its
+   own email rate limit**, separate from SMTP2GO's and low by default; and
+   **Site URL / Redirect URLs must include the web app**, or every reset link is
+   rejected as an untrusted redirect.
+
+   **Nothing calls `send-email`.** No caller in the web app, the mobile app or
+   the migrations. Repointing it off SendGrid is necessary but not sufficient —
+   moderator alerts still need something to invoke it when content is reported.
 5. **Two accounts did not get their legacy profile data.**
    `j.marshall@skyway.media` and `jeremy@skyway.media` already existed in
    Supabase, so the importer reported "email already registered" and skipped
@@ -170,9 +203,8 @@ Nothing here can be finished without them. Chase as one list.
    `heuristic_moderation_flag()` plus member reports; and the i18next
    scaffolding at `app/src/presentation/translations` is now dead weight
    unless the decision reverses.
-2. **SMTP2GO — still waiting.** Decided 9 Sept: **Skyway's own details**, not
-   the client's domain. Password-reset mail to ~2,200 members. Skyway's key exists
-   and is fine for testing only.
+2. **SMTP2GO — DNS done, credentials outstanding.** The account is the
+   CLIENT'S, and mail sends as laurieslove.org. Detail in §1a item 4.
 3. **Post-image privacy decision.** `post-images` is a public bucket, so any
    post photo is readable by URL — including photos in private groups. That was
    the original design and the mobile app assumes it. The alternative is a
