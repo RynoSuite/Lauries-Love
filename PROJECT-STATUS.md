@@ -40,8 +40,7 @@ original history, partly stale).
 | Aaron's original | github.com/AaronPilk/Lauries-Love-App-Rebuild (`upstream`, fetch-only) |
 | **Hosting** | Cloudflare Pages project `lauries-love`, on the j.marshall@skyway.media account |
 | **Backend** | Supabase **staging** `hcvyknwbixnlwqozmkas` (production is `iwbfsbriippzmdyrsmsu`, untouched) |
-| **Ownership** | `lauries-love-staging` was **transferred to the client's Supabase organisation, 17 Sept.** The ref, URL and keys are unchanged, so no code moved. The `FCM_SERVICE_ACCOUNT` secret survived; there were no others to lose. |
-
+| **Ownership** | Supabase, SMTP2GO and the AWS accounts are all **the client's** — which is the right answer for a database of members' health data. `lauries-love-staging` was **transferred to the client's Supabase organisation, 17 Sept.** The ref, URL and keys are unchanged, so no code moved. The `FCM_SERVICE_ACCOUNT` secret survived; there were no others to lose. |
 | Test login | `jeremy@skyway.media` — password in `PARALLEL-AUDIT-2026-08-23.md`. **Rotate it**; it is committed in plaintext and the account is a support owner. |
 
 > **The project names are backwards — do not trust them.**
