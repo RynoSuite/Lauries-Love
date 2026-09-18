@@ -8,7 +8,15 @@ const { width } = Dimensions.get('window');
 // the bottom, which is what makes the deck read as a pile rather than one card
 // that changes person.
 export const CARD_WIDTH = width - 40;
-export const CARD_HEIGHT = Math.min(520, Dimensions.get('window').height * 0.62);
+// Sized so the whole COLUMN fits, not so the card looks good on its own.
+//
+// Above and below it sit the header, the intro, the hint, the swipe buttons
+// and the app's own tab bar. At 0.56 of the screen height the total came to
+// more than the screen, the column overflowed, and the buttons were pushed
+// down behind the tab bar. That presents as "the icons are cut off" rather
+// than "the card is too tall", which is why it is worth saying here: if the
+// controls ever disappear again, this number is the first thing to check.
+export const CARD_HEIGHT = Math.min(430, Dimensions.get('window').height * 0.46);
 
 // Past this the release commits the swipe; below it the card springs back, so a
 // small hesitant drag is not a decision.
@@ -24,8 +32,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 4,
+    paddingTop: 22,
+    paddingBottom: 6,
   },
   backButton: {
     width: 40,
@@ -45,16 +53,33 @@ const styles = StyleSheet.create({
     lineHeight: 19,
     color: colors.muted,
     paddingHorizontal: 20,
-    paddingBottom: 10,
+    paddingTop: 14,
+    paddingBottom: 20,
   },
   introStrong: {
     color: colors.seaMist,
   },
 
+  // An EXPLICIT height, not flex: 1.
+  //
+  // The cards are position:absolute so they can stack, which takes them out of
+  // flow — meaning they are not clipped or constrained by this container. With
+  // flex:1 the card simply drew over whatever was above and below it whenever
+  // the available space was shorter than the card, so the intro text and the
+  // swipe buttons ended up underneath it. A fixed height makes the column
+  // deterministic: the card occupies exactly this much and nothing else moves.
+  //
+  // The extra 24 is the peek of the two cards stacked behind the top one.
   deck: {
-    flex: 1,
+    height: CARD_HEIGHT + 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
+  },
+  // Absorbs whatever is left over, so the controls sit toward the bottom on a
+  // tall screen and simply tighten up on a short one.
+  spacer: {
+    flex: 1,
+    minHeight: 8,
   },
   card: {
     position: 'absolute',
@@ -184,7 +209,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 22,
-    paddingBottom: 6,
+    paddingTop: 10,
+    paddingBottom: 14,
   },
   controlButton: {
     width: 58,
@@ -208,8 +234,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.faint,
     textAlign: 'center',
-    paddingTop: 12,
-    paddingBottom: 18,
+    paddingTop: 10,
+    paddingBottom: 6,
   },
 
   centered: {

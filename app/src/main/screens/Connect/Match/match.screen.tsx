@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   Image,
   Pressable,
-  SafeAreaView,
   Text,
   View,
 } from 'react-native';
@@ -18,6 +17,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { PATHS_MESSAGES_TAB } from 'main/navigators/paths';
 import { useChatProvider } from 'providers/ChatProvider/ChatProvider';
 
@@ -189,6 +190,14 @@ function MatchCelebration({
 const MatchScreen = () => {
   const navigation = useNavigation<any>();
   const { getChannels } = useChatProvider();
+  // React Native's own SafeAreaView does nothing for the BOTTOM inset on
+  // Android, so the gesture bar sat over the swipe buttons. The real inset,
+  // with a floor so devices that report 0 still clear the edge.
+  // The APP'S OWN tab bar overlays the bottom of this screen — it is not the
+  // system gesture bar, and no safe-area inset accounts for it. Measured rather
+  // than guessed at, the same way HomeTabMain and the group feed do it.
+  const tabBarHeight = useBottomTabBarHeight();
+  const controlsBottom = tabBarHeight + 30;
   // The diagnosis taxonomy, so an id on a card can be shown as its name.
   const diagnosisTypes = useGetDefinitions(DefinitionType.diagnosisType);
   const labelsFor = useCallback(
@@ -364,7 +373,7 @@ const MatchScreen = () => {
   const behind = deck.slice(1, 3);
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
@@ -448,7 +457,13 @@ const MatchScreen = () => {
             </GestureDetector>
           </View>
 
-          <View style={styles.controls}>
+          <Text style={styles.hint}>
+            Drag the card or use the buttons. Right to connect, left to pass.
+          </Text>
+
+          <View style={styles.spacer} />
+
+          <View style={[styles.controls, { paddingBottom: controlsBottom }]}>
             <Pressable
               style={styles.controlButton}
               onPress={() => fling('pass')}
@@ -467,9 +482,7 @@ const MatchScreen = () => {
             </Pressable>
           </View>
 
-          <Text style={styles.hint}>
-            Drag the card or use the buttons. Right to connect, left to pass.
-          </Text>
+
         </>
       )}
 

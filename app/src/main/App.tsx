@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Sentry from 'services/sentry.shim';
 import SplashScreen from 'react-native-splash-screen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import { initFacebookSDK } from 'services/facebookTracking';
@@ -112,6 +113,12 @@ export default function App() {
   }, []);
 
   return (
+    // SafeAreaProvider was never mounted, so useSafeAreaInsets() returned ZEROS
+    // everywhere in the app. Several screens already ask for insets — the
+    // donate sheet, the post image modal, the swipe deck — and were all
+    // silently getting nothing, which is why content sat under the notch and
+    // behind the gesture bar. It wraps everything so the values are real.
+    <SafeAreaProvider>
     <KeyboardProvider>
       <QueryClientProvider client={queryClient}>
         <I18nextProvider i18n={i18next}>
@@ -157,6 +164,7 @@ export default function App() {
         </I18nextProvider>
       </QueryClientProvider>
     </KeyboardProvider>
+    </SafeAreaProvider>
   );
 }
 
