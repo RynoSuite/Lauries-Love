@@ -181,3 +181,19 @@ export function IconArrowRight({ className = 'h-4 w-4' }: IconProps) {
     </svg>
   );
 }
+// Chevrons rather than full arrows for the deck's side controls: they sit next
+// to the card as direction, not as a link to somewhere else.
+export function IconChevronLeft({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M14.5 6 8.5 12l6 6" />
+    </svg>
+  );
+}
+export function IconChevronRight({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M9.5 6l6 6-6 6" />
+    </svg>
+  );
+}

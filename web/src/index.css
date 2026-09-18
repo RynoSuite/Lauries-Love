@@ -301,6 +301,98 @@ h5 {
   color: rgb(var(--c-magenta-text));
 }
 
+/* ── The match moment ───────────────────────────────────────────────────────
+   Two members liking each other is the one genuinely good thing this app can
+   tell someone, so it gets an animation rather than a dialog that blinks into
+   existence.
+
+   Deliberately warm rather than celebratory: a gentle spring and a single
+   heartbeat, not confetti. Some of the people seeing this are having a hard
+   week, and a party popper would read as tone-deaf.
+
+   Every rule here is disabled under prefers-reduced-motion at the bottom of
+   this block — motion sensitivity is common, and a vestibular trigger is a
+   worse outcome than a flat dialog. */
+@keyframes ll-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Overshoots slightly at 65% so it lands with a spring rather than a stop. */
+@keyframes ll-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.88) translateY(14px);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.025) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* One beat, once. A looping heart turns a moment into a nag. */
+@keyframes ll-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  28% {
+    transform: scale(1.22);
+  }
+  55% {
+    transform: scale(0.95);
+  }
+  78% {
+    transform: scale(1.06);
+  }
+}
+
+/* The ring that pushes out from behind the heart and fades. */
+@keyframes ll-ripple {
+  0% {
+    opacity: 0.55;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+.ll-fade-in {
+  animation: ll-fade-in 180ms ease-out both;
+}
+.ll-pop-in {
+  animation: ll-pop-in 380ms cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+.ll-heartbeat {
+  animation: ll-heartbeat 720ms ease-in-out 120ms both;
+}
+.ll-ripple {
+  animation: ll-ripple 900ms ease-out 120ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ll-fade-in,
+  .ll-pop-in,
+  .ll-heartbeat,
+  .ll-ripple {
+    animation: none;
+  }
+  /* The ripple exists only as motion, so without it there is nothing to show. */
+  .ll-ripple {
+    display: none;
+  }
+}
+
 /* ── Light mode: the rules above that are about DARKNESS, not about a token ──
    Everything else in this file already resolves through --c-*, so it flips on
    its own. These four do not. */

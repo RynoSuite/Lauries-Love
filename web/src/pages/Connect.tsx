@@ -2,7 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Avatar } from '../components/Avatar';
 import { PageTitle } from '../components/PageTitle';
-import { IconArrowRight, IconHeartFilled, IconMap, IconMessages } from '../components/Icons';
+import {
+  IconArrowRight,
+  IconChevronLeft,
+  IconChevronRight,
+  IconHeartFilled,
+  IconMap,
+  IconMessages,
+} from '../components/Icons';
 import { useDefinitions } from '../lib/useDefinitions';
 import { deckName, useMatchDeck, type DeckCandidate } from '../lib/useMatchDeck';
 
@@ -46,12 +53,21 @@ function MatchOverlay({
   const navigate = useNavigate();
   const name = deckName(member);
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
-      <div className="w-full max-w-sm rounded-2xl border border-line bg-surface p-6 text-center">
-        <IconHeartFilled className="mx-auto h-9 w-9 text-magenta-text" />
+    <div className="ll-fade-in fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
+      <div className="ll-pop-in w-full max-w-sm rounded-2xl border border-line bg-surface p-6 text-center">
+        {/* The heart and the ring it pushes out are stacked, so the ripple
+            reads as coming from the heart rather than sitting behind the card. */}
+        <div className="relative mx-auto grid h-14 w-14 place-items-center">
+          <span
+            aria-hidden
+            className="ll-ripple absolute h-12 w-12 rounded-full bg-magenta-text"
+          />
+          <IconHeartFilled className="ll-heartbeat relative h-10 w-10 text-magenta-text" />
+        </div>
         <h2 className="mt-3 font-serif text-xl text-heading">You’re connected</h2>
         <p className="mt-1 text-sm text-muted">
-          You and {name} both wanted to connect, so you’re friends now — no request needed.
+          You and {name} both said yes, so you’re friends now. No request to send, no waiting
+          for anyone to accept.
         </p>
         <div className="mt-5 flex flex-col gap-2">
           <button
@@ -219,8 +235,9 @@ export function Connect() {
       </PageTitle>
 
       <p className="mb-5 text-sm text-muted">
-        People with a similar diagnosis, near you. If you both say yes, you’re connected
-        straight away — and nobody is told when you don’t.
+        People with a similar diagnosis, near you.{' '}
+        <span className="text-body">Right to connect, left to pass.</span> If you both say
+        yes you’re connected straight away, and nobody is told when you don’t.
       </p>
 
       {error && (
@@ -238,7 +255,7 @@ export function Connect() {
             {exhausted ? 'That’s everyone for now' : 'No one left to show'}
           </h2>
           <p className="mx-auto mt-1 max-w-xs text-sm text-muted">
-            You’ve seen everyone we can suggest today. New members join often — and the map
+            You’ve seen everyone we can suggest today. New members join often, and the map
             is another way to find people near you.
           </p>
           <Link
@@ -251,26 +268,52 @@ export function Connect() {
         </div>
       ) : (
         <>
-          {/* The pile needs a fixed height: the cards are absolutely positioned
-              so they can stack, which takes them out of flow. */}
-          <div
-            className="relative h-[460px] touch-pan-y select-none"
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
-          >
-            {deck
-              .slice(0, 3)
-              .reverse()
-              .map((c, i, arr) => {
-                const depth = arr.length - 1 - i;
-                return depth === 0 ? (
-                  <Card key={c.id} member={c} offset={offset} dragging={dragging} />
-                ) : (
-                  <Card key={c.id} member={c} stacked={depth} />
-                );
-              })}
+          {/* Arrows flank the card so the direction of a swipe is visible
+              rather than something you have to already know. They do the same
+              thing as the buttons below; both stay, because a first-time user
+              reaches for the arrows and a repeat user reaches for the heart. */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => void decide('pass')}
+              disabled={busy}
+              aria-label={`Pass on ${deckName(top)}`}
+              title="Pass (left arrow key)"
+              className="hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-line bg-surface text-muted transition-colors hover:border-line-strong hover:text-heading disabled:opacity-40 sm:grid"
+            >
+              <IconChevronLeft className="h-5 w-5" />
+            </button>
+
+            {/* The pile needs a fixed height: the cards are absolutely
+                positioned so they can stack, which takes them out of flow. */}
+            <div
+              className="relative h-[460px] flex-1 touch-pan-y select-none"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerCancel={onPointerUp}
+            >
+              {deck
+                .slice(0, 3)
+                .reverse()
+                .map((c, i, arr) => {
+                  const depth = arr.length - 1 - i;
+                  return depth === 0 ? (
+                    <Card key={c.id} member={c} offset={offset} dragging={dragging} />
+                  ) : (
+                    <Card key={c.id} member={c} stacked={depth} />
+                  );
+                })}
+            </div>
+
+            <button
+              onClick={() => void decide('like')}
+              disabled={busy}
+              aria-label={`Connect with ${deckName(top)}`}
+              title="Connect (right arrow key)"
+              className="hidden h-11 w-11 shrink-0 place-items-center rounded-full border border-magenta-text/40 bg-magenta-plate text-magenta-text transition-colors hover:bg-magenta hover:text-white disabled:opacity-40 sm:grid"
+            >
+              <IconChevronRight className="h-5 w-5" />
+            </button>
           </div>
 
           <div className="mt-5 flex items-center justify-center gap-4">
@@ -293,7 +336,7 @@ export function Connect() {
           </div>
 
           <p className="mt-3 text-center text-xs text-faint">
-            Drag the card, use the buttons, or press ← and →
+            Drag the card, tap the arrows, or press ← and →. Right to connect, left to pass.
           </p>
         </>
       )}
