@@ -12,6 +12,7 @@ import { Groups } from './pages/Groups';
 import { Messages } from './pages/Messages';
 import { Profile } from './pages/Profile';
 import { MapPage } from './pages/MapPage';
+import { Connect } from './pages/Connect';
 import { UserProfile } from './pages/UserProfile';
 import { PostDetail } from './pages/PostDetail';
 import { Support } from './pages/Support';
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="messages" element={<Messages />} />
         <Route path="profile" element={<Profile />} />
         <Route path="map" element={<MapPage />} />
+        <Route path="connect" element={<Connect />} />
         <Route path="users/:id" element={<UserProfile />} />
         <Route path="posts/:id" element={<PostDetail />} />
         <Route path="donate" element={<Donate />} />

@@ -16,6 +16,7 @@ import { supabase } from '../lib/supabase';
 import { useColorMode } from '../lib/colorMode';
 import { useFeatureFlags } from '../lib/featureFlags';
 import { PageTitle } from '../components/PageTitle';
+import { IconHeartFilled } from '../components/Icons';
 
 // Marker colours, per theme. Leaflet writes these onto the SVG as attributes,
 // so they cannot be `var(--c-magenta)` like the rest of the app — they have to
@@ -284,7 +285,22 @@ export function MapPage() {
 
   return (
     <div>
-      <PageTitle>Community map</PageTitle>
+      {/* The deck lives off the map on purpose: the map answers "who is near
+          me", the deck answers "who is like me", and someone scanning pins for
+          a person to talk to is exactly who wants the second question. */}
+      <PageTitle
+        actions={
+          <Link
+            to="/connect"
+            className="flex items-center gap-2 rounded-lg bg-magenta px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-magenta-hi"
+          >
+            <IconHeartFilled className="h-[18px] w-[18px]" />
+            Meet members
+          </Link>
+        }
+      >
+        Community map
+      </PageTitle>
 
       <div className="mb-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Filter
