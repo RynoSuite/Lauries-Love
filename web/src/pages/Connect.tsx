@@ -10,6 +10,7 @@ import {
   IconMap,
   IconMessages,
 } from '../components/Icons';
+import { supabase } from '../lib/supabase';
 import { useDefinitions } from '../lib/useDefinitions';
 import { deckName, useMatchDeck, type DeckCandidate } from '../lib/useMatchDeck';
 
@@ -52,6 +53,28 @@ function MatchOverlay({
 }) {
   const navigate = useNavigate();
   const name = deckName(member);
+  const [opening, setOpening] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  // The same path the profile page's Message button takes: the conversation has
+  // to exist before it can be opened, and `/messages` on its own is just the
+  // inbox — which is what this did at first, landing the member on a list with
+  // no idea where the person they just matched with had gone.
+  async function openConversation() {
+    setOpening(true);
+    setErr(null);
+    try {
+      const { data: convId, error } = await supabase.rpc('find_or_create_direct_conversation', {
+        other_profile: member.id,
+      });
+      if (error) throw error;
+      navigate(`/messages?c=${convId}`);
+    } catch {
+      setErr('Could not open the conversation. They are in your messages either way.');
+      setOpening(false);
+    }
+  }
+
   return (
     <div className="ll-fade-in fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
       <div className="ll-pop-in w-full max-w-sm rounded-2xl border border-line bg-surface p-6 text-center">
@@ -71,12 +94,14 @@ function MatchOverlay({
         </p>
         <div className="mt-5 flex flex-col gap-2">
           <button
-            onClick={() => navigate('/messages')}
-            className="flex items-center justify-center gap-2 rounded-lg bg-magenta px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-magenta-hi"
+            onClick={() => void openConversation()}
+            disabled={opening}
+            className="flex items-center justify-center gap-2 rounded-lg bg-magenta px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-magenta-hi disabled:opacity-60"
           >
             <IconMessages className="h-[18px] w-[18px]" />
-            Send {name} a message
+            {opening ? 'Opening…' : `Send ${name} a message`}
           </button>
+          {err && <p className="text-xs text-danger">{err}</p>}
           <Link
             to={`/users/${member.id}`}
             className="rounded-lg border border-line px-4 py-2.5 text-sm text-body transition-colors hover:bg-surface-2 hover:text-heading"
