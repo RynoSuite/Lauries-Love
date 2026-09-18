@@ -1,34 +1,92 @@
-# Laurie's Love — App Rebuild
+# Laurie's Love
 
-Clean, owned rebuild of the Laurie's Love app with all audit fixes applied. Forked from the original codebase (not a from-scratch rewrite) so the proven, battle-tested logic is preserved while the bugs, performance issues, and security gaps are fixed.
+A support community for people living with cancer, and the people around them.
+Web app, mobile app and admin console over a Supabase backend.
 
-**This repo does not touch the live production system.** It's an independent copy for rebuilding, hardening, and testing. User-data migration and App Store submission are handled separately, later.
+**Start with [`PROJECT-STATUS.md`](PROJECT-STATUS.md)** — it is the
+authoritative state of the project. This file is orientation only.
+
+## Where things are
+
+| | |
+|---|---|
+| Web app | https://lauries-love.pages.dev (Cloudflare Pages, project `lauries-love`) |
+| Backend | Supabase `hcvyknwbixnlwqozmkas`, in the client's organisation |
+| Repo | `github.com/RynoSuite/Lauries-Love` |
+
+> The Supabase project names are **backwards**: `lauries-love-staging` holds
+> everything, and the one labelled `Lauries Love` is empty. Match on the project
+> ref, not the name. See `PROJECT-STATUS.md` §1.
 
 ## Structure
 
 ```
-Lauries-Love-App-Rebuild/
-├── app/    # React Native (Expo SDK 53) mobile app — opens in Xcode
-├── api/    # NestJS 11 + TypeORM + MySQL backend
-└── REBUILD_PLAN.md   # the fix checklist we're working through
+web/                React 18 + Vite + Tailwind + React Query. Member app AND
+                    admin console. Deployed to Cloudflare Pages.
+app/                React Native / Expo mobile app (members only — staff
+                    functions live on the web).
+supabase/
+  migrations/       53 SQL migrations. Applied by pasting into the SQL editor.
+  functions/        6 edge functions (donations, email, push, moderation,
+                    account deletion).
+  seed/             Demo data for review. Seeded members are identifiable by
+                    their @seed.laurieslove.invalid address.
+scripts/            The legacy migration tooling — see below.
+support-dashboard/  Standalone HTML staff dashboard. Points at the EMPTY
+                    project; treat as suspect.
+api/                The OLD NestJS/TypeORM/MySQL backend. Reference only — the
+                    entity definitions document the legacy schema. Not running.
 ```
 
 ## Stack
-- **App:** React Native 0.79 / Expo 53, React Query, React Navigation v7, Sendbird chat
-- **API:** NestJS 11, TypeORM, MySQL, AWS Cognito auth, S3, Authorize.Net
-- **Hosting (later):** AWS ECS Fargate (existing), or your own infra
 
-## Current build mode: MOCK API
-The app is being wired to run against **mocked/stubbed data** so it compiles and runs in Xcode with zero backend infrastructure. Real backend wiring comes after the app is testable.
+- **Web:** React 18, Vite, Tailwind (every colour resolves through a CSS
+  variable, which is what makes runtime theming and light mode possible),
+  React Query, Leaflet
+- **Mobile:** React Native 0.79 / Expo 53, React Navigation v7, MMKV
+- **Backend:** Supabase — Postgres with row-level security, Auth, Storage,
+  Edge Functions
+- **Not used any more:** NestJS, MySQL, AWS Cognito, S3, Sendbird,
+  Authorize.Net. All of those belong to the legacy platform being migrated away
+  from.
 
-## Getting it running in Xcode (once fixes land)
+## Running it
+
 ```sh
-cd app
-yarn install
-npx expo prebuild --platform ios     # generates the ios/ project
-npx expo run:ios                      # or open ios/*.xcworkspace in Xcode
+cd web && npm install && npm run dev        # http://localhost:5173
+cd app && npm install && npx expo run:ios   # or run:android
 ```
-Secrets (`firebase.json`, `GoogleService-Info.plist`, `.env`) are gitignored — keep your local copies in place for the build; they are not committed.
 
-## Fix progress
-See `REBUILD_PLAN.md` — work is tiered P0 (security) → P1 (signup + map) → P2 (performance) → P3 (cleanup).
+Both need a `.env` (see `.env.example` in each). Secrets are gitignored.
+`DEV-SETUP.md` has the detail, and `MOBILE-REVIEW-ACCESS.md` covers getting a
+build onto a reviewer's phone.
+
+Deploying the web app:
+
+```sh
+cd web && npm run build
+npx wrangler pages deploy dist --project-name lauries-love --branch main
+```
+
+## The legacy migration
+
+The old platform's data has been migrated into **staging** (16–18 Sept 2026):
+2,219 members, 318 posts, 1,028 likes, 284 friendships. Production has not been
+cut over.
+
+`MIGRATION-RUNBOOK.md` is the full account, including what did **not** survive
+and why. The tooling is in `scripts/`, every importer takes `--dry-run`, and
+each is idempotent on a legacy key so a failed run can be repeated.
+
+**The exports contain names, emails, dates of birth and cancer diagnoses for
+2,221 real people.** Write them outside this repository, keep them local, and
+delete them once the import is verified. `.gitignore` covers `*.ndjson` and
+`*.sql` as a second line of defence, not as permission.
+
+## Documentation
+
+`PROJECT-STATUS.md` and `MIGRATION-RUNBOOK.md` are current and maintained.
+The other markdown files are dated records — audits, handoffs, session logs and
+meeting briefs — kept for their reasoning rather than their status. Several
+describe the pre-Supabase architecture. Do not act on them without checking
+against `PROJECT-STATUS.md` first.

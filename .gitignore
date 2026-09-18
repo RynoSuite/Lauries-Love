@@ -54,3 +54,6 @@ users.tsv
 
 # Supabase CLI scratch
 supabase/.temp/
+
+# Wrangler deploy cache
+.wrangler/

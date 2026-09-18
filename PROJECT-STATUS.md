@@ -1,12 +1,33 @@
 # Where this project stands
 
-Working notes for the Laurie's Love takeover. Updated 9 Sept 2026.
+Working notes for the Laurie's Love takeover. **Updated 18 Sept 2026.**
 Read this first when picking the work back up.
 
-Companion docs: `SESSION-2026-09-09.md` (**everything done on 9 Sept and what
-comes next, in order — read this second**), `MIGRATION-RUNBOOK.md` (how to
-reach the legacy data), `DEV-SETUP.md` (running the mobile app),
-`PROJECT-STATE.md` (Aaron's original history, partly stale).
+## The headline, 18 Sept
+
+**The legacy community is in staging.** 2,219 members, 318 posts, 1,028 likes,
+43 comments, 284 friendships and 39 post images — the real thing, not seed
+data. Everything that can move without AWS credentials has moved.
+
+Also done since 9 Sept: the Supabase project now belongs to **the client's
+organisation**; the web app has **light mode** and a **daily rotating quote**
+in the left rail; and the **age/gender vocabulary split** between web and
+mobile is fixed (§1a).
+
+Still open, in the order that matters:
+
+1. **222 profile avatars** — blocked on AWS access (private bucket)
+2. **SMTP2GO** — blocked on the client, and nothing can reach 2,200 members
+   without it
+3. **Production cutover** — `iwbfsbriippzmdyrsmsu` has had NO migrations run
+4. **Stripe** — donations are a placeholder that says so honestly
+5. **Mobile light mode** — deliberately deferred; it is a refactor, not a
+   token swap
+
+Companion docs: `MIGRATION-RUNBOOK.md` (**the legacy migration, now with what
+actually ran — read this second**), `SESSION-2026-09-09.md` (the 9 Sept
+session), `DEV-SETUP.md` (running the mobile app), `PROJECT-STATE.md` (Aaron's
+original history, partly stale).
 
 ---
 
@@ -19,7 +40,27 @@ reach the legacy data), `DEV-SETUP.md` (running the mobile app),
 | Aaron's original | github.com/AaronPilk/Lauries-Love-App-Rebuild (`upstream`, fetch-only) |
 | **Hosting** | Cloudflare Pages project `lauries-love`, on the j.marshall@skyway.media account |
 | **Backend** | Supabase **staging** `hcvyknwbixnlwqozmkas` (production is `iwbfsbriippzmdyrsmsu`, untouched) |
+| **Ownership** | `lauries-love-staging` was **transferred to the client's Supabase organisation, 17 Sept.** The ref, URL and keys are unchanged, so no code moved. The `FCM_SERVICE_ACCOUNT` secret survived; there were no others to lose. |
+
+> **The project names are backwards — do not trust them.**
+> `lauries-love-staging` (`hcvyknwbixnlwqozmkas`) is where **everything** is:
+> all 53 migrations, the buckets, the demo data and now the real community.
+> `Lauries Love` (`iwbfsbriippzmdyrsmsu`) is labelled production and is
+> **empty** — zero migrations have ever been run on it. Match on the ref, which
+> cannot be edited, not the name, which can.
 | Test login | `jeremy@skyway.media` — password in `PARALLEL-AUDIT-2026-08-23.md`. **Rotate it**; it is committed in plaintext and the account is a support owner. |
+
+### Credentials due for rotation
+
+The migration needed four secrets, all of which passed through a session
+transcript. None is in this repo, and none should be treated as still private:
+
+| Secret | Where | Why it matters |
+|---|---|---|
+| Legacy RDS master password | Secrets Manager → `laurieslove-rds-secret` | Full read/write on 2,221 people's records, from anywhere (§2, 0b) |
+| Sendbird master API token | Sendbird → Settings → Application → API tokens | Can read **every message in the app** |
+| Supabase staging service role key | Settings → API Keys | Bypasses all RLS on staging, which now holds real member data |
+| `jeremy@skyway.media` password | `PARALLEL-AUDIT-2026-08-23.md` | Committed in plaintext; support-owner account |
 
 Deploy after any change:
 
@@ -36,21 +77,41 @@ npx wrangler pages deploy dist --project-name lauries-love --branch main
 The detail behind each of these, and the full log of what changed on 9 Sept,
 is in `SESSION-2026-09-09.md`.
 
-1. **Web and mobile write different values for the same profile fields.** Age
-   ranges: web writes `18-29/30-39/40-49/50-59/60-69/70+`, mobile writes and
-   filters on `18-34/35-44/45-59/60-plus`. Gender: web writes `Female/Male/
-   Non-binary/Prefer not to say`, mobile `female/male`. A member who completes
-   their profile on one is invisible to the other's filters — silently, with no
-   error. Pick one set (mobile's is the likelier canon: it is what the 2,200
-   legacy members already use), change `web/src/components/ProfileFields.tsx`,
-   and migrate existing rows. `supabase/seed/demo_align_filter_values.sql`
-   patched the demo members only.
-2. **A full web/mobile parity audit, before the data import.** The age and
-   gender divergence was found by accident, which means nobody has checked the
-   rest: role ids, diagnosis types and subtypes, diagnosis year, city/state,
-   group visibility, notification types, password rules. Two apps writing the
-   same table is only safe if they agree on every field, and the time to find
-   out is before 2,200 real members are in it, not after.
+1. ~~**Web and mobile write different values for the same profile fields.**~~
+   **FIXED 16 Sept** — and it was worse than recorded here: **mobile disagreed
+   with itself.** Three files held three vocabularies. `constants/onboarding.ts`
+   wrote `60-plus` at signup; `constants/map.ts` offered only female and male
+   as filters; and `ProfileTab.constants.ts` — the profile editor — wrote
+   **`55-59` under a label reading "45-59"**, plus `60+` and `any`. Editing your
+   profile changed your stored value without changing your answer.
+
+   The legacy export carries the damage: **26 members hold `60+` and 6 hold
+   `55-59`**, a bracket no filter in either app has ever listed. Those six
+   tapped the row labelled 45-59 and were unfindable ever since.
+
+   The canon is mobile's, and not by preference: web's buckets **cannot
+   represent** `45-59`, which is 930 real members. Importing them through web's
+   set would have destroyed the answer rather than converted it.
+
+   ```
+   age_range   18-34 | 35-44 | 45-59 | 60-plus
+   gender      female | male | non-binary | prefer-not-to-say
+   ```
+
+   `non-binary` was added to mobile rather than dropped from web. Data patched
+   by `supabase/migrations/20260916120000_align_filter_vocabulary_v1.sql`, which
+   deliberately leaves `30-39` and `40-49` alone — they straddle two canonical
+   buckets with five years either side, and a wrong age looks like an answer.
+2. **A full web/mobile parity audit — still not done, and now more urgent, not
+   less.** The age and gender divergence was found by accident and turned out to
+   be three bugs rather than one, which says nothing good about the fields
+   nobody has checked: role ids, diagnosis types and subtypes, diagnosis year,
+   city/state, group visibility, notification types, password rules. Two apps
+   writing the same table is only safe if they agree on every field.
+
+   **2,219 real members are now in staging**, so this is no longer "before the
+   import" — but production is still empty, so it is still before the one that
+   counts.
 3. ~~**A real Groups page on mobile**~~ — **built 11 Sept.** The groups
    screen now mirrors web: covers as card backgrounds behind a scrim, My
    groups then Groups you can join, and a group page with that group's feed,
@@ -67,10 +128,38 @@ is in `SESSION-2026-09-09.md`.
 4. **SMTP2GO on Skyway's own details** (decided: our company info, not the
    client's domain). Needed for password reset and moderator alerts. Repoint
    `send-email`, which is hardcoded to SendGrid and has no account behind it.
+5. **Two accounts did not get their legacy profile data.**
+   `j.marshall@skyway.media` and `jeremy@skyway.media` already existed in
+   Supabase, so the importer reported "email already registered" and skipped
+   them — correctly, it never overwrites. But their legacy city, age, diagnosis
+   and so on are still sitting in `members.ndjson` unmerged. Affects two people,
+   and will look like a bug in three weeks. The other eight skyway.media
+   addresses imported cleanly.
+6. **Decide what happens to the empty production project.** `Lauries Love`
+   (`iwbfsbriippzmdyrsmsu`) is still in Aaron's organisation, has never had a
+   migration run on it, and several docs point at it as though it were live.
+   Either transfer it too or retire it — otherwise it stays a trap.
 
 ## 2. Blocked on the client
 
 Nothing here can be finished without them. Chase as one list.
+
+0. **AWS read access for the 222 profile avatars.** The only thing still
+   blocking the migration. They are stored as bare S3 keys
+   (`users/<cognito>/profilePhotos/<uuid>.jpg`) and neither candidate bucket is
+   public — `lauries-api-production` and `039868711312-general-files` both
+   return 403. Needs a temporary public-read grant or a read-only IAM key
+   scoped to those buckets. Post images worked only because
+   `laurieslove-post-prod` happens to be public.
+
+0b. **Security finding to pass on, separate from the migration.** The legacy
+   production database accepts connections from **anywhere on the internet** —
+   `sg-0272f79ebba1da009`, port 3306, source `0.0.0.0/0` — with a password as
+   the only control, holding 2,221 people's names, emails, dates of birth and
+   cancer diagnoses. Worth asking AWS for the connection logs. **Do not simply
+   delete the rule:** it is the only inbound rule on the group, so the legacy
+   app servers depend on it, and removing it would take the live app down. See
+   `MIGRATION-RUNBOOK.md` §3.
 
 1. ~~**OpenAI API key.**~~ **Dropped by the client, 10 Sept 2026** — no AI
    translation and no bilingual support for now. Two consequences worth
@@ -123,6 +212,7 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 | `20260909120000_post_delete_trigger_fix_v1` | Deleting any post failed on a BEFORE-trigger conflict; splits the reaction cleanup |
 | `20260909140000_leave_any_conversation_v1` | Swipe-to-delete a conversation: removes it for the caller only |
 | `20260911120000_group_delete_cascades_posts_v1` | Deleting a group deletes its posts, instead of republishing them to everyone |
+| `20260916120000_align_filter_vocabulary_v1` | **One age/gender vocabulary across both apps** (§1a). Run it BEFORE any import — afterwards it is a mass update across real profiles. |
 | `20260909180000_unread_by_conversation_v1` | Per-thread unread counts, so the Messages list can show which thread is waiting |
 | `20260909160000_moderation_orphan_cleanup_v1` | **Bug.** Reports for deleted content stayed pending forever and inflated the dashboard count; closes them on delete + backfills |
 
@@ -141,12 +231,56 @@ Files live in `supabase/migrations/`; paste into the Supabase SQL editor.
 - `is_staff()` exists in the migration files but was never applied to staging.
   Use `is_support_staff()`, which is there.
 
+### Staging now holds REAL member data
+
+As of 18 Sept, `hcvyknwbixnlwqozmkas` contains **2,219 real members with their
+real diagnoses**, alongside ~2,310 demo profiles. Two consequences:
+
+- **It is no longer a scratch environment.** Treat destructive SQL there the way
+  you would treat production.
+- **Demo and real data are mixed.** Seeded members are identifiable by their
+  `@seed.laurieslove.invalid` email — a reserved TLD that can never receive
+  mail — and `supabase/seed/demo_members_remove.sql` clears the whole set in one
+  statement. **But it cascades:** the demo account's wall, friends, messages and
+  groups all hang off seeded members, so running it empties
+  `jeremy@skyway.media`'s tabs too. Do it after any review, not before.
+- **The demographics look nothing like the community.** The demo set is evenly
+  spread across four genders (811 non-binary, 474 female); the real community is
+  85% female. Anyone reviewing the map is reading fabricated numbers.
+
 ---
 
 ## 4. Web app: what has been built
 
 Redesigned against the client-approved comp: magenta-led dark theme, three
 column shell, real logo, Fraunces/Figtree.
+
+- **Light mode** (16 Sept) — toggle in the account menu, dark stays the
+  default. Mostly a second set of `--c-*` values, but with three traps worth
+  knowing before touching it:
+  1. **Light must beat the org's saved theme** for surfaces, text and status.
+     `applyTheme` writes the branding console's colours as INLINE styles, which
+     win over any stylesheet rule, so a CSS-only light mode would be
+     overwritten the moment branding loaded.
+  2. **`magenta-text` is recomputed, not reused.** `#F45FAF` exists because
+     `#911766` scores 1.82:1 on the dark card; on white that inverts exactly.
+     The light stop is derived by darkening the org's own fill until it clears
+     4.5:1.
+  3. **The light values are duplicated on purpose** — `LIGHT_TOKENS` in
+     `web/src/lib/theme.ts` and the `:root[data-theme='light']` block in
+     `index.css`. The CSS copy paints the first frame (set by an inline script
+     in `index.html` before React mounts); the TS copy is written inline after.
+     **Change one without the other and you get a flash of the wrong colour.**
+
+  The branding console still edits the DARK theme only. Its contrast warnings
+  compare against the dark card, which is correct, but an org cannot tune what
+  light mode does with their palette beyond the brand colour.
+- **Daily quote** in the left rail (16 Sept) — replaced the fixed "Connect.
+  Empower. Inspire." card with 50 client-supplied quotes, one a day. Derived
+  from the date rather than stored: no table, no fetch, no cron, everyone sees
+  the same quote on the same day, and a reload never shuffles it. Rolls over at
+  the viewer's own local midnight, and a tab left open overnight re-arms a
+  timer. `web/src/data/quotes.ts`.
 
 - **Branding console** — every colour token editable with a real picker, logo
   upload, live preview, contrast warnings
@@ -300,6 +434,28 @@ keystore. A new keystore cannot update an existing Play listing.
 
 ---
 
+## 5c. Mobile light mode is deferred, not dropped
+
+The client asked for light mode on **both** apps, 16 Sept. Web shipped the same
+day; mobile was scoped out by agreement, because the two are nowhere near each
+other in cost.
+
+Web was cheap because every colour already resolves through a `--c-*` CSS
+variable. Mobile has **no live theme provider at all** —
+`app/src/presentation/theme/index.tsx` has NativeBase commented out — and
+colours come from a static `app/src/styles/colors.ts` imported by **~217
+files**, consumed inside `StyleSheet.create` **at module load**, plus ~130
+hardcoded hex values in components. Static styles cannot respond to a theme
+change, so this is a context/hook conversion across the whole app.
+
+**Do not price it as "the same thing we did on web."** It is a refactor with a
+regression surface covering every screen, and it wants its own estimate.
+
+Related: the mobile app currently has **183 TypeScript errors** — 102 in
+generated icon components, 81 elsewhere (e.g. a missing `eminence` colour
+token). None were introduced by the vocabulary fix, and none are blocking, but
+a theme refactor across 217 files would be much safer on a clean typecheck.
+
 ## 5b. Staff and admin functions live on the web, not in the app
 
 Decided 11 Sept for group creation, extended 14 Sept to support. The mobile
@@ -339,7 +495,7 @@ Two rules follow:
    reviewer needs — had never been run. A profile nobody has built is a
    profile that does not work yet.
 
-## 6. Decisions already made, so they are not relitigated
+## 7. Decisions already made, so they are not relitigated
 
 - **Magenta leads the interface**, over the brand guide's "one vivid stroke"
   note, because the client approved the comp. Magenta has two stops: `#911766`
@@ -352,5 +508,26 @@ Two rules follow:
 - **Edits are marked, never silent** (`edited_at`), because quietly rewriting a
   message after someone replied is a trust problem in a health community.
 - **Staff cannot edit or delete member messages**, only their own.
-- **Sendbird message import is not worth building.** 494 posts are recoverable
-  and worth migrating; direct messages amount to ~80 in total.
+- **Sendbird message import is not worth building.** ~~494 posts are
+  recoverable~~ — **corrected 18 Sept: 316 are.** 160 posts have no recoverable
+  body (`firstMessage` was not cached before ~mid-March 2025 and retention
+  deleted the originals), and 740 of 783 comments are gone the same way. Direct
+  messages were estimated at ~80; sampling eight conversations found **one
+  message in total**, so skipping them is not a trade-off but an absence. Full
+  accounting in `MIGRATION-RUNBOOK.md` §5.
+- **Pending friend requests stay pending on import.** 218 of 284 were never
+  answered. Accepting them would fabricate relationships between real people
+  who never agreed to them.
+- **Deleted accounts stay deleted.** 13 people appear in Sendbird but not in the
+  member table. Their content — 17 posts, 80 likes, 8 friendships, 1 image — is
+  dropped rather than hosted under resurrected profiles.
+- **The ZIP beats the geocoder.** The legacy coordinates put 356 members in the
+  wrong state and 144 at `0,0`, because the old platform geocoded city names
+  with no state. State is derived from the ZIP; coordinates that disagree are
+  discarded, so those members have no map pin rather than a wrong one.
+- **Legacy `role_id` is not imported.** It reads 125 Admin and 85 Super Admin
+  out of 2,221. Everyone lands as Basic; granting admin is a deliberate act.
+- **Light mode beats a saved brand theme for surfaces and text.** The branding
+  console's colours were all picked against the dark ground, so honouring a
+  saved `#0A2A2D` "card" in light mode would paint black cards on a white page.
+  The brand fill and gold still come from the org.
