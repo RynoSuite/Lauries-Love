@@ -45,6 +45,7 @@ import { useGetUsersInRegionReq } from 'presentation/services/react-query/user.q
 import { useCountry } from 'presentation/hooks';
 import {
   IconBars3,
+  IconTabHeart,
   IconChevronDown,
   IconInformationCircle,
   IconPaperAirplane,
@@ -795,13 +796,24 @@ export default function MapScreen() {
           {user ? (
             <UserCard user={user} onClose={() => setUser(null)} setInitialRegion={setInitialRegion} />
           ) : (
-            <View style={styles.cardContainer}>
+            <View style={styles.bottomRow}>
+              <View style={styles.cardContainer}>
+                <TouchableOpacity
+                  onPress={handleView}
+                  style={styles.listViewButton}
+                >
+                  <IconBars3 width={18} height={18} stroke={colors.white} />
+                  <Text style={styles.listViewText}>List view</Text>
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity
-                onPress={handleView}
-                style={styles.listViewButton}
+                onPress={() => navigation.navigate('Connect', { screen: 'MatchView' })}
+                style={styles.matchButton}
+                accessibilityRole="button"
+                accessibilityLabel="Meet members, one at a time"
               >
-                <IconBars3 width={18} height={18} stroke={colors.white} />
-                <Text style={styles.listViewText}>List view</Text>
+                <IconTabHeart width={18} height={18} stroke={colors.white} />
+                <Text style={styles.matchButtonText}>Meet members</Text>
               </TouchableOpacity>
             </View>
           )}

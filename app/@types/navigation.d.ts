@@ -95,4 +95,7 @@ export type ConnectStackParamList = {
   // that are actually in view rather than an unrelated page of the community.
   ListView: { search?: any; filters: any; region?: any };
   DetailView: { user: any; fromExternal?: Boolean };
+  // The swipe deck. Takes no params: the deck is built server-side from who
+  // the viewer is, not from anything the map hands it.
+  MatchView: undefined;
 };

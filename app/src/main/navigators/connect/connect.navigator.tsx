@@ -5,6 +5,7 @@ import { ConnectStackParamList } from 'types/navigation';
 import MapScreen from 'main/screens/Connect/Map/map.screen';
 import ListScreen from 'main/screens/Connect/List/list.screen';
 import DetailsScreen from 'main/screens/Connect/Details/details.screen';
+import MatchScreen from 'main/screens/Connect/Match/match.screen';
 import colors from 'styles/colors';
 
 const ConnectStack = createStackNavigator<ConnectStackParamList>();
@@ -20,6 +21,7 @@ const ConnectNavigator = () => {
       <ConnectStack.Screen name="MapView" component={MapScreen} />
       <ConnectStack.Screen name="ListView" component={ListScreen} />
       <ConnectStack.Screen name="DetailView" component={DetailsScreen} />
+      <ConnectStack.Screen name="MatchView" component={MatchScreen} />
     </ConnectStack.Navigator>
   );
 };

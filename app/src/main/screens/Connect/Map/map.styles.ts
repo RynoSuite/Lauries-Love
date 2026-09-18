@@ -108,6 +108,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.heading,
   },
+  // The two bottom entry points sit side by side: the map answers "who is near
+  // me", the deck answers "who is like me", and someone scanning pins for a
+  // person to talk to is exactly who wants the second question.
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  matchButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 80,
+    backgroundColor: colors.magenta,
+    boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.25)',
+  },
+  matchButtonText: {
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 16,
+    color: colors.white,
+  },
   // Map markers
   pin: {
     width: 32,
