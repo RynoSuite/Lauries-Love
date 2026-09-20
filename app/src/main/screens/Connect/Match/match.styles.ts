@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 20,
-    color: colors.seaMist,
+    color: colors.heading,
   },
   intro: {
     fontFamily: FONT_RALEWAY_500,
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   introStrong: {
-    color: colors.seaMist,
+    color: colors.heading,
   },
 
   // An EXPLICIT height, not flex: 1.
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 22,
-    color: colors.seaMist,
+    color: colors.heading,
     marginTop: 14,
     textAlign: 'center',
   },
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 18,
-    color: colors.seaMist,
+    color: colors.heading,
     marginTop: 14,
     textAlign: 'center',
   },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   matchTitle: {
     fontFamily: FONT_RALEWAY_700,
     fontSize: 22,
-    color: colors.seaMist,
+    color: colors.heading,
     marginTop: 14,
   },
   matchBody: {

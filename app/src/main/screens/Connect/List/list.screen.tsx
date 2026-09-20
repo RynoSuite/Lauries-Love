@@ -361,7 +361,7 @@ export default function ListScreen() {
               <IconChevronDown
                 width={20}
                 height={20}
-                stroke={colors.white}
+                stroke={colors.heading}
               />
 
               {filtersCount > 0 && (

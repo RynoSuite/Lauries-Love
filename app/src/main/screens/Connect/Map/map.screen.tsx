@@ -772,7 +772,7 @@ export default function MapScreen() {
                   <IconChevronDown
                     width={20}
                     height={20}
-                    stroke={colors.white}
+                    stroke={colors.heading}
                   />
 
                   {filtersCount > 0 && (
@@ -786,7 +786,7 @@ export default function MapScreen() {
                 <IconInformationCircle
                   width={24}
                   height={24}
-                  stroke={colors.white}
+                  stroke={colors.heading}
                 />
               </TouchableOpacity>
             </View>
@@ -802,7 +802,7 @@ export default function MapScreen() {
                   onPress={handleView}
                   style={styles.listViewButton}
                 >
-                  <IconBars3 width={18} height={18} stroke={colors.white} />
+                  <IconBars3 width={18} height={18} stroke={colors.heading} />
                   <Text style={styles.listViewText}>List view</Text>
                 </TouchableOpacity>
               </View>

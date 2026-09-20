@@ -1,9 +1,72 @@
-const colors = {
+import { MMKV } from 'react-native-mmkv';
+
+// ───────────────────────────────────────────────────────────────────────────
+// Light and dark, without converting 217 files.
+//
+// Every stylesheet in this app calls StyleSheet.create() at MODULE LOAD, which
+// copies these values once and freezes them. The textbook fix — a theme
+// context, styles built per render — means rewriting 133 stylesheets and 100
+// components that use colours inline: a regression surface covering every
+// screen in the app.
+//
+// So the palette is chosen at module load instead, from a preference read
+// SYNCHRONOUSLY out of MMKV before any stylesheet evaluates. Flipping the mode
+// writes the preference and reloads the app, which is why the toggle warns
+// that it will. That is the honest cost: a reload rather than an instant
+// repaint.
+//
+// It is also upgradeable. Screens can move to a live theme hook one at a time
+// later, and when enough have, the reload can go. Nothing here blocks that.
+// ───────────────────────────────────────────────────────────────────────────
+
+export type ColorMode = 'dark' | 'light';
+
+export const COLOR_MODE_KEY = 'll.color-mode';
+
+// Created LAZILY and defensively, never at module scope.
+//
+// This file is imported by 217 others, including the first ones the app
+// evaluates. `new MMKV()` at module scope means that if the native module is
+// not ready at that instant — or throws for any reason — the failure happens
+// before anything can render, and the app dies with "error loading app" and no
+// usable stack. A colour palette must never be able to take the app down, so
+// the store is built on first use and every failure falls back to dark.
+let store: MMKV | null = null;
+let storeFailed = false;
+
+function getStore(): MMKV | null {
+  if (store || storeFailed) return store;
+  try {
+    store = new MMKV();
+  } catch {
+    storeFailed = true;
+  }
+  return store;
+}
+
+/** The stored preference, or dark. Dark is the approved design's default. */
+export function getColorMode(): ColorMode {
+  try {
+    return getStore()?.getString(COLOR_MODE_KEY) === 'light' ? 'light' : 'dark';
+  } catch {
+    return 'dark';
+  }
+}
+
+export function setStoredColorMode(mode: ColorMode) {
+  try {
+    getStore()?.set(COLOR_MODE_KEY, mode);
+  } catch {
+    // Nothing useful to do: the toggle simply will not persist, and the app
+    // stays on the mode it is already showing.
+  }
+}
+
+const shared = {
   white: '#FFFFFF',
   transparent: 'transparent',
 
   // Laurie's Love — "Plume, refined" brand palette (Skyway Media, Aug 2026).
-  deepwater: '#0F474C', // primary ground — owns most surfaces
   harbor: '#082729', // deepest fields
   lagoon: '#1789A8', // interface & links
   magenta: '#911766', // single accent stroke, never two
@@ -118,6 +181,15 @@ const colors = {
   //
   // Use these for anything structural. Reach for the raw brand names above
   // only where the design genuinely calls for that specific pigment.
+  magentaHi: '#B01D7D', // pressed / hover fill — a FILL, so it does not flip
+};
+
+// ── The tokens that depend on the ground being dark ────────────────────────
+//
+// Same names and same values as the web app, so a colour decided once holds on
+// both. Only what genuinely changes with the lights is here; the brand fills,
+// gold and the numeric scales above stay put.
+const darkTokens = {
   ground: '#051A1D', // page behind everything
   surface: '#0A2A2D', // cards, sheets, bars
   surface2: '#0E383C', // raised: inputs, chips, pressed states
@@ -127,13 +199,45 @@ const colors = {
   body: '#D3E3E4', // paragraphs
   muted: '#8FA9AC', // secondary text
   faint: '#6E8B8F', // timestamps, captions
-  magentaHi: '#B01D7D', // pressed / hover fill
   magentaText: '#F45FAF', // magenta AS TYPE on dark — 5.14:1, passes AA
   magentaPlate: '#58163B', // icon discs
   danger: '#E8686B',
   dangerHi: '#F28184',
   warn: '#E2B857',
   successText: '#5FC98B',
+  // Structural despite the brand name: every one of its 25 uses is a gradient
+  // stop, the map's geometry fill, or a glass overlay. None is an accent on a
+  // card, so it has to lighten with everything else or the gradients would run
+  // from a white page into a dark teal.
+  deepwater: '#0F474C',
+};
+
+const lightTokens: typeof darkTokens = {
+  ground: '#F4F7F7',
+  surface: '#FFFFFF',
+  surface2: '#EAF0F1',
+  line: '#D8E2E3',
+  lineStrong: '#C2D2D3',
+  heading: '#0A2A2D', // 15.2:1 on the card
+  body: '#123239', // 13.6:1
+  muted: '#4F6A6E', // 5.8:1
+  faint: '#546E71', // 5.5:1 — the dark side's faint only manages 3.5 on its own input surface
+  // #F45FAF exists because #911766 scores 1.82:1 on the dark card. On white
+  // that inverts exactly, so the fill itself becomes the readable stop: 8.34:1.
+  magentaText: '#911766',
+  magentaPlate: '#F4D7EA', // a tint, still 6.3:1 against the text stop above
+  // The dark theme lightened these to survive a dark ground; on white the same
+  // values are washed out, so they come back down.
+  danger: '#B3262B',
+  dangerHi: '#8E1B20',
+  warn: '#8A6100',
+  successText: '#1B7A47',
+  deepwater: '#DCE9EA',
+};
+
+const colors = {
+  ...shared,
+  ...(getColorMode() === 'light' ? lightTokens : darkTokens),
 };
 
 export default colors;

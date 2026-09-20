@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   selectedText: {
-    color: colors.white,
+    color: colors.heading,
   },
 });
 

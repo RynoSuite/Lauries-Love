@@ -190,9 +190,6 @@ function MatchCelebration({
 const MatchScreen = () => {
   const navigation = useNavigation<any>();
   const { getChannels } = useChatProvider();
-  // React Native's own SafeAreaView does nothing for the BOTTOM inset on
-  // Android, so the gesture bar sat over the swipe buttons. The real inset,
-  // with a floor so devices that report 0 still clear the edge.
   // The APP'S OWN tab bar overlays the bottom of this screen — it is not the
   // system gesture bar, and no safe-area inset accounts for it. Measured rather
   // than guessed at, the same way HomeTabMain and the group feed do it.
@@ -381,7 +378,7 @@ const MatchScreen = () => {
           accessibilityRole="button"
           accessibilityLabel="Back to the map"
         >
-          <IconArrowLeft width={24} height={24} stroke={colors.seaMist} />
+          <IconArrowLeft width={24} height={24} stroke={colors.heading} />
         </Pressable>
         <Text style={styles.title}>Meet members</Text>
         <View style={styles.backButton} />

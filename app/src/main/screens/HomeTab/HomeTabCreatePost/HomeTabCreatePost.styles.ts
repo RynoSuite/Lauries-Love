@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   postButtonText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.white,
+    color: colors.heading,
     fontSize: 16,
     lineHeight: 20,
   },

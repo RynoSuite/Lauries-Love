@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   filterText: {
     fontFamily: FONT_RALEWAY_600,
-    color: colors.white,
+    color: colors.heading,
   },
   filterBadge: {
     position: 'absolute',

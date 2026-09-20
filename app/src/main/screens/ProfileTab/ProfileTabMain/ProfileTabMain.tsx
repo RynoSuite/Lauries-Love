@@ -4,7 +4,9 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { Linking, ScrollView, View } from 'react-native';
+import { Alert, DevSettings, Linking, ScrollView, View } from 'react-native';
+import * as Updates from 'expo-updates';
+import { getColorMode, setStoredColorMode } from 'styles/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -209,10 +211,47 @@ const ProfileTabMain: FunctionComponent<ClientsMainScreenProps> = ({
     setSelectTypeModal(null);
   };
 
+  /**
+   * Light / dark.
+   *
+   * The palette is chosen when the app's modules load — see styles/colors.ts
+   * for why — so switching it means restarting. That is stated plainly in the
+   * prompt rather than the app appearing to crash: an app that vanishes and
+   * comes back without warning reads as a bug, especially to the members this
+   * one is for.
+   */
+  const onPressAppearance = () => {
+    setSelectTypeModal(null);
+    const current = getColorMode();
+    const next = current === 'light' ? 'dark' : 'light';
+    Alert.alert(
+      'Appearance',
+      `Switch to ${next} mode?\n\nThe app will restart to apply it. Nothing is lost.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: `Use ${next} mode`,
+          onPress: async () => {
+            setStoredColorMode(next);
+            try {
+              await Updates.reloadAsync();
+            } catch {
+              // reloadAsync is unavailable in a bare dev session; DevSettings
+              // does the same job there. If neither works the preference is
+              // still saved, so the next launch picks it up.
+              DevSettings.reload();
+            }
+          },
+        },
+      ],
+    );
+  };
+
   useEffect(() => {
     if (selectTypeModal === 'logout') onPressSignOut();
     if (selectTypeModal === 'terms') onPressPrivacyTerms(false);
     if (selectTypeModal === 'privacy') onPressPrivacyTerms(true);
+    if (selectTypeModal === 'appearance') onPressAppearance();
   }, [selectTypeModal]);
 
   return (

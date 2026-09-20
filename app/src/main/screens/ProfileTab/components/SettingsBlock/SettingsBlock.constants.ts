@@ -1,5 +1,6 @@
 import {
   IconFileTextProfile,
+  IconLayout,
   IconLogOutProfile,
   IconShieldProfile,
   IconTrashProfile,
@@ -13,6 +14,12 @@ export const LIST_BUTTONS_SETTINGS_BLOCK: Array<{
   type: ItemsProfileTabType;
   Icon: (originalProps: IconType) => React.JSX.Element;
 }> = [
+  {
+    id: 'appearance',
+    title: 'Appearance',
+    type: 'appearance',
+    Icon: IconLayout,
+  },
   {
     id: 'privacy',
     title: 'Privacy policy',

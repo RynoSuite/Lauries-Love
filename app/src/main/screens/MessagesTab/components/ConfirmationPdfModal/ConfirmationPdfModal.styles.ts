@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   userTitle: {
     fontFamily: FONT_RALEWAY_500,
-    color: colors.white,
+    color: colors.heading,
     fontSize: 16,
     lineHeight: 22,
   },

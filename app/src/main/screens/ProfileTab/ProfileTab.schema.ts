@@ -11,6 +11,7 @@ export const nameModalsProfileContainerSchema = z.enum([
 ]);
 
 export const nameModalsSettingsContainerSchema = z.enum([
+  'appearance',
   'privacy',
   'terms',
   'logout',
