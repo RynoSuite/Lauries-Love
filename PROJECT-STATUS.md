@@ -428,6 +428,21 @@ keeping:
   `ios/*.xcodeproj/project.pbxproj` must change to the live app's
   `com.SMv587dd8da82c.app`. Note the native value wins over `app.json` whenever
   an `ios/` directory exists.
+- **Home-screen name, 20 Sept.** `CFBundleDisplayName` is **`LL Beta`**, in both
+  `app.json` and `ios/LauriesLove/Info.plist`. **Revert it to `Laurie's Love` at
+  cutover, alongside the bundle identifier above.** The live app is still
+  shipping — 2.1.5 went out 21 Aug — so board members are likely to have it
+  installed already; two icons both reading "Laurie's Love" and nobody can tell
+  the review build from the real one. Do not restore this note as an XML comment
+  in the plist: Expo's config plugin rewrites that file on every build and eats
+  comments.
+- **Apple distribution certificates are at Apple's ceiling.** The team holds
+  **three** `IOS_DISTRIBUTION` certificates, which is the maximum. Whenever EAS
+  asks "reuse this distribution certificate?", **always reuse**. Creating a
+  fourth forces a revoke, and revoking `561C51409BE567EC084939A91ED46F95`
+  (expires 2027-08-21) would break OneSeven Tech's ability to ship updates to
+  the live app — it signs the only ACTIVE `com.SMv587dd8da82c.app` App Store
+  profile. The staging profile uses `7A311EB555BFBF6C6410121A3C85EA9` instead.
 - **CRLF broke the build.** `ios/.xcode.env` is sourced by `sh` on the macOS
   builder, where a carriage return is not whitespace, so a blank line became a
   command named : "line 5: : command not found". `Podfile` and
