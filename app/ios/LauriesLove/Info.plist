@@ -36,12 +36,6 @@
           <string>com.googleusercontent.apps.17233288656-9miimtggrnq7sig471884uclek2btqvo</string>
         </array>
       </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>fbYOUR_FACEBOOK_APP_ID</string>
-        </array>
-      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>155</string>
