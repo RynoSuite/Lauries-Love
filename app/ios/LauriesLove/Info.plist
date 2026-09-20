@@ -7,7 +7,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Laurie's Love</string>
+	<!-- REVERT AT CUTOVER, alongside the bundle identifier. This build ships to
+	     the board beside the live App Store app, which is also "Laurie's Love";
+	     two identical icons and they cannot tell the review build from the real
+	     one. See PROJECT-STATUS.md §5. -->
+	<string>LL Beta</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

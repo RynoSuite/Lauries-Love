@@ -30,7 +30,7 @@
           "fetch",
           "remote-notification"
         ],
-        "CFBundleDisplayName": "Laurie's Love",
+        "CFBundleDisplayName": "LL Beta",
         "NSAppleMusicUsageDescription": "Laurie's Love needs access to your Apple Music library so you can listen to your favorite songs and discover new tracks. It also allows you to create and share playlists with other users. Your privacy is important to us, we will never share your music data or listening history without your explicit consent.",
         "NSCameraUsageDescription": "Laurie's Love needs access to your camera to take photos and videos so that you can upload and share your own images with other users. Your privacy is important to us, we will never share your photos without your explicit consent.",
         "NSLocationWhenInUseUsageDescription": "Laurie's Love uses the user's location to find and connect people near you. By enabling location access, we can show users relevant and useful information about people nearby with similar interests and situations. Your privacy is important to us, we will never share your location without your explicit consent.",

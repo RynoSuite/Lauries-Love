@@ -37,6 +37,27 @@
       "android": {
         "buildType": "apk"
       }
+    },
+    "testflight": {
+      "node": "22.11.0",
+      "environment": "development",
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      },
+      "distribution": "store",
+      "ios": {
+        "autoIncrement": "buildNumber"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "testflight": {
+      "ios": {
+        "appleTeamId": "49HFHLWS47"
+      }
     }
   }
 }
