@@ -1,194 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<!-- REVERT AT CUTOVER, alongside the bundle identifier. This build ships to
-	     the board beside the live App Store app, which is also "Laurie's Love";
-	     two identical icons and they cannot tell the review build from the real
-	     one. See PROJECT-STATUS.md §5. -->
-	<string>LL Beta</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
-	<key>CFBundleShortVersionString</key>
-	<string>2.1.3</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.SMv587dd8da82c.app</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.17233288656-9miimtggrnq7sig471884uclek2btqvo</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fbYOUR_FACEBOOK_APP_ID</string>
-			</array>
-		</dict>
-	</array>
-	<key>CFBundleVersion</key>
-	<string>154</string>
-	<key>FacebookAdvertiserIDCollectionEnabled</key>
-	<true/>
-	<key>FacebookAppID</key>
-	<string>YOUR_FACEBOOK_APP_ID</string>
-	<key>FacebookAutoInitEnabled</key>
-	<true/>
-	<key>FacebookAutoLogAppEventsEnabled</key>
-	<true/>
-	<key>FacebookClientToken</key>
-	<string>YOUR_FACEBOOK_CLIENT_TOKEN</string>
-	<key>FacebookDisplayName</key>
-	<string>Laurie's Love</string>
-	<key>GMSApiKey</key>
-	<string>YOUR_GOOGLE_MAPS_API_KEY</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-	</array>
-	<key>LSMinimumSystemVersion</key>
-	<string>12.0</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Laurie's Love needs access to your Apple Music library so you can listen to your favorite songs and discover new tracks. It also allows you to create and share playlists with other users. Your privacy is important to us, we will never share your music data or listening history without your explicit consent.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Laurie's Love needs access to your camera to take photos and videos so that you can upload and share your own images with other users. Your privacy is important to us, we will never share your photos without your explicit consent.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Laurie's Love uses the user's location to find and connect people near you. By enabling location access, we can show users relevant and useful information about people nearby with similar interests and situations. Your privacy is important to us, we will never share your location without your explicit consent.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Laurie's Love needs access to your microphone so that you can record and send voice messages. It is also used to make voice and video calls within the app. Your privacy is important to us, we will never record or listen to your conversations without your explicit consent.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Laurie's Love needs access to your photos and videos so that you can upload and share your own images with other users. It also allows you to save other users' photos to your own photo library for easy access. Your privacy is important to us, we will never share your photos without your explicit consent.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Laurie's Love needs access to your photos and videos so that you can upload and share your own images with other users. It also allows you to save other users' photos to your own photo library for easy access. Your privacy is important to us, we will never share your photos without your explicit consent.</string>
-	<key>SKAdNetworkItems</key>
-	<array>
-		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>v9wttpbfk9.skadnetwork</string>
-		</dict>
-		<dict>
-			<key>SKAdNetworkIdentifier</key>
-			<string>n38lu8286q.skadnetwork</string>
-		</dict>
-	</array>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Autography.otf</string>
-		<string>ObjektivMk1_Trial_Bd.ttf</string>
-		<string>ObjektivMk1_Trial_BdIt.ttf</string>
-		<string>ObjektivMk1_Trial_Blk.ttf</string>
-		<string>ObjektivMk1_Trial_BlkIt.ttf</string>
-		<string>ObjektivMk1_Trial_Hair.ttf</string>
-		<string>ObjektivMk1_Trial_HairIt.ttf</string>
-		<string>ObjektivMk1_Trial_It.ttf</string>
-		<string>ObjektivMk1_Trial_Lt.ttf</string>
-		<string>ObjektivMk1_Trial_LtIt.ttf</string>
-		<string>ObjektivMk1_Trial_Md.ttf</string>
-		<string>ObjektivMk1_Trial_MdIt.ttf</string>
-		<string>ObjektivMk1_Trial_Rg.ttf</string>
-		<string>ObjektivMk1_Trial_SBd.ttf</string>
-		<string>ObjektivMk1_Trial_SBdIt.ttf</string>
-		<string>ObjektivMk1_Trial_Th.ttf</string>
-		<string>ObjektivMk1_Trial_ThIt.ttf</string>
-		<string>ObjektivMk1_Trial_XBd.ttf</string>
-		<string>ObjektivMk1_Trial_XBdIt.ttf</string>
-		<string>ObjektivVF_Trial_Wght.ttf</string>
-		<string>ObjektivVF_Trial_WghtItal.ttf</string>
-		<string>Behind The Nineties Black.ttf</string>
-		<string>Behind The Nineties Bold.ttf</string>
-		<string>Behind The Nineties Extra Bold.ttf</string>
-		<string>Behind The Nineties Italic.ttf</string>
-		<string>Behind The Nineties Medium.ttf</string>
-		<string>Behind The Nineties Regular.ttf</string>
-		<string>Behind The Nineties Semi Bold.ttf</string>
-		<string>Raleway-Black.ttf</string>
-		<string>Raleway-Bold.ttf</string>
-		<string>Raleway-ExtraBold.ttf</string>
-		<string>Raleway-ExtraLight.ttf</string>
-		<string>Raleway-Light.ttf</string>
-		<string>Raleway-Medium.ttf</string>
-		<string>Raleway-Regular.ttf</string>
-		<string>Raleway-SemiBold.ttf</string>
-		<string>Raleway-Thin.ttf</string>
-		<string>HankenGrotesk-Black.ttf</string>
-		<string>HankenGrotesk-Bold.ttf</string>
-		<string>HankenGrotesk-ExtraBold.ttf</string>
-		<string>HankenGrotesk-ExtraLight.ttf</string>
-		<string>HankenGrotesk-Light.ttf</string>
-		<string>HankenGrotesk-Medium.ttf</string>
-		<string>HankenGrotesk-Regular.ttf</string>
-		<string>HankenGrotesk-SemiBold.ttf</string>
-		<string>HankenGrotesk-Thin.ttf</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>fetch</string>
-		<string>remote-notification</string>
-	</array>
-	<key>UILaunchStoryboardName</key>
-	<string>SplashScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-	<key>UIRequiresFullScreen</key>
-	<false/>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleDefault</string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>Allow LauriesLove to connect to the development server on your local network.</string>
-	<key>NSBonjourServices</key>
-	<array>
-		<string>_http._tcp</string>
-	</array>
-</dict>
+  <dict>
+    <key>CADisableMinimumFrameDurationOnPhone</key>
+    <true/>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>LL Beta</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+    <key>CFBundleShortVersionString</key>
+    <string>2.1.3</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.SMv587dd8da82c.app</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.17233288656-9miimtggrnq7sig471884uclek2btqvo</string>
+        </array>
+      </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>fbYOUR_FACEBOOK_APP_ID</string>
+        </array>
+      </dict>
+    </array>
+    <key>CFBundleVersion</key>
+    <string>155</string>
+    <key>FacebookAdvertiserIDCollectionEnabled</key>
+    <true/>
+    <key>FacebookAppID</key>
+    <string>YOUR_FACEBOOK_APP_ID</string>
+    <key>FacebookAutoInitEnabled</key>
+    <true/>
+    <key>FacebookAutoLogAppEventsEnabled</key>
+    <true/>
+    <key>FacebookClientToken</key>
+    <string>YOUR_FACEBOOK_CLIENT_TOKEN</string>
+    <key>FacebookDisplayName</key>
+    <string>Laurie's Love</string>
+    <key>GMSApiKey</key>
+    <string>YOUR_GOOGLE_MAPS_API_KEY</string>
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>fbapi</string>
+      <string>fb-messenger-share-api</string>
+    </array>
+    <key>LSMinimumSystemVersion</key>
+    <string>12.0</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <false/>
+      <key>NSAllowsLocalNetworking</key>
+      <true/>
+    </dict>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>Laurie's Love needs access to your Apple Music library so you can listen to your favorite songs and discover new tracks. It also allows you to create and share playlists with other users. Your privacy is important to us, we will never share your music data or listening history without your explicit consent.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Laurie's Love needs access to your camera to take photos and videos so that you can upload and share your own images with other users. Your privacy is important to us, we will never share your photos without your explicit consent.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Laurie's Love uses the user's location to find and connect people near you. By enabling location access, we can show users relevant and useful information about people nearby with similar interests and situations. Your privacy is important to us, we will never share your location without your explicit consent.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Laurie's Love needs access to your microphone so that you can record and send voice messages. It is also used to make voice and video calls within the app. Your privacy is important to us, we will never record or listen to your conversations without your explicit consent.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Laurie's Love needs access to your photos and videos so that you can upload and share your own images with other users. It also allows you to save other users' photos to your own photo library for easy access. Your privacy is important to us, we will never share your photos without your explicit consent.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Laurie's Love needs access to your photos and videos so that you can upload and share your own images with other users. It also allows you to save other users' photos to your own photo library for easy access. Your privacy is important to us, we will never share your photos without your explicit consent.</string>
+    <key>SKAdNetworkItems</key>
+    <array>
+      <dict>
+        <key>SKAdNetworkIdentifier</key>
+        <string>v9wttpbfk9.skadnetwork</string>
+      </dict>
+      <dict>
+        <key>SKAdNetworkIdentifier</key>
+        <string>n38lu8286q.skadnetwork</string>
+      </dict>
+    </array>
+    <key>UIAppFonts</key>
+    <array>
+      <string>Autography.otf</string>
+      <string>ObjektivMk1_Trial_Bd.ttf</string>
+      <string>ObjektivMk1_Trial_BdIt.ttf</string>
+      <string>ObjektivMk1_Trial_Blk.ttf</string>
+      <string>ObjektivMk1_Trial_BlkIt.ttf</string>
+      <string>ObjektivMk1_Trial_Hair.ttf</string>
+      <string>ObjektivMk1_Trial_HairIt.ttf</string>
+      <string>ObjektivMk1_Trial_It.ttf</string>
+      <string>ObjektivMk1_Trial_Lt.ttf</string>
+      <string>ObjektivMk1_Trial_LtIt.ttf</string>
+      <string>ObjektivMk1_Trial_Md.ttf</string>
+      <string>ObjektivMk1_Trial_MdIt.ttf</string>
+      <string>ObjektivMk1_Trial_Rg.ttf</string>
+      <string>ObjektivMk1_Trial_SBd.ttf</string>
+      <string>ObjektivMk1_Trial_SBdIt.ttf</string>
+      <string>ObjektivMk1_Trial_Th.ttf</string>
+      <string>ObjektivMk1_Trial_ThIt.ttf</string>
+      <string>ObjektivMk1_Trial_XBd.ttf</string>
+      <string>ObjektivMk1_Trial_XBdIt.ttf</string>
+      <string>ObjektivVF_Trial_Wght.ttf</string>
+      <string>ObjektivVF_Trial_WghtItal.ttf</string>
+      <string>Behind The Nineties Black.ttf</string>
+      <string>Behind The Nineties Bold.ttf</string>
+      <string>Behind The Nineties Extra Bold.ttf</string>
+      <string>Behind The Nineties Italic.ttf</string>
+      <string>Behind The Nineties Medium.ttf</string>
+      <string>Behind The Nineties Regular.ttf</string>
+      <string>Behind The Nineties Semi Bold.ttf</string>
+      <string>Raleway-Black.ttf</string>
+      <string>Raleway-Bold.ttf</string>
+      <string>Raleway-ExtraBold.ttf</string>
+      <string>Raleway-ExtraLight.ttf</string>
+      <string>Raleway-Light.ttf</string>
+      <string>Raleway-Medium.ttf</string>
+      <string>Raleway-Regular.ttf</string>
+      <string>Raleway-SemiBold.ttf</string>
+      <string>Raleway-Thin.ttf</string>
+      <string>HankenGrotesk-Black.ttf</string>
+      <string>HankenGrotesk-Bold.ttf</string>
+      <string>HankenGrotesk-ExtraBold.ttf</string>
+      <string>HankenGrotesk-ExtraLight.ttf</string>
+      <string>HankenGrotesk-Light.ttf</string>
+      <string>HankenGrotesk-Medium.ttf</string>
+      <string>HankenGrotesk-Regular.ttf</string>
+      <string>HankenGrotesk-SemiBold.ttf</string>
+      <string>HankenGrotesk-Thin.ttf</string>
+    </array>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+      <string>remote-notification</string>
+    </array>
+    <key>UILaunchStoryboardName</key>
+    <string>SplashScreen</string>
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+      <string>arm64</string>
+    </array>
+    <key>UIRequiresFullScreen</key>
+    <false/>
+    <key>UIStatusBarStyle</key>
+    <string>UIStatusBarStyleDefault</string>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+      <string>UIInterfaceOrientationPortraitUpsideDown</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+      <string>UIInterfaceOrientationPortrait</string>
+      <string>UIInterfaceOrientationPortraitUpsideDown</string>
+      <string>UIInterfaceOrientationLandscapeLeft</string>
+      <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UIUserInterfaceStyle</key>
+    <string>Light</string>
+    <key>UIViewControllerBasedStatusBarAppearance</key>
+    <false/>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>Allow LauriesLove to connect to the development server on your local network.</string>
+    <key>NSBonjourServices</key>
+    <array>
+      <string>_http._tcp</string>
+    </array>
+  </dict>
 </plist>
