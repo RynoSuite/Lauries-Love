@@ -1,4 +1,6 @@
-import { MMKV } from 'react-native-mmkv';
+// `import type` is erased at compile time, so this file pulls in no MMKV code
+// at module scope. That matters — see getStore() below.
+import type { MMKV } from 'react-native-mmkv';
 
 // ───────────────────────────────────────────────────────────────────────────
 // Light and dark, without converting 217 files.
@@ -37,7 +39,21 @@ let storeFailed = false;
 function getStore(): MMKV | null {
   if (store || storeFailed) return store;
   try {
-    store = new MMKV();
+    // require() inside the try, NOT a static import at the top of the file.
+    //
+    // react-native-mmkv 3.x resolves its TurboModule as its own module is
+    // evaluated, so a static `import { MMKV } from 'react-native-mmkv'` throws
+    // during THIS file's evaluation — before any try/catch here can run. And
+    // because 217 files import this one, that throw happened before the app
+    // could render, killing it with an Invariant Violation and no usable
+    // stack. require() is the only form that can actually be caught.
+    //
+    // It threw because iOS had the new architecture disabled in
+    // ios/Podfile.properties.json while Android had it on, and 3.x requires
+    // TurboModules. That is fixed, but the guard stays: a colour palette must
+    // never be able to take the app down, whatever the native config says.
+    const { MMKV: MMKVClass } = require('react-native-mmkv');
+    store = new MMKVClass();
   } catch {
     storeFailed = true;
   }
