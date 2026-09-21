@@ -1,7 +1,44 @@
 # Where this project stands
 
-Working notes for the Laurie's Love takeover. **Updated 18 Sept 2026.**
+Working notes for the Laurie's Love takeover. **Updated 21 Sept 2026.**
 Read this first when picking the work back up.
+
+## The headline, 21 Sept
+
+**The mobile app is on TestFlight and it works.** Build 160, installed and
+verified on a real iPhone. The full account is in
+**`SESSION-2026-09-21-TESTFLIGHT.md` — read that before touching the mobile
+build**; it is the second thing to read after this file.
+
+The short version:
+
+- **iOS had never had a Release build.** Every previous one was a dev client
+  loading JavaScript from Metro. The first real one crashed at launch, because
+  `ios/Podfile.properties.json` had `newArchEnabled "false"` while
+  `android/gradle.properties` and `app.json` both said true — and
+  `react-native-mmkv` 3.x needs TurboModules. iOS storage had therefore never
+  worked either. **`app.json` configures nothing native in this project.**
+- **Five blockers cleared, all pre-existing:** that architecture mismatch,
+  Apple's iOS 26 SDK requirement, an invalid Facebook URL scheme, an
+  unconfigured Facebook SDK killing startup, and crash reporting that was
+  wired up but never switched on.
+- **Three handoff items closed:** the Expo project now lives in the
+  **client-owned `lauries-love` account** on their paid plan; the **Android
+  upload keystore** in that account is reachable at last, so the Play Store
+  update path is no longer blocked; and Sentry now reports somewhere readable.
+- **The live app was never touched.** OneSeven Tech still ship it — v2.1.5 went
+  out 21 Aug — and it has an external tester group with a public link, so the
+  beta was deliberately built as a separate app record and a separate Expo
+  project.
+- **Still to do before the board installs it:** Jeremy's bug list, a decision
+  on over-the-air updates (disabled natively, and it must be compiled into the
+  build the board installs), an external tester group, and Beta App Review
+  (~24h, Apple's clock).
+
+**Mobile light mode shipped on 21 Sept.** §5c below says it was deferred; that
+is out of date.
+
+Work in progress lives on the branch **`testflight-board-review`**, not `main`.
 
 ## The headline, 18 Sept
 
