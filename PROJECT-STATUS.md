@@ -428,6 +428,33 @@ keeping:
   `ios/*.xcodeproj/project.pbxproj` must change to the live app's
   `com.SMv587dd8da82c.app`. Note the native value wins over `app.json` whenever
   an `ios/` directory exists.
+- **`app.json` does not configure native anything. This is a bare project.**
+  Because `app/ios/` and `app/android/` exist and are committed, EAS prints
+  *"Specified value for `ios.bundleIdentifier` in app.json is ignored because
+  an ios directory was detected"* on **every** build — and that rule is not
+  limited to the bundle identifier. It applies to every native setting, and it
+  has already cost this project two separate days of debugging.
+  - **21 Sept — the startup crash.** `app.json` said `newArchEnabled: true`,
+    `android/gradle.properties` said `newArchEnabled=true`, and
+    **`ios/Podfile.properties.json` said `"false"`**. So iOS built on the old
+    architecture, `react-native-mmkv` 3.x could not register its `MmkvCxx`
+    TurboModule, and the import threw during module evaluation — fatal in a
+    Release build, a dismissable redbox in a dev client. Every previous iOS
+    build was a dev client loading JS from Metro, which is why nobody had ever
+    seen it. It also means iOS storage (`useStorage`, backed by
+    `local-storage-adapter.ts`) had never worked.
+  - **The same trap, still armed: over-the-air updates.**
+    `ios/LauriesLove/Supporting/Expo.plist` has `EXUpdatesEnabled` `<false/>`.
+    Running `eas update:configure`, which writes `updates.url` into `app.json`,
+    would appear to succeed and **do nothing on iOS**. Before relying on OTA,
+    set `EXUpdatesEnabled` to `<true/>` and `EXUpdatesURL` in that plist, and
+    verify on a device rather than trusting the config.
+  - **The rule:** when changing any native-ish setting, change it in
+    `ios/Podfile.properties.json`, `ios/LauriesLove/Supporting/Expo.plist`,
+    `ios/LauriesLove/Info.plist`, `ios/*.xcodeproj/project.pbxproj` or
+    `android/gradle.properties` — and treat `app.json` as documentation of
+    intent, not configuration. Keep the two platforms' values in step; the
+    crash above was purely iOS and Android disagreeing.
 - **Home-screen name, 20 Sept.** `CFBundleDisplayName` is **`LL Beta`**, in both
   `app.json` and `ios/LauriesLove/Info.plist`. **Revert it to `Laurie's Love` at
   cutover, alongside the bundle identifier above.** The live app is still
