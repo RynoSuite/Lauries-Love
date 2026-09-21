@@ -108,8 +108,18 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [loaded]);
 
+  // Startup side effects are wrapped because an exception thrown from an effect
+  // is not caught by anything: React re-throws it out of the commit phase, and
+  // in a Release build that reaches RCTExceptionsManager, which calls RCTFatal
+  // and aborts the process. Build 156 died here — SIGABRT 450ms after launch,
+  // no message, because a native SDK's startup validation failed on iOS. An
+  // analytics SDK should never be able to do that.
   useEffect(() => {
-    initFacebookSDK();
+    try {
+      initFacebookSDK();
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }, []);
 
   return (
