@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Laurie's Love",
-    "slug": "lauries-love",
+    "slug": "lauries-love-beta",
     "version": "2.1.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.laurieslove.staging",
-      "buildNumber": "158",
+      "buildNumber": "159",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "LSApplicationQueriesSchemes": [
@@ -175,10 +175,10 @@
     "runtimeVersion": "1.0.0",
     "extra": {
       "eas": {
-        "projectId": "3dce34f7-098c-4c93-84c8-5c2542b31d2b"
+        "projectId": "101ddcd9-0197-48d7-800b-84b3bcc67bb2"
       }
     },
-    "owner": "rynosuite",
+    "owner": "lauries-love",
     "backgroundColor": "#051A1D"
   }
 }

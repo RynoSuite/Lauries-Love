@@ -28,22 +28,13 @@
       }
     },
     "staging": {
-      "node": "22.11.0",
-      "environment": "development",
-      "env": {
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-      },
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "extends": "staging-env"
     },
     "testflight": {
-      "node": "22.11.0",
-      "environment": "development",
-      "env": {
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-      },
       "distribution": "store",
       "ios": {
         "autoIncrement": "buildNumber",
@@ -51,21 +42,29 @@
       },
       "android": {
         "buildType": "app-bundle"
-      }
+      },
+      "extends": "staging-env"
     },
     "diagnose": {
-      "node": "22.11.0",
-      "environment": "development",
-      "env": {
-        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
-      },
       "distribution": "internal",
       "ios": {
         "image": "macos-sequoia-15.6-xcode-16.4"
       },
       "android": {
         "buildType": "apk"
-      }
+      },
+      "extends": "staging-env"
+    },
+    "staging-env": {
+      "node": "22.11.0",
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true",
+        "EXPO_PUBLIC_BACKEND": "supabase",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://hcvyknwbixnlwqozmkas.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_KEY": "sb_publishable_nVwkBcbJ148W1GgakOQH6g_4kViA3lF",
+        "EXPO_PUBLIC_SENTRY_DSN": "https://4f7ab766e0f5672adbea7f8e6a0efd1e@o4512122889568256.ingest.us.sentry.io/4512122893500416"
+      },
+      "environment": "development"
     }
   },
   "submit": {
