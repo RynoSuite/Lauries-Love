@@ -103,7 +103,26 @@ export default function App() {
     // Perf: was a hardcoded 2000ms hold AFTER fonts loaded — 1.7s of dead
     // perceived boot time. 300ms is enough to avoid a first-frame flash.
     const timer = setTimeout(() => {
-      SplashScreen.hide();
+      // react-native-splash-screen is `NativeModules.SplashScreen` and nothing
+      // else — if the native module is not registered, the import is literally
+      // undefined. It has no iOS AppDelegate setup here, and iOS builds with
+      // useFrameworks: "static", which stops older modules registering. So on
+      // iOS this was undefined.hide(), thrown from inside a setTimeout, where
+      // nothing catches it: Release has no redbox, so it reached RCTFatal and
+      // aborted the process ~450ms in — bundle and fonts, plus this 300ms.
+      //
+      // The call is vestigial anyway. This app's splash is expo-splash-screen
+      // (see app.json, and MainActivity's setTheme) behind a launch storyboard
+      // that iOS dismisses by itself once the first frame renders. The library
+      // is a leftover from the original codebase.
+      //
+      // Optional-chained AND wrapped: the first handles the module being
+      // absent, the second anything it throws once present.
+      try {
+        SplashScreen?.hide?.();
+      } catch (error) {
+        Sentry.captureException(error);
+      }
     }, 300);
     return () => clearTimeout(timer);
   }, [loaded]);
