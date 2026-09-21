@@ -52,6 +52,20 @@
       "android": {
         "buildType": "app-bundle"
       }
+    },
+    "diagnose": {
+      "node": "22.11.0",
+      "environment": "development",
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      },
+      "distribution": "internal",
+      "ios": {
+        "image": "macos-sequoia-15.6-xcode-16.4"
+      },
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
