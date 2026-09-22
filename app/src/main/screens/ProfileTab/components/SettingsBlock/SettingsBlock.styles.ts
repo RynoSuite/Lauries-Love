@@ -14,6 +14,14 @@ const styles = StyleSheet.create({
     color: colors.heading,
     marginBottom: 4,
   },
+  // Quiet on purpose: a diagnostic for the review period, not a feature.
+  versionLine: {
+    fontFamily: FONT_RALEWAY_600,
+    fontSize: 12,
+    color: colors.faint,
+    textAlign: 'center',
+    marginTop: 16,
+  },
 });
 
 export default styles;
