@@ -9,17 +9,21 @@ iOS delivery pipeline and what remains before board members can install it.
 
 ---
 
-## 1. State at the end of the session
+## 1. State — updated 22 Sept
 
 | | |
 |---|---|
-| **Working build** | **160**, in TestFlight, verified installed and running on a real iPhone |
+| **Board build** | **161**, in TestFlight, **with over-the-air updates compiled in** (§8) |
+| **Beta App Review** | **161 submitted 21 Sept 23:01 PT — `WAITING_FOR_REVIEW`**. Board members cannot install until Apple approves |
+| **External group** | **`Board Review`**, id `380101d7-8a6b-4fea-bf71-e3dce7a16aa4`, build 161 attached, **no testers yet, no public link** |
+| **Earlier build** | 160 — works, but has no OTA; superseded by 161 |
 | **App Store Connect app** | `Lauries Love Beta`, Apple ID **6814278840**, bundle `org.laurieslove.staging` |
 | **Expo project** | **`@lauries-love/lauries-love-beta`**, id `101ddcd9-0197-48d7-800b-84b3bcc67bb2` — the CLIENT's account, on their paid plan |
-| **Branch** | `testflight-board-review`, 17 commits, **not merged to main** |
+| **Branch** | `testflight-board-review`, **pushed to origin**, not merged to main |
 | **Home-screen name** | **`LL Beta`** — so it does not collide with the live app |
 | **Backend** | staging (`hcvyknwbixnlwqozmkas`) — the migrated community, not production |
 | **Crash reporting** | Sentry `skyway-media/react-native`, working, readable |
+| **Android** | prepared for Play internal testing; **blocked only on a Google Maps API key** (§9) |
 
 ### The live app was never touched
 
@@ -154,11 +158,11 @@ settings live in `ios/Podfile.properties.json`,
 `ios/*.xcodeproj/project.pbxproj` and `android/gradle.properties`. **Keep the
 two platforms in step.**
 
-**Over-the-air updates are disabled natively.**
-`ios/LauriesLove/Supporting/Expo.plist` has `EXUpdatesEnabled` `<false/>`.
-Running `eas update:configure` writes `updates.url` into `app.json`, reports
-success, and **does nothing on iOS**. Enabling OTA means editing that plist and
-verifying on a device. See §6.
+**Over-the-air updates — the same trap, now defused.** Both platforms had
+`expo-updates` disabled natively (`Expo.plist`, `AndroidManifest.xml`), so
+`eas update:configure`, which only writes `app.json`, would have reported
+success and done nothing. **Fixed 22 Sept, in the native files** — see §8. The
+general rule stands: any expo-updates setting has to be changed there.
 
 **Apple distribution certificates are at the ceiling.** The team holds
 **three**, which is the maximum. When EAS asks "reuse this distribution
@@ -217,23 +221,32 @@ a fresh one at `https://sentry.io/settings/account/api/auth-tokens/` with
 
 ---
 
-## 6. What is left before the board can install it
+## 6. What is left — updated 22 Sept
 
-1. **Jeremy's bug list and UI changes** — testing was still in progress when
-   the session ended.
-2. **Decide on over-the-air updates.** Without them every change is a ~20
-   minute rebuild that every board member must install by hand; with them a
-   JavaScript change reaches them in about a minute, automatically. It **must
-   be compiled into the build the board installs** — adding it later means
-   everyone reinstalls. Needs the `Expo.plist` change in §4, and should be
-   proved on an ad-hoc build before it goes anywhere near the board.
-3. **External tester group + Beta App Review.** Board members are not App Store
-   Connect users, so they need external testing, which requires Apple to review
-   the build — roughly 24 hours, once. **Start it before the fixes land**: once
-   the group is approved, later builds usually clear quickly. Apple needs a
-   review contact name, phone and email, plus the demo account above.
-4. **Invite the board** — a public link (lowest friction, and what the live
-   app's `Clients` group already uses) or individual emails.
+### iOS (the board)
+
+1. ~~Decide on over-the-air updates~~ — **done**, enabled natively, in build
+   161. See §8.
+2. ~~External tester group + Beta App Review~~ — **done**. `Board Review`
+   group created; build 161 submitted 21 Sept 23:01 PT. Review contact, demo
+   account, reviewer notes, feedback email and beta description are all set in
+   App Store Connect.
+3. **Wait for Apple.** `WAITING_FOR_REVIEW` → `IN_REVIEW` → `APPROVED`,
+   usually within 24h. Apple emails when it clears. Check with the API query
+   in §8 rather than waiting on the email.
+4. **Jeremy's bug list and UI changes.** Still outstanding. Most will ship as
+   **over-the-air updates** (§8), so they do not need another build or another
+   review — and the first one doubles as the proof that OTA works, which has
+   **not yet been verified on a device**.
+5. **Invite the board** once review clears *and* Jeremy is happy. **Six board
+   members, list received 22 Sept** — held deliberately **out of the repo**
+   because several are personal addresses; they are in the session
+   transcript. Add them as external testers on `Board Review`. Public link vs
+   individual invites is still undecided; the list suggests individual invites.
+
+### Android (the boss, plus Android testers)
+
+See §9. **Blocked only on a Google Maps API key.** Everything else is ready.
 
 **Internal testing was considered and rejected.** It skips Apple review, but
 every internal tester must be a **user on the client's App Store Connect
@@ -262,3 +275,148 @@ Apple ID. External testing is one link and needs no account at all.
 - **Build numbers**: `autoIncrement` bumps `CFBundleVersion` locally, so
   `app.json` and `Info.plist` change on each build and need committing. The
   beta record has seen 156, 157, 158 and 160.
+  Build 161 followed on 22 Sept.
+
+---
+
+## 8. Over-the-air updates (22 Sept)
+
+**Enabled in build 161**, and it must stay compiled into anything the board
+installs — an update can only reach a build that knows where to look.
+
+It was done **in the native files, not `app.json`**, for the reason in §4.
+Both platforms had `expo-updates` installed and explicitly disabled, with no
+update URL:
+
+| | Before | After |
+|---|---|---|
+| `ios/LauriesLove/Supporting/Expo.plist` | `EXUpdatesEnabled <false/>` | `<true/>`, plus `EXUpdatesURL` |
+| `AndroidManifest.xml` | `expo.modules.updates.ENABLED false` | `true`, plus `EXPO_UPDATE_URL` |
+
+URL: `https://u.expo.dev/101ddcd9-0197-48d7-800b-84b3bcc67bb2`.
+`app.json` carries the same `updates.url`, because the `eas update` CLI reads
+it — but the native files are what decide.
+
+**Channels are per profile**: `testflight` and `diagnose`. So:
+
+```
+cd app
+npx eas-cli update --branch testflight --message "what changed"
+```
+
+reaches build 161 and anything else built with the `testflight` profile. On
+the device the update **downloads on one launch and applies on the next** —
+testers need to open the app twice.
+
+**Not yet verified on a device.** The config is explicit in both platform
+files, but the first real fix is the proof. If it does not arrive, suspect the
+channel/branch mapping before anything native.
+
+**What OTA can and cannot change.** JavaScript, styles, copy, images bundled
+with the JS: yes. Anything native — a new native module, `Info.plist`,
+`AndroidManifest.xml`, the icon, the splash, permissions, the **Google Maps
+key** — needs a full build.
+
+**CAUTION — `runtimeVersion` is a fixed `"1.0.0"`** in `Expo.plist`,
+`android/app/src/main/res/values/strings.xml` and `app.json`. Updates are
+matched on it. **Any future change to native code must bump it in all three**,
+or an update built for the new native code will be delivered to older builds
+that cannot run it — and that is a crash on launch in the field.
+
+### Checking Beta App Review without waiting for the email
+
+The build's review state is on
+`GET /v1/builds/826e1038-983f-4809-bd87-70cf82aa0828/betaAppReviewSubmission`,
+authenticated with the ASC API key in §5.
+
+---
+
+## 9. Android (22 Sept)
+
+**Decided: Google Play internal testing**, on the existing listing, for the
+boss and any Android testers. The board is on iOS.
+
+### Why Play and not direct APK links
+
+The beta uses the **same package as the live app, `com.lauriesloveapp`** —
+unlike iOS, where it got its own bundle ID. A directly-installed APK is signed
+with a different key, so Android refuses to install it over the live app;
+testers would have to uninstall the real one first.
+
+Play avoids that entirely. **Google re-signs every upload with the production
+app-signing key**, so a build delivered through Play installs as an ordinary
+update. Testers opt in through a link and can opt out to go straight back to
+the live app.
+
+**The internal track cannot reach production users.** A build there stays
+there unless someone explicitly promotes it. Still, it is the agency's live
+listing — **tell the client before uploading**, rather than letting them find
+out by noticing.
+
+### Done
+
+- **Upload keystore attached** to `lauries-love-beta` **by reference** —
+  keystore `9446c7db-c084-4638-aa1a-5a218c27ba0a`, alias `upload`, md5
+  `17d4a1295532f32f1d98382e6860a1f6`, **verified to match the live listing**.
+  Nothing on the original project was changed. Play rejects anything signed
+  with a different upload key, and a new keystore cannot update an existing
+  listing.
+- **`versionCode` 154 → 1000**, in `android/app/build.gradle` (what ships)
+  and `app.json`. It had to clear the live app's 158; it jumps far past it on
+  purpose. OneSeven are still shipping, and if we took 159 and they later
+  built 159, **Play would reject theirs**.
+- **Submit config**: `eas.json` → `submit.testflight.android` = track
+  `internal`, `releaseStatus` `draft`, `changesNotSentForReview` true.
+  Nothing rolls out on upload.
+
+### Blocked: the Google Maps API key
+
+Both native configs hold the literal placeholder `YOUR_GOOGLE_MAPS_API_KEY`.
+**iOS is unaffected** — no map component specifies a provider, so it falls
+back to **Apple Maps**, which needs no key. That is why nobody noticed.
+**Android always uses Google Maps**, and with a placeholder key the Connect
+map renders as a **blank grey square** — on the screen the swipe deck is
+reached from.
+
+It is native (`AndroidManifest.xml`, `com.google.android.geo.API_KEY`), so it
+**cannot be fixed by an over-the-air update**. Build once the key arrives.
+
+**Only one Google API is needed: Maps SDK for Android.** Checked in the code,
+not assumed:
+
+- Geocoding (`utils/geolocation.ts`, the map screen) is `expo-location`'s
+  `geocodeAsync`, which uses the **device's own geocoder** — no Google API
+- No Places or autocomplete anywhere
+- No direct `maps.googleapis.com` calls
+- Maps SDK for iOS is not needed (Apple Maps, above)
+
+**The key fails silently if restricted wrongly.** An Android app restriction
+needs package `com.lauriesloveapp` **and the SHA-1 of the app-signing
+certificate from Play Console** (Setup → App integrity) — *not* the upload
+key's, because Play re-signs. For testing, an unrestricted key or one limited
+only to Maps SDK for Android is simplest; tighten it before launch. **Billing
+must be enabled** on the Cloud project or it serves no tiles at all.
+
+### No Play service account JSON
+
+Not among the keys the other dev company sent. Optional — without it, upload
+the `.aab` by hand: Play Console → Internal testing → Create release → drop the
+file. To automate later: Play Console → Setup → API access → service account.
+
+### Once the key arrives
+
+1. Put it in `AndroidManifest.xml` (`com.google.android.geo.API_KEY`) — and in
+   `ios/LauriesLove/Info.plist` `GMSApiKey` for tidiness, though iOS does not
+   use it
+2. `npx eas-cli build --platform android --profile testflight`
+3. Upload the `.aab` to Play internal testing
+4. Add testers, send the opt-in link
+
+### Testers cannot use their real accounts
+
+The beta talks to the **staging** Supabase database; the live app talks to the
+old AWS/Cognito backend. Live credentials do not exist in staging. The 2,219
+migrated members exist there as profiles but **cannot sign in** — Cognito
+passwords cannot be migrated, and password reset needs SMTP, still
+outstanding. **Testers should create a fresh account** — signup works, and
+email confirmation is off on staging — or use the demo account.
