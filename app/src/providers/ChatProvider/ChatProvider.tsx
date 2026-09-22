@@ -208,7 +208,22 @@ const ChatProvider: FunctionComponent<ChatProviderProps> = ({
           getMyConversations(userDB?.id),
           fetchSupabaseFriends(),
         ]);
-        const channels = [...conversations, ...groups];
+        // Merged by ACTIVITY, not concatenated. These are two queries —
+        // message threads and community groups — and simply appending one to
+        // the other pinned every group below every conversation however
+        // recent it was, so a group you had just created sat at the very
+        // bottom of the inbox. Ordering getMyConversations fixed the threads
+        // half; this fixes the list they are shown in.
+        //
+        // Both shapes already carry lastMessage.createdAt and createdAt in
+        // milliseconds (conversationToChannel, groupToChannel), and a group
+        // with no messages reports its own creation time, so one comparison
+        // covers both.
+        const activityOf = (c: any) =>
+          c?.lastMessage?.createdAt ?? c?.createdAt ?? 0;
+        const channels = [...conversations, ...groups].sort(
+          (a: any, b: any) => activityOf(b) - activityOf(a),
+        );
         const memberMap = channels.reduce<Record<string, UserSendBirdType>>(
           (acc: any, channel: any) => {
             (channel.members || []).forEach((m: any) => {

@@ -1,5 +1,3 @@
-import * as Sentry from 'services/sentry.shim';
-
 const DEFAULT_SENTRY_SETTINGS = {
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
   // Was __DEV__, which made Sentry log every transport tick and every session
@@ -7,21 +5,23 @@ const DEFAULT_SENTRY_SETTINGS = {
   // app's own logs and making the console useless for debugging.
   debug: false,
   environment: __DEV__ ? 'development' : 'production',
-  tracesSampleRate: 1.0,
+  // These were ALL at 1.0, which meant a release build recorded a session
+  // replay of every session: mobile replay screenshots the UI continuously and
+  // masks every text, image and vector as it goes. It cost nothing while there
+  // was no DSN, because none of it ran — but the DSN was set on 21 Sept to
+  // diagnose the startup crash, and the app immediately felt laggy to scroll.
+  //
+  // What a review build actually needs is crashes and errors, which are
+  // unsampled and free. Tracing is kept at a fifth for a sense of slow calls.
+  // Replay and profiling are OFF: replaysOnErrorSampleRate is not the cheap
+  // option it looks like, because buffering an on-error replay means recording
+  // continuously in case an error arrives.
+  tracesSampleRate: 0.2,
   _experiments: {
-    profilesSampleRate: 1.0,
-    // Session replay screenshots every frame in development and tells you
-    // about each one. Keep it for release, off while developing.
-    replaysSessionSampleRate: __DEV__ ? 0 : 1.0,
-    replaysOnErrorSampleRate: __DEV__ ? 0 : 1.0,
+    profilesSampleRate: 0,
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 0,
   },
-  integrations: [
-    Sentry.mobileReplayIntegration({
-      maskAllText: true,
-      maskAllImages: true,
-      maskAllVectors: true,
-    }),
-  ],
 };
 
 export const appConfig = {
