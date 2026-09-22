@@ -22,9 +22,31 @@ export const captureMessage = (msg?: string): void => {
   if (typeof msg === 'string') Sentry.captureMessage(msg);
 };
 
-// Only initialize when a DSN is present — an empty/missing DSN leaves the SDK
-// uninitialized (no native calls, no reporting) instead of erroring.
+/**
+ * Reporting is OFF unless EXPO_PUBLIC_SENTRY_ENABLED is exactly "true".
+ *
+ * A single switch, deliberately separate from the DSN, so the DSN can stay
+ * configured while reporting is off — and so moving to the client's own Sentry
+ * account later is a DSN change and nothing else.
+ *
+ * It is an EXPO_PUBLIC_* value, which means it is inlined when the JavaScript
+ * is bundled — so it can be flipped by an over-the-air update in about a
+ * minute, without a build or an App Store review. Change it in eas.json
+ * (build."staging-env".env) and run:
+ *
+ *     node scripts/ota-update.mjs testflight "Turn crash reporting on"
+ *
+ * Turned off on 22 Sept at Jeremy's request, once the performance cost was
+ * traced to Sentry's session replay. Worth knowing what it costs: while this
+ * is off, a crash from a board member arrives as the words "it crashed", and
+ * the only way back to a real stack trace is a device .ips file — which is how
+ * the startup crash consumed a night before reporting existed.
+ */
+export const isEnabled = (): boolean =>
+  process.env.EXPO_PUBLIC_SENTRY_ENABLED === 'true';
+
 export const init = (settings?: { dsn?: string } & Record<string, unknown>): void => {
+  if (!isEnabled()) return;
   if (!settings?.dsn) return;
   Sentry.init(settings as Sentry.ReactNativeOptions);
 };

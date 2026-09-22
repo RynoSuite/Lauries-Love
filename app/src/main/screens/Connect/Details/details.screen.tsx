@@ -436,6 +436,16 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                   <Text style={[styles.detailsLabel, { marginBottom: 8 }]}>
                     Posts
                   </Text>
+                  {/* Its own scroll area, bounded, rather than however many
+                      posts the member happens to have pushing the rest of the
+                      profile off the screen. nestedScrollEnabled is what makes
+                      an inner scroll work inside the page's ScrollView on
+                      Android; iOS handles it without. */}
+                  <ScrollView
+                    style={styles.postsScroll}
+                    nestedScrollEnabled
+                    showsVerticalScrollIndicator
+                  >
                   {memberPosts.map(post => {
                     let body = '';
                     try {
@@ -452,8 +462,11 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                           borderTopColor: colors.line,
                         }}
                       >
+                        {/* No numberOfLines: it clamped every post to three
+                            lines, which is what "the posts get cut off"
+                            was. The module scrolls now, so the text can be
+                            whatever length it is. */}
                         <Text
-                          numberOfLines={3}
                           style={[styles.detailsValue, { textAlign: 'left' }]}
                         >
                           {body}
@@ -468,6 +481,7 @@ const DetailsScreen: FunctionComponent<DetailsScreenProps> = ({
                       </View>
                     );
                   })}
+                  </ScrollView>
                 </View>
               )}
             </View>

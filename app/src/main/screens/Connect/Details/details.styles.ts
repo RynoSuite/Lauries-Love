@@ -108,7 +108,21 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderRadius: 20,
-    borderColor: '#DFDFDF',
+    // Was a hardcoded #DFDFDF: a near-white outline on the near-black ground,
+    // which is the highest-contrast edge in the palette and shouted louder
+    // than the content inside it. A card should be read as a raised surface,
+    // not as an outline, so the fill does the separating and the border is a
+    // hairline that only defines the corner radius.
+    //
+    // It also could not work in light mode — a white border on a white card is
+    // invisible — whereas both tokens flip with the theme.
+    borderColor: colors.line,
+    backgroundColor: colors.surface,
+  },
+  // Bounded so a prolific member does not push the rest of the profile away.
+  // ~5 posts visible; the rest scroll.
+  postsScroll: {
+    maxHeight: 280,
   },
   detailsRow: {
     flexDirection: 'row',

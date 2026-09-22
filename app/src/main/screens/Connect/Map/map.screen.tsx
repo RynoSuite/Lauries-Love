@@ -479,6 +479,7 @@ export default function MapScreen() {
   }
 
   function handleCurrentLocation() {
+    clearFocusRequest();
     if (currentLocation) {
       leafletRef.current?.flyTo(currentLocation.latitude, currentLocation.longitude, zoomForDelta(currentLocation.longitudeDelta));
       setIsCurrentLocation(true);
@@ -584,8 +585,27 @@ export default function MapScreen() {
       target.longitude,
       zoomForDelta(target.longitudeDelta),
     );
-    pendingFocus.current = null;
+    // Deliberately NOT cleared here.
+    //
+    // It used to be, and "View on map" still landed on the wide default view.
+    // Applying once assumes the fly-to is the last word on the camera, and it
+    // is not: the request and the WebView being ready race, onReady can fire
+    // again if the page reloads underneath us, and the map is re-centred from
+    // several places. Whichever of those wins, clearing on the first apply
+    // means there is nothing left to re-apply and the member is lost.
+    //
+    // So the request outlives the apply and is re-applied whenever the map
+    // becomes ready. It is cleared by clearFocusRequest() the moment the
+    // member does anything with the map themselves — see below — so it can
+    // never drag them back to a pin they have panned away from.
     return true;
+  }, []);
+
+  // The member has taken control of the map, so stop re-applying the focus
+  // that brought them here. Called from every deliberate camera action: tapping
+  // the map, tapping a pin, the current-location button, and search.
+  const clearFocusRequest = useCallback(() => {
+    pendingFocus.current = null;
   }, []);
 
   // Opened from a member's profile. This cannot live in the mount effect:
@@ -713,10 +733,16 @@ export default function MapScreen() {
             pushMarkersToMap();
             applyPendingFocus();
           }}
-          onMarkerPress={handleLeafletMarkerPress}
+          onMarkerPress={id => {
+            clearFocusRequest();
+            handleLeafletMarkerPress(id);
+          }}
           // Restores what the native map's onPress did: tapping away from a
           // pin dismisses the member card. Without it the card had no way out.
-          onMapPress={() => setUser(null)}
+          onMapPress={() => {
+            clearFocusRequest();
+            setUser(null);
+          }}
           onRegionChange={handleLeafletRegionChange}
         />
         <SafeAreaView style={styles.safeAreaTop}>
