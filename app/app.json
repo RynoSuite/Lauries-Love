@@ -64,7 +64,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "versionCode": 154,
+      "versionCode": 1000,
       "package": "com.lauriesloveapp",
       "googleServicesFile": "./google-services.json",
       "permissions": [
