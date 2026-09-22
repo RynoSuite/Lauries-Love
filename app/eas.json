@@ -43,7 +43,8 @@
       "android": {
         "buildType": "app-bundle"
       },
-      "extends": "staging-env"
+      "extends": "staging-env",
+      "channel": "testflight"
     },
     "diagnose": {
       "distribution": "internal",
@@ -53,7 +54,8 @@
       "android": {
         "buildType": "apk"
       },
-      "extends": "staging-env"
+      "extends": "staging-env",
+      "channel": "diagnose"
     },
     "staging-env": {
       "node": "22.11.0",

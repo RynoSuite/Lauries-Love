@@ -179,6 +179,9 @@
       }
     },
     "owner": "lauries-love",
-    "backgroundColor": "#051A1D"
+    "backgroundColor": "#051A1D",
+    "updates": {
+      "url": "https://u.expo.dev/101ddcd9-0197-48d7-800b-84b3bcc67bb2"
+    }
   }
 }
