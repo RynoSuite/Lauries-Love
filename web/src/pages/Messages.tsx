@@ -23,6 +23,7 @@ type Conversation = {
   name: string | null;
   last_message_body: string | null;
   last_message_at: string | null;
+  created_at: string;
   members: {
     profile: {
       id: string;
@@ -91,11 +92,19 @@ async function fetchConversations(): Promise<Conversation[]> {
   const { data } = await supabase
     .from('conversations')
     .select(
-      'id, is_group, group_id, name, last_message_body, last_message_at, members:conversation_members(profile:profiles(id, display_name, first_name, avatar_path))',
+      'id, is_group, group_id, name, last_message_body, last_message_at, created_at, members:conversation_members(profile:profiles(id, display_name, first_name, avatar_path))',
     )
-    .in('id', ids)
-    .order('last_message_at', { ascending: false, nullsFirst: false });
-  return (data ?? []) as unknown as Conversation[];
+    .in('id', ids);
+  // Ordered by ACTIVITY: the last message if there is one, otherwise when the
+  // conversation was created. last_message_at is NULL until the first message
+  // (the bump trigger sets it), so ordering on it alone with nulls last put
+  // every newly created group at the bottom of the list. The mobile inbox had
+  // the identical bug and is fixed the same way, in supabase.chat.ts.
+  const activityOf = (c: Conversation) =>
+    new Date(c.last_message_at ?? c.created_at).getTime();
+  return ((data ?? []) as unknown as Conversation[]).sort(
+    (a, b) => activityOf(b) - activityOf(a),
+  );
 }
 
 function othersOf(c: Conversation, meId: string | null) {

@@ -167,6 +167,22 @@ export async function getMyConversations(meIdHint?: string) {
     if (r.profile?.id) profileById[r.profile.id] = r.profile;
   });
 
+  // Order by ACTIVITY, not by last message. last_message_at is only set by the
+  // bump trigger when a message is inserted, so a conversation nobody has
+  // written in yet has it NULL — and the query's nullsFirst:false put every
+  // newly created group at the BOTTOM of the inbox, the one place you would
+  // never look for something you had just made. Creating a conversation is
+  // activity, so it counts from created_at until its first message.
+  //
+  // Deliberately not fixed with a column default: this file reads
+  // last_message_at as "there is a message to preview" (below), so defaulting
+  // it would give every empty group a blank preview and a timestamp.
+  const activityOf = (c: any) =>
+    new Date(c.last_message_at ?? c.created_at).getTime();
+  const ordered = [...(convs ?? [])].sort(
+    (a, b) => activityOf(b) - activityOf(a),
+  );
+
   // Last message is DENORMALIZED onto conversations (maintained by the bump
   // trigger) — correct per-conversation, no global newest-N heuristic.
   const lastByConv: Record<string, any> = {};
@@ -182,7 +198,7 @@ export async function getMyConversations(meIdHint?: string) {
     }
   });
 
-  return (convs ?? []).map(c =>
+  return ordered.map(c =>
     conversationToChannel(
       unreadByConv[c.id] ?? 0,
       c,
