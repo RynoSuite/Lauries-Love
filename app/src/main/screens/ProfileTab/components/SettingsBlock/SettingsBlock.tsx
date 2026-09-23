@@ -53,22 +53,70 @@ function versionLine(): string {
   return `v${version} (${build}) · ${running}`;
 }
 
+/**
+ * Why an update has not arrived.
+ *
+ * Build 162 reported "embedded" after several updates had been published, so
+ * expo-updates is running — the native module answered — but is either not
+ * fetching or failing to. A silent failure is the one thing that cannot be
+ * diagnosed from a laptop, so the app asks on its own and shows the answer.
+ *
+ * checkForUpdateAsync() reaches u.expo.dev with this build's channel and
+ * runtime version, which is exactly the request that is not landing.
+ */
+function useUpdateCheck(): string {
+  const [state, setState] = React.useState('checking…');
+
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const channel = Updates.channel ?? 'none';
+        const runtime = Updates.runtimeVersion ?? '?';
+        const res = await Updates.checkForUpdateAsync();
+        if (cancelled) return;
+        setState(
+          res.isAvailable
+            ? `${channel}/${runtime}: update available`
+            : `${channel}/${runtime}: none offered`,
+        );
+      } catch (error: any) {
+        if (cancelled) return;
+        // The message is the point — "not configured", a network error and a
+        // signature failure are three different problems that look identical
+        // from outside.
+        setState(`error: ${String(error?.message ?? error).slice(0, 60)}`);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return state;
+}
+
 const SettingsBlock: FunctionComponent<SettingsBlockProps> = ({
   setSelectTypeModal,
-}) => (
-  <View style={styles.container}>
-    <Text style={styles.title}>Settings</Text>
-    {LIST_BUTTONS_SETTINGS_BLOCK.map((item, index) => (
-      <ButtonModalTabs
-        key={index}
-        Icon={item.Icon}
-        label={item.title}
-        onPress={() => setSelectTypeModal(item.type)}
-        tone={item.type === 'deleteAccount' ? 'danger' : 'default'}
-      />
-    ))}
-    <Text style={styles.versionLine}>{versionLine()}</Text>
-  </View>
-);
+}) => {
+  const updateState = useUpdateCheck();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Settings</Text>
+      {LIST_BUTTONS_SETTINGS_BLOCK.map((item, index) => (
+        <ButtonModalTabs
+          key={index}
+          Icon={item.Icon}
+          label={item.title}
+          onPress={() => setSelectTypeModal(item.type)}
+          tone={item.type === 'deleteAccount' ? 'danger' : 'default'}
+        />
+      ))}
+      <Text style={styles.versionLine}>{versionLine()}</Text>
+      <Text style={styles.versionLine}>{updateState}</Text>
+    </View>
+  );
+};
 
 export default React.memo(SettingsBlock);
