@@ -119,3 +119,88 @@ revoke execute on function public.users_in_bbox_points(
 -- idx_profiles_geo on (latitude, longitude) where active already covers the
 -- bbox predicate exactly: same columns, same partial condition, fewer columns
 -- selected. The filters run against the rows that survive it.
+
+
+-- ============================================================
+-- One marker per state when zoomed out
+-- ============================================================
+-- What the board asked for, and what the map could not do: zoomed out it drew
+-- a handful of grid-cell centroids, which is why "185" sat over Mexico and
+-- "313" over the Gulf of Mexico — a cell spanning half a continent averages to
+-- the middle of nowhere. Clustering by geometry cannot answer "how many
+-- members are in Georgia".
+--
+-- Aggregating by state answers it exactly, and cheaply: ~50 rows instead of
+-- 3,979, so the zoomed-out view stops moving thousands of coordinates it only
+-- ever collapses into bubbles. The position is the average of that state's own
+-- members, so a marker always lands among the people it counts.
+--
+-- Same filters as users_in_bbox_points, for the same reason: a count is only
+-- honest if it is counted after filtering and before any limit.
+create or replace function public.members_by_state(
+  min_lat double precision,
+  min_lng double precision,
+  max_lat double precision,
+  max_lng double precision,
+  p_roles            text[] default null,
+  p_ages             text[] default null,
+  p_genders          text[] default null,
+  p_diagnosis_types  text[] default null,
+  p_diagnosis_years  text[] default null,
+  p_countries        text[] default null,
+  p_city             text   default null
+)
+returns table (
+  label text,
+  member_count bigint,
+  latitude double precision,
+  longitude double precision
+)
+language sql stable security invoker set search_path = public as $$
+  select
+    -- Members outside the US have no state, so they group by country rather
+    -- than collapsing into one meaningless "no state" pile.
+    coalesce(nullif(trim(p.state), ''), nullif(trim(p.country), ''), 'Unknown') as label,
+    count(*) as member_count,
+    avg(p.latitude)  as latitude,
+    avg(p.longitude) as longitude
+  from public.profiles p
+  where p.active
+    and p.latitude  between min_lat and max_lat
+    and p.longitude between min_lng and max_lng
+
+    and (p_roles is null or cardinality(p_roles) = 0 or p.role_id in (
+      select v.id from public.value_definitions v
+      where v.definition_type = 'USER_ROLE' and v.description = any(p_roles)
+    ))
+    and (p_ages is null or cardinality(p_ages) = 0
+         or p.age_range = any(p_ages))
+    and (p_genders is null or cardinality(p_genders) = 0
+         or p.gender = any(p_genders))
+    and (p_diagnosis_types is null or cardinality(p_diagnosis_types) = 0
+         or p.diagnosis_type_ids && array(
+              select v.id from public.value_definitions v
+              where v.definition_type = 'DIAGNOSIS_TYPE'
+                and v.description = any(p_diagnosis_types)
+            ))
+    and (p_diagnosis_years is null or cardinality(p_diagnosis_years) = 0
+         or p.diagnosis_year = any(p_diagnosis_years))
+    and (p_countries is null or cardinality(p_countries) = 0
+         or lower(p.country) = any(select lower(c) from unnest(p_countries) c))
+    and (p_city is null or p_city = ''
+         or p.city ilike '%' || p_city || '%')
+
+  group by 1
+  -- No limit: this is one row per state, and there are fifty of them.
+  order by 2 desc;
+$$;
+
+grant execute on function public.members_by_state(
+  double precision, double precision, double precision, double precision,
+  text[], text[], text[], text[], text[], text[], text
+) to authenticated;
+
+revoke execute on function public.members_by_state(
+  double precision, double precision, double precision, double precision,
+  text[], text[], text[], text[], text[], text[], text
+) from anon, public;
