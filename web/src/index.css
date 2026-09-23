@@ -216,6 +216,29 @@ h5 {
   background: rgb(var(--c-surface) / 0.85) !important;
   color: rgb(var(--c-faint));
 }
+
+/* The member count sitting inside a state bubble.
+   A Leaflet tooltip, not a label, because a tooltip can be anchored to the
+   centre of a marker — but it arrives as a little bordered box, so all of that
+   chrome is stripped and only the number is left. White regardless of theme:
+   it sits on the magenta fill, not on the map. */
+.leaflet-tooltip.ll-count {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  line-height: 1;
+  /* The number is decoration on the marker; clicks belong to the marker. */
+  pointer-events: none;
+  white-space: nowrap;
+}
+.leaflet-tooltip.ll-count::before {
+  display: none;
+}
 .leaflet-control-attribution a {
   color: rgb(var(--c-magenta-text));
 }

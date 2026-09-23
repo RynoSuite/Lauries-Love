@@ -50,6 +50,21 @@ const MARKERS = {
 // is the honest shape here: you are filtering the people you can see, and the
 // viewport is already the primary filter.
 
+// PostgREST returns at most 1000 rows per request, whatever a function's own
+// limit says — verified against staging, where a country-wide box reports
+// "content-range: 0-999/3971". So above this many members in view, ANY list of
+// individuals is a truncated sample, and the map has to aggregate instead.
+// That is not a workaround: it is also what the board asked for.
+const POINT_LIMIT = 1000;
+
+// One row per state, counted in the database.
+type StateBubble = {
+  label: string;
+  member_count: number;
+  latitude: number;
+  longitude: number;
+};
+
 type Marker = {
   id: string;
   display_name: string | null;
@@ -87,32 +102,102 @@ async function fetchDefinitions(): Promise<Definition[]> {
   return (data ?? []) as Definition[];
 }
 
-function ViewportLoader({ onData }: { onData: (m: Marker[]) => void }) {
+export type ViewportResult = {
+  markers: Marker[];
+  states: StateBubble[];
+  total: number;
+  mode: 'members' | 'states';
+};
+
+/**
+ * Decides what the map can honestly draw for the current viewport, and loads it.
+ *
+ * It used to ask users_in_bbox for 500 profiles and draw those. With 3,979
+ * members carrying coordinates, a country-wide box returned an arbitrary 500 —
+ * arbitrary meaning disk order — so whole states had no pins at all, the count
+ * read "500 of 500" because it was reporting the cap back to itself, and the
+ * filters ran over that truncated sample.
+ *
+ * So the count comes first, aggregated in the database, and it decides:
+ *
+ *   more than POINT_LIMIT in view -> one bubble per state, counted exactly.
+ *     Individual markers are not merely slow here, they are impossible: 1000
+ *     rows is all PostgREST will return.
+ *
+ *   at or below           -> every member in view fits in one response, so
+ *     individuals are drawn and filtering them client-side is finally correct,
+ *     because the set is complete rather than a sample.
+ *
+ * The threshold is a fact about the transport, not a guessed zoom level, so
+ * the map cannot silently start lying again as the community grows.
+ */
+function ViewportLoader({
+  filterArgs,
+  onResult,
+}: {
+  filterArgs: Record<string, unknown>;
+  onResult: (r: ViewportResult) => void;
+}) {
   const load = useCallback(
     async (b: L.LatLngBounds) => {
-      const { data } = await supabase.rpc('users_in_bbox', {
+      const box = {
         min_lat: b.getSouth(),
         min_lng: b.getWest(),
         max_lat: b.getNorth(),
         max_lng: b.getEast(),
-        max_rows: 500,
+      };
+
+      // Unfiltered on purpose: this asks "could individuals be drawn at all",
+      // which is a property of the viewport, not of the filters. Deciding on
+      // the filtered count would flip the map between bubbles and pins as
+      // filters change, which reads as a glitch.
+      const { data: allStates } = await supabase.rpc('members_by_state', box);
+      const total = (allStates ?? []).reduce(
+        (n: number, r: StateBubble) => n + Number(r.member_count),
+        0,
+      );
+
+      if (total > POINT_LIMIT) {
+        const { data: filtered } = await supabase.rpc('members_by_state', {
+          ...box,
+          ...filterArgs,
+        });
+        onResult({
+          markers: [],
+          states: (filtered ?? []) as StateBubble[],
+          total,
+          mode: 'states',
+        });
+        return;
+      }
+
+      const { data } = await supabase.rpc('users_in_bbox', {
+        ...box,
+        max_rows: POINT_LIMIT,
       });
-      onData(
-        ((data ?? []) as Marker[]).filter(
+      onResult({
+        markers: ((data ?? []) as Marker[]).filter(
           (u) => u.latitude != null && u.longitude != null,
         ),
-      );
+        states: [],
+        total,
+        mode: 'members',
+      });
     },
-    [onData],
+    [filterArgs, onResult],
   );
 
   const map = useMapEvents({
     moveend: () => load(map.getBounds()),
   });
-  useState(() => {
+
+  // Reload when the filters change too: in bubble mode the counts themselves
+  // are filtered server-side, so a filter change is a data change, not just a
+  // different subset of what is already held.
+  useEffect(() => {
     load(map.getBounds());
-    return null;
-  });
+  }, [load, map]);
+
   return null;
 }
 
@@ -210,8 +295,18 @@ export function MapPage() {
   const { isEnabled } = useFeatureFlags();
   const { mode } = useColorMode();
   const [markers, setMarkers] = useState<Marker[]>([]);
+  const [states, setStates] = useState<StateBubble[]>([]);
+  const [viewTotal, setViewTotal] = useState(0);
+  const [mapMode, setMapMode] = useState<'members' | 'states'>('members');
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [located, setLocated] = useState<boolean | null>(null);
+
+  const handleViewport = useCallback((r: ViewportResult) => {
+    setMarkers(r.markers);
+    setStates(r.states);
+    setViewTotal(r.total);
+    setMapMode(r.mode);
+  }, []);
 
   const { data: defs } = useQuery({
     queryKey: ['value-definitions'],
@@ -279,6 +374,29 @@ export function MapPage() {
 
   const activeCount = Object.values(filters).filter(Boolean).length;
 
+  // The aggregate filters on DESCRIPTIONS, because that is what the mobile
+  // app's filter modal holds and one function serves both. This page selects
+  // by definition id, so it translates on the way out.
+  const filterArgs = useMemo(() => {
+    const describe = (id: string) =>
+      (defs ?? []).find((d) => d.id === id)?.description;
+    const one = (v?: string) => (v ? [v] : null);
+    return {
+      p_roles: filters.role ? one(describe(filters.role)) : null,
+      p_diagnosis_types: filters.diagnosis ? one(describe(filters.diagnosis)) : null,
+      p_genders: one(filters.gender),
+      p_ages: one(filters.ageRange),
+    };
+  }, [filters, defs]);
+
+  // In bubble mode the counts are already filtered in the database, so the
+  // total shown is the sum of what is drawn. In member mode the whole viewport
+  // fits in one response, so the filtered count is simply what survives.
+  const shownCount =
+    mapMode === 'states'
+      ? states.reduce((n, s) => n + Number(s.member_count), 0)
+      : visible.length;
+
   if (!isEnabled('community_map'))
     return <p className="text-muted">The community map is turned off.</p>;
 
@@ -344,9 +462,15 @@ export function MapPage() {
               {' · '}
             </>
           )}
-          Showing <span className="font-semibold text-heading">{visible.length}</span> of{' '}
-          <span className="font-semibold text-heading">{markers.length}</span> member
-          {markers.length === 1 ? '' : 's'} in view
+          {/* Was "{visible.length} of {markers.length}", which at wide zoom
+              read "500 of 500" — the cap reporting itself back. Both numbers
+              are now counted in the database over the whole viewport. */}
+          Showing <span className="font-semibold text-heading">{shownCount}</span> of{' '}
+          <span className="font-semibold text-heading">{viewTotal}</span> member
+          {viewTotal === 1 ? '' : 's'} in view
+          {mapMode === 'states' && (
+            <span className="text-faint"> · grouped by state — zoom in for individuals</span>
+          )}
         </span>
         {activeCount > 0 && (
           <button
@@ -384,7 +508,7 @@ export function MapPage() {
           ) : (
             <LocateOnFirstLoad onResolved={setLocated} />
           )}
-          <ViewportLoader onData={setMarkers} />
+          <ViewportLoader filterArgs={filterArgs} onResult={handleViewport} />
           {/* The member you asked to see, drawn OUTSIDE the cluster group with
               a permanent label. Centring alone was not an answer: on a map of
               two thousand pins, "somewhere in this cluster" still does not
@@ -418,6 +542,36 @@ export function MapPage() {
               </Popup>
             </CircleMarker>
           )}
+          {/* Zoomed out: one bubble per state, counted in the database, placed
+              at the average of that state's own members so it always lands
+              among the people it counts. The old grid clustering averaged a
+              cell instead, which is how "185" ended up over Mexico and "313"
+              over the Gulf. Sized by count so the shape of the community reads
+              at a glance, and clamped so a big state cannot swallow the map. */}
+          {mapMode === 'states' &&
+            states.map((s) => (
+              <CircleMarker
+                key={s.label}
+                center={[s.latitude, s.longitude]}
+                radius={Math.max(14, Math.min(34, 12 + Math.sqrt(Number(s.member_count)) * 1.6))}
+                pathOptions={MARKERS[mode].member}
+                eventHandlers={{
+                  click: (e) => e.target._map.flyTo([s.latitude, s.longitude], 7),
+                }}
+              >
+                <Tooltip permanent direction="center" className="ll-count">
+                  {s.member_count}
+                </Tooltip>
+                <Popup>
+                  <div className="font-semibold text-heading">{s.label}</div>
+                  <div className="text-xs text-muted">
+                    {s.member_count} member{Number(s.member_count) === 1 ? '' : 's'}
+                  </div>
+                  <div className="text-xs text-faint">Zoom in to see them individually</div>
+                </Popup>
+              </CircleMarker>
+            ))}
+
           <MarkerClusterGroup chunkedLoading showCoverageOnHover={false}>
             {visible.map((m) => (
               <CircleMarker
