@@ -91,7 +91,14 @@ const ForgotPasswordScreen: FunctionComponent = () => {
   const onPasswordChange = async () => {
     const newErrorMessages = {
       ...DEFAULT_ERROR_MESSAGES,
-      code: data.code.length === 6 ? null : 'Code must be 6 characters',
+      // NOT a fixed 6. Supabase issues 6-10 digits depending on project
+      // settings and this project is on 8, so a hardcoded length rejected
+      // every real code. Supabase answers a wrong-length code with "token has
+      // expired or is invalid", which sends people hunting an expiry problem
+      // that was never there.
+      code: /^\d{6,10}$/.test(data.code.trim())
+        ? null
+        : 'Enter the code from the email exactly as it appears',
       newPassword: isPasswordValid(data.newPassword)
         ? null
         : 'Password must contain at least 8 characters, 1 letter, 1 number, and 1 special character',
@@ -185,7 +192,7 @@ const ForgotPasswordScreen: FunctionComponent = () => {
                 <Text style={styles.subtitle}>
                   {step === 'email'
                     ? 'Enter the email address you used for creating your account and we’ll send you link to reset your password.'
-                    : `Please enter 6 digit code sent to ${data.email} to update password`}
+                    : `Please enter the code sent to ${data.email} to update password`}
                 </Text>
               </View>
               <View style={styles.body}>
@@ -210,7 +217,10 @@ const ForgotPasswordScreen: FunctionComponent = () => {
                         placeholder={'Code'}
                         errorMessage={errorMessages.code}
                         keyboardType={'number-pad'}
-                        maxLength={6}
+                        // 10, not 6: this project's codes are 8 digits, and a
+                        // limit of 6 meant the field silently stopped accepting
+                        // input halfway through the code.
+                        maxLength={10}
                       />
                       <Text style={styles.resendCodeText}>
                         Didn't receive the code?{' '}

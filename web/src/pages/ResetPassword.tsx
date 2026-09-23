@@ -10,9 +10,12 @@ import { AuthLayout } from '../components/AuthLayout';
 //     recovery token out of the URL fragment on load and emits
 //     PASSWORD_RECOVERY, so a session already exists and we only ask for the
 //     new password.
-//   · Code  — the member has the 6-digit {{ .Token }} instead. This is the flow
-//     the mobile app uses (sbConfirmPasswordReset), and it also covers the very
-//     common case of requesting on a laptop but opening mail on a phone.
+//   · Code  — the member has the {{ .Token }} from the email instead. This is
+//     the flow the mobile app uses (sbConfirmPasswordReset), and it also covers
+//     the common case of requesting on a laptop but opening mail on a phone.
+//
+// The two are the SAME single-use token, so using one cancels the other. The
+// email says as much, because trying both looks like an expiry bug.
 //
 // Supabase enforces its own password policy server-side; the length check here
 // is only so the member gets told before a round trip.
@@ -51,6 +54,11 @@ export function ResetPassword() {
     if (password.length < MIN_LENGTH)
       return `Password must be at least ${MIN_LENGTH} characters.`;
     if (password !== confirm) return 'The two passwords do not match.';
+    // Checked here, on the code path only, so a mistyped or truncated code is
+    // caught before the round trip. Supabase answers a wrong-length code with
+    // "token has expired or is invalid", which is true but misleading.
+    if (!hasRecoverySession && !/^\d{6,10}$/.test(code.trim()))
+      return 'Enter the code from the email exactly as it appears.';
     return null;
   }
 
@@ -64,7 +72,7 @@ export function ResetPassword() {
     setBusy(true);
     setError(null);
     try {
-      // Code path: exchange the 6-digit token for a session first. Same call
+      // Code path: exchange the emailed token for a session first. Same call
       // the mobile app makes, so one email template serves both surfaces.
       if (!hasRecoverySession) {
         const { error: otpErr } = await supabase.auth.verifyOtp({
@@ -107,7 +115,7 @@ export function ResetPassword() {
             {!hasRecoverySession && (
               <>
                 <p className="mb-4 text-sm leading-relaxed text-muted">
-                  Enter the email on your account and the 6-digit code we sent
+                  Enter the email on your account and the code we sent
                   you.
                 </p>
                 <label className="mb-1 block text-sm font-medium text-heading">
@@ -122,13 +130,19 @@ export function ResetPassword() {
                   className={inputClass}
                 />
                 <label className="mb-1 block text-sm font-medium text-heading">
-                  6-digit code
+                  Code from the email
                 </label>
+                {/* maxLength is 10, NOT 6. Supabase issues 6-10 digits
+                    depending on project settings and this project is on 8, so
+                    a fixed 6 silently truncated the code as it was typed.
+                    Supabase then rejected the short code as invalid, which
+                    surfaces as "token has expired or is invalid" — sending
+                    people to hunt an expiry problem that was never there. */}
                 <input
                   inputMode="numeric"
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                  maxLength={6}
+                  maxLength={10}
                   required
                   autoComplete="one-time-code"
                   className={inputClass + ' tracking-[0.4em]'}
