@@ -740,8 +740,6 @@ export default function MapScreen() {
   // Marker data crosses to the page over postMessage rather than as React
   // children: rebuilding the page on every change would throw away the pan and
   // zoom the member had set.
-  // Which member the map is singling out: whoever's card is open.
-  const selectedId = user?.id;
 
   const pushMarkersToMap = useCallback(() => {
     // Zoomed out: one bubble per state, counted in the database, instead of a
@@ -772,11 +770,20 @@ export default function MapScreen() {
       // The name comes from `user` rather than the point, because a point is
       // only an id and a coordinate — and `user` is exactly the member being
       // singled out.
-      focus: u.id === selectedId,
-      label: u.id === selectedId ? user?.firstName || 'This member' : undefined,
+      // Deliberately the member arrived at from a profile, NOT whoever was
+      // last tapped.
+      //
+      // Highlighting the tapped pin meant every tap changed this list, and
+      // setMarkers rebuilds the cluster group from scratch — so tapping a dot
+      // inside a cluster collapsed the cluster, and you had to expand it again
+      // for each member. Singling out a pin is only meaningful when you asked
+      // to see a specific person; once tapped, their card is open and says who
+      // they are.
+      focus: u.id === focusUserId,
+      label: u.id === focusUserId ? user?.firstName || 'This member' : undefined,
     }));
     leafletRef.current?.setMarkers(list);
-  }, [points, selectedId, user?.firstName, showStates, statesData]);
+  }, [points, focusUserId, user?.firstName, showStates, statesData]);
 
   // Keep the page in step as the viewport fetch returns new people.
   useEffect(() => {

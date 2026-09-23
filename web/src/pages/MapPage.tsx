@@ -138,6 +138,11 @@ function ViewportLoader({
   filterArgs: Record<string, unknown>;
   onResult: (r: ViewportResult) => void;
 }) {
+  // The last box actually fetched, rounded. Opening a popup auto-pans the map
+  // by a few pixels, which fires moveend — without this, every tap on a member
+  // re-queried the database for a viewport that had barely moved.
+  const lastBox = useRef<string>('');
+
   const load = useCallback(
     async (b: L.LatLngBounds) => {
       const box = {
@@ -146,6 +151,16 @@ function ViewportLoader({
         max_lat: b.getNorth(),
         max_lng: b.getEast(),
       };
+
+      // Two decimals is about a kilometre, and coordinates are already
+      // coarsened to roughly that before they leave the database — so a
+      // movement smaller than this cannot change the answer.
+      const key =
+        [box.min_lat, box.min_lng, box.max_lat, box.max_lng]
+          .map(n => n.toFixed(2))
+          .join(',') + JSON.stringify(filterArgs);
+      if (key === lastBox.current) return;
+      lastBox.current = key;
 
       // Unfiltered on purpose: this asks "could individuals be drawn at all",
       // which is a property of the viewport, not of the filters. Deciding on
@@ -301,9 +316,27 @@ export function MapPage() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [located, setLocated] = useState<boolean | null>(null);
 
+  // Keeps the SAME array when the data has not actually changed.
+  //
+  // Opening a member's popup auto-pans the map to fit it, which fires moveend,
+  // which reloads the viewport. If that handed React a fresh array every time,
+  // MarkerClusterGroup would rebuild from nothing and collapse the cluster the
+  // member had just expanded — so tapping a dot inside a cluster closed the
+  // cluster, and they had to expand it again for every single member.
+  //
+  // Identity is what matters to the cluster group, not contents, so an
+  // equivalent result must return the previous array unchanged.
   const handleViewport = useCallback((r: ViewportResult) => {
-    setMarkers(r.markers);
-    setStates(r.states);
+    const sameIds = (a: { id: string }[], b: { id: string }[]) =>
+      a.length === b.length && a.every((x, i) => x.id === b[i].id);
+    const sameStates = (a: StateBubble[], b: StateBubble[]) =>
+      a.length === b.length &&
+      a.every(
+        (x, i) => x.label === b[i].label && x.member_count === b[i].member_count,
+      );
+
+    setMarkers(prev => (sameIds(prev, r.markers) ? prev : r.markers));
+    setStates(prev => (sameStates(prev, r.states) ? prev : r.states));
     setViewTotal(r.total);
     setMapMode(r.mode);
   }, []);
