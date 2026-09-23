@@ -44,6 +44,7 @@ import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
 import {
   useGetUsersInRegionReq,
   useGetUserPointsInRegionReq,
+  useGetMembersByStateReq,
 } from 'presentation/services/react-query/user.query';
 // For fetching one profile when a tapped pin is not in the capped profile set.
 import { makeAxiosHttpClient } from 'main/factories/http';
@@ -285,6 +286,39 @@ export default function MapScreen() {
     region ?? initialRegion ?? null,
     pointFilters,
   );
+
+  // Members in view grouped by state: what the map draws when zoomed out, and
+  // the only honest count of what is out there.
+  //
+  // Filtered, so the numbers on the bubbles mean what they say. Fetched
+  // unfiltered as well, below, because whether individual pins are possible is
+  // a property of the viewport rather than of the filters — deciding on the
+  // filtered count would flip the map between bubbles and pins as filters
+  // change, which reads as a glitch.
+  const { data: statesData } = useGetMembersByStateReq(
+    region ?? initialRegion ?? null,
+    pointFilters,
+  );
+  const { data: statesUnfiltered } = useGetMembersByStateReq(
+    region ?? initialRegion ?? null,
+  );
+
+  // PostgREST returns at most 1000 rows per request whatever a function's own
+  // limit says — verified on staging as "content-range: 0-999/3971". So above
+  // this, individual markers are not slow, they are impossible, and the map
+  // has to aggregate. Which is also what the board asked for.
+  const POINT_LIMIT = 1000;
+  const totalInView = useMemo(
+    () =>
+      (statesUnfiltered ?? []).reduce(
+        (n, s) => n + Number(s.member_count || 0),
+        0,
+      ),
+    [statesUnfiltered],
+  );
+  // Until the aggregate has answered, behave as before rather than flashing
+  // bubbles over a map that is about to show pins.
+  const showStates = totalInView > POINT_LIMIT;
 
   // Rebuild fix (P1 perf): removed `countRender` state — it incremented on
   // every isShowMarkers flip, forcing an extra full re-render of the map and
@@ -710,6 +744,22 @@ export default function MapScreen() {
   const selectedId = user?.id;
 
   const pushMarkersToMap = useCallback(() => {
+    // Zoomed out: one bubble per state, counted in the database, instead of a
+    // cloud of pins the transport cannot even deliver.
+    if (showStates) {
+      leafletRef.current?.setMarkers(
+        (statesData ?? [])
+          .filter(s => s.latitude != null && s.longitude != null)
+          .map(s => ({
+            id: s.label,
+            latitude: Number(s.latitude),
+            longitude: Number(s.longitude),
+            count: Number(s.member_count),
+          })),
+      );
+      return;
+    }
+
     const list = points.map(u => ({
       id: u.id,
       latitude: u.geoLocation.latitude,
@@ -726,7 +776,7 @@ export default function MapScreen() {
       label: u.id === selectedId ? user?.firstName || 'This member' : undefined,
     }));
     leafletRef.current?.setMarkers(list);
-  }, [points, selectedId, user?.firstName]);
+  }, [points, selectedId, user?.firstName, showStates, statesData]);
 
   // Keep the page in step as the viewport fetch returns new people.
   useEffect(() => {
@@ -780,8 +830,9 @@ export default function MapScreen() {
       viewRegion?.longitudeDelta ?? initialRegion.longitudeDelta ?? 50;
     // Clustered from the points, so the counts describe every member in view
     // rather than the arbitrary 500 that used to arrive.
+    if (showStates) return [];
     return buildClusters(points as any, lngDelta);
-  }, [points, viewRegion?.longitudeDelta, initialRegion.longitudeDelta]);
+  }, [points, showStates, viewRegion?.longitudeDelta, initialRegion.longitudeDelta]);
 
   // Tap a count bubble -> zoom into that cell (roughly 1/3 the current span),
   // which re-clusters at the finer granularity. The existing users_in_bbox
@@ -829,6 +880,12 @@ export default function MapScreen() {
           onMarkerPress={id => {
             clearFocusRequest();
             handleLeafletMarkerPress(id);
+          }}
+          // A state bubble is a count, not a person: tapping it zooms into that
+          // state, which is where the individual members become drawable.
+          onCountPress={({ latitude, longitude }) => {
+            clearFocusRequest();
+            leafletRef.current?.flyTo(latitude, longitude, zoomForDelta(6));
           }}
           // Restores what the native map's onPress did: tapping away from a
           // pin dismisses the member card. Without it the card had no way out.

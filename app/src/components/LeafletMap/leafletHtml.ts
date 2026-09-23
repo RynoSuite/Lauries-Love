@@ -97,6 +97,21 @@ export const leafletHtml = `<!doctype html>
     box-shadow: 0 4px 12px rgba(0,0,0,0.45);
   }
   .ll-tip.leaflet-tooltip-top:before { border-top-color: ${colors.surface2}; }
+  /* A state, with how many members are in it. Drawn instead of individual pins
+     when the viewport holds more members than can be fetched at all, which is
+     also what reads best zoomed out: "how many are in Georgia" rather than a
+     cloud of dots. Sized by count, so the shape of the community is visible
+     before any number is read. */
+  .ll-count-bubble {
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: ${colors.magenta};
+    border: 2px solid ${colors.magentaText};
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 0 0 4px ${colors.magenta}40;
+  }
 </style>
 </head>
 <body>
@@ -127,14 +142,45 @@ export const leafletHtml = `<!doctype html>
   // swallow it, which defeats the point of singling someone out.
   var focusMarker = null;
 
+  // State bubbles live outside the cluster group too — they are already an
+  // aggregate, and clustering an aggregate would count the same people twice.
+  var countMarkers = [];
+
   function setMarkers(list) {
     cluster.clearLayers();
     if (focusMarker) {
       map.removeLayer(focusMarker);
       focusMarker = null;
     }
+    countMarkers.forEach(function (m) { map.removeLayer(m); });
+    countMarkers = [];
     (list || []).forEach(function (m) {
       if (m.latitude == null || m.longitude == null) return;
+
+      // A state bubble: a count rather than a person. Same sizing as the web
+      // map so the two read alike.
+      if (m.count) {
+        var r = Math.max(14, Math.min(34, 12 + Math.sqrt(m.count) * 1.6));
+        var size = Math.round(r * 2);
+        var bubble = L.marker([m.latitude, m.longitude], {
+          icon: L.divIcon({
+            className: '',
+            html:
+              '<div class="ll-count-bubble" style="width:' + size + 'px;height:' + size + 'px">' +
+              m.count +
+              '</div>',
+            iconSize: [size, size],
+          }),
+          zIndexOffset: 500,
+        });
+        bubble.on('click', function () {
+          send({ type: 'countPress', id: m.id, latitude: m.latitude, longitude: m.longitude });
+        });
+        bubble.addTo(map);
+        countMarkers.push(bubble);
+        return;
+      }
+
       var isFocus = !!m.focus;
       var icon = L.divIcon({
         className: '',

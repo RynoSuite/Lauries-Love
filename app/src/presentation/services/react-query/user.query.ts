@@ -11,8 +11,10 @@ import { UserModel } from 'domain/models';
 import { RequestKeys } from './queries.model';
 import {
   getUserPointsInBbox,
+  getMembersByState,
   type MapPoint,
   type MapPointFilters,
+  type StateBubble,
 } from 'services/supabase/supabase.map';
 
 type Variables = Partial<User>;
@@ -28,6 +30,45 @@ type Variables = Partial<User>;
  * The filters are part of the query key, so changing one refetches rather than
  * filtering a set that was already truncated.
  */
+/**
+ * Members in view, grouped by state.
+ *
+ * Always fetched, because it is ~50 rows and it answers two questions at once:
+ * what to draw when zoomed out, and — by its total — whether drawing
+ * individuals is possible at all. PostgREST caps every response at 1000 rows,
+ * so above that a list of members is a sample rather than the truth.
+ */
+export const useGetMembersByStateReq = (
+  region: {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  } | null,
+  filters: MapPointFilters = {},
+) => {
+  const bbox = region
+    ? {
+        minLat: +(region.latitude - region.latitudeDelta * 0.625).toFixed(2),
+        maxLat: +(region.latitude + region.latitudeDelta * 0.625).toFixed(2),
+        minLng: +(region.longitude - region.longitudeDelta * 0.625).toFixed(2),
+        maxLng: +(region.longitude + region.longitudeDelta * 0.625).toFixed(2),
+      }
+    : null;
+
+  return useQuery<StateBubble[]>({
+    queryKey: [RequestKeys.userList, 'states', bbox, filters],
+    enabled: !!bbox,
+    queryFn: () => getMembersByState(bbox!, filters),
+    placeholderData: prev => prev,
+    staleTime: 5 * 60 * 1000,
+    throwOnError: err => {
+      console.error(err?.message);
+      return false;
+    },
+  });
+};
+
 export const useGetUserPointsInRegionReq = (
   region: {
     latitude: number;

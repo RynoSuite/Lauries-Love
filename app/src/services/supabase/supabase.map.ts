@@ -38,6 +38,48 @@ export type MapPointFilters = {
 // the function treats both the same, but null says what is meant.
 const orNull = (xs?: string[]) => (xs && xs.length ? xs : null);
 
+/** One row per state, counted in the database. */
+export type StateBubble = {
+  label: string;
+  member_count: number;
+  latitude: number;
+  longitude: number;
+};
+
+/**
+ * How many members are in view, by state.
+ *
+ * Cheap — about fifty rows — and exact, which individual markers cannot be:
+ * PostgREST returns at most 1000 rows per request whatever a function's own
+ * limit says (verified as "content-range: 0-999/3971"). So above that, a list
+ * of members is necessarily a sample, and only an aggregate can answer "how
+ * many members are in Georgia".
+ *
+ * Each bubble sits at the average of its own state's members, so it always
+ * lands among the people it counts — unlike grid clustering, which averaged a
+ * cell and put "185" over Mexico.
+ */
+export async function getMembersByState(
+  bbox: { minLat: number; minLng: number; maxLat: number; maxLng: number },
+  filters: MapPointFilters = {},
+): Promise<StateBubble[]> {
+  const { data, error } = await supabase.rpc('members_by_state', {
+    min_lat: bbox.minLat,
+    min_lng: bbox.minLng,
+    max_lat: bbox.maxLat,
+    max_lng: bbox.maxLng,
+    p_roles: orNull(filters.roles),
+    p_ages: orNull(filters.ages),
+    p_genders: orNull(filters.genders),
+    p_diagnosis_types: orNull(filters.diagnosisTypes),
+    p_diagnosis_years: orNull(filters.diagnosisYears),
+    p_countries: orNull(filters.countries),
+    p_city: filters.city && filters.city.trim() ? filters.city.trim() : null,
+  });
+  if (error) throw error;
+  return (data ?? []) as StateBubble[];
+}
+
 export async function getUserPointsInBbox(
   bbox: { minLat: number; minLng: number; maxLat: number; maxLng: number },
   filters: MapPointFilters = {},

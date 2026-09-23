@@ -18,6 +18,12 @@ export type LeafletMarker = {
   focus?: boolean;
   /** The name shown on the focused pin's permanent label. */
   label?: string;
+  /**
+   * Present when this is a STATE rather than a member: the number of members
+   * it stands for. Drawn as a sized bubble with the count in it, outside the
+   * cluster group — clustering an aggregate would count the same people twice.
+   */
+  count?: number;
 };
 
 export type LeafletBounds = {
@@ -35,6 +41,8 @@ export type LeafletMapHandle = {
 type Props = {
   style?: StyleProp<ViewStyle>;
   onMarkerPress?: (id: string) => void;
+  /** A state bubble was tapped: zoom to it rather than open a member. */
+  onCountPress?: (p: { id: string; latitude: number; longitude: number }) => void;
   onRegionChange?: (bounds: LeafletBounds, zoom: number) => void;
   /** A tap on the basemap, not on a pin. */
   onMapPress?: () => void;
@@ -55,7 +63,7 @@ type Props = {
  * would throw away the user's pan and zoom every time a marker moved.
  */
 const LeafletMap = forwardRef<LeafletMapHandle, Props>(function LeafletMap(
-  { style, onMarkerPress, onRegionChange, onMapPress, onReady },
+  { style, onMarkerPress, onCountPress, onRegionChange, onMapPress, onReady },
   ref,
 ) {
   const webRef = useRef<WebView>(null);
@@ -82,11 +90,13 @@ const LeafletMap = forwardRef<LeafletMapHandle, Props>(function LeafletMap(
         return;
       }
       if (msg.type === 'markerPress') onMarkerPress?.(msg.id);
+      if (msg.type === 'countPress')
+        onCountPress?.({ id: msg.id, latitude: msg.latitude, longitude: msg.longitude });
       if (msg.type === 'regionChange') onRegionChange?.(msg.bounds, msg.zoom);
       if (msg.type === 'mapPress') onMapPress?.();
       if (msg.type === 'ready') onReady?.();
     },
-    [onMarkerPress, onRegionChange, onMapPress, onReady],
+    [onMarkerPress, onCountPress, onRegionChange, onMapPress, onReady],
   );
 
   return (
