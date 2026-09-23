@@ -41,7 +41,14 @@ import UserCard from '../components/UserCard/UserCard';
 import InfoModal from '../components/InfoModal/InfoModal';
 import FiltersModal from '../components/FiltersModal/FiltersModal';
 import { useUserDBProvider } from 'providers/UserDBProvider/UserDBProvider';
-import { useGetUsersInRegionReq } from 'presentation/services/react-query/user.query';
+import {
+  useGetUsersInRegionReq,
+  useGetUserPointsInRegionReq,
+} from 'presentation/services/react-query/user.query';
+// For fetching one profile when a tapped pin is not in the capped profile set.
+import { makeAxiosHttpClient } from 'main/factories/http';
+import { appConfig } from 'main/config/app.config';
+import { captureException } from 'services/sentry.shim';
 import { useCountry } from 'presentation/hooks';
 import {
   IconBars3,
@@ -243,6 +250,42 @@ export default function MapScreen() {
   const { data: usersData } = useGetUsersInRegionReq(
     region ?? initialRegion ?? null,
   );
+
+  // The dots. A separate query from the one above, and the one the map is
+  // actually drawn from.
+  //
+  // useGetUsersInRegionReq returns whole profiles and is capped at 1000 rows
+  // in the database with no ORDER BY, while the screen asks for 500. With
+  // 3,979 members carrying coordinates, a country-wide viewport returned an
+  // arbitrary 500 of them, so whole states had no pins until you zoomed in far
+  // enough for the locals to fit under the cap. Raising the cap is not the
+  // answer: 3,979 whole profiles is 1.81 MB against 315 KB of points.
+  //
+  // The filters go with it. Filtering in memory could only ever filter the
+  // truncated 500, so a filtered map was wrong twice over — this filters
+  // before the limit, in the database.
+  //
+  // Whole profiles are still fetched above: they drive the loading state and
+  // give the member card an instant answer for any pin already in that set.
+  const pointFilters = useMemo(
+    () => ({
+      roles: designation.map(d => d.id),
+      ages: age.map(a => a.id),
+      genders: gender.map(g => g.id),
+      diagnosisTypes: diagnosisType.map(d => d.id),
+      diagnosisYears: diagnosisYear.map(d => d.id),
+      // Both, because the column holds both "US" and "United States".
+      countries: country.flatMap(c => [c.id, c.label].filter(Boolean)),
+      city,
+    }),
+    [designation, age, gender, diagnosisType, diagnosisYear, country, city],
+  );
+
+  const { data: pointsData } = useGetUserPointsInRegionReq(
+    region ?? initialRegion ?? null,
+    pointFilters,
+  );
+
   // Rebuild fix (P1 perf): removed `countRender` state — it incremented on
   // every isShowMarkers flip, forcing an extra full re-render of the map and
   // all markers, and was never read anywhere.
@@ -413,6 +456,37 @@ export default function MapScreen() {
     country,
     city,
   ]);
+
+  // What the map is drawn from: every member in view, filtered in the database.
+  //
+  // Falls back to `friends` — the capped, in-memory-filtered set this screen
+  // used to draw — whenever the points query has nothing. That covers the
+  // first render, a transient network failure, AND the case where
+  // users_in_bbox_points has not been created yet, because the migration is
+  // applied by hand. Without that fallback, shipping this ahead of the
+  // migration would leave the map with no pins at all, which is worse than the
+  // bug it fixes. Once the function exists, the map upgrades itself.
+  const points = useMemo(() => {
+    if (pointsData && pointsData.length) {
+      return pointsData
+        .filter(p => p.latitude != null && p.longitude != null)
+        .map(p => ({
+          id: p.id,
+          geoLocation: { latitude: p.latitude, longitude: p.longitude },
+        }));
+    }
+    return (friends ?? [])
+      .filter(
+        u => u.geoLocation?.latitude != null && u.geoLocation?.longitude != null,
+      )
+      .map(u => ({
+        id: u.id,
+        geoLocation: {
+          latitude: u.geoLocation!.latitude,
+          longitude: u.geoLocation!.longitude,
+        },
+      }));
+  }, [pointsData, friends]);
 
   function countFilters() {
     let count = 0;
@@ -636,24 +710,23 @@ export default function MapScreen() {
   const selectedId = user?.id;
 
   const pushMarkersToMap = useCallback(() => {
-    const list = (friends ?? [])
-      .filter(u => u.geoLocation?.latitude != null && u.geoLocation?.longitude != null)
-      .map(u => ({
-        id: u.id,
-        latitude: u.geoLocation!.latitude,
-        longitude: u.geoLocation!.longitude,
-        // The selected member — arrived at from their profile, or tapped — is
-        // singled out and named. Centring on their area is not an answer on a
-        // map this dense: "somewhere in this cluster" still does not say which
-        // pin is them.
-        focus: u.id === selectedId,
-        label:
-          u.id === selectedId
-            ? u.firstName || 'This member'
-            : undefined,
-      }));
+    const list = points.map(u => ({
+      id: u.id,
+      latitude: u.geoLocation.latitude,
+      longitude: u.geoLocation.longitude,
+      // The selected member — arrived at from their profile, or tapped — is
+      // singled out and named. Centring on their area is not an answer on a
+      // map this dense: "somewhere in this cluster" still does not say which
+      // pin is them.
+      //
+      // The name comes from `user` rather than the point, because a point is
+      // only an id and a coordinate — and `user` is exactly the member being
+      // singled out.
+      focus: u.id === selectedId,
+      label: u.id === selectedId ? user?.firstName || 'This member' : undefined,
+    }));
     leafletRef.current?.setMarkers(list);
-  }, [friends, selectedId]);
+  }, [points, selectedId, user?.firstName]);
 
   // Keep the page in step as the viewport fetch returns new people.
   useEffect(() => {
@@ -661,9 +734,27 @@ export default function MapScreen() {
   }, [pushMarkersToMap]);
 
   const handleLeafletMarkerPress = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      // Fast path: the profile query above may already hold this member, in
+      // which case the card opens with no round trip.
       const match = (friends ?? []).find(u => u.id === id);
-      if (match) setUser(match);
+      if (match) {
+        setUser(match);
+        return;
+      }
+      // Otherwise fetch the one profile. Pins now come from a points query
+      // that returns every member in view, so most of them are NOT in that
+      // capped set — before this, tapping such a pin did nothing at all.
+      try {
+        const res = await makeAxiosHttpClient().request({
+          method: 'get',
+          url: `${appConfig.apiUrl}/users/getUserInfoByCognitoId/${id}`,
+        });
+        const profile = (res as any)?.body;
+        if (profile?.id) setUser(profile);
+      } catch (error) {
+        captureException(error);
+      }
     },
     [friends],
   );
@@ -687,8 +778,10 @@ export default function MapScreen() {
   const clusters = useMemo(() => {
     const lngDelta =
       viewRegion?.longitudeDelta ?? initialRegion.longitudeDelta ?? 50;
-    return buildClusters(friends ?? [], lngDelta);
-  }, [friends, viewRegion?.longitudeDelta, initialRegion.longitudeDelta]);
+    // Clustered from the points, so the counts describe every member in view
+    // rather than the arbitrary 500 that used to arrive.
+    return buildClusters(points as any, lngDelta);
+  }, [points, viewRegion?.longitudeDelta, initialRegion.longitudeDelta]);
 
   // Tap a count bubble -> zoom into that cell (roughly 1/3 the current span),
   // which re-clusters at the finer granularity. The existing users_in_bbox

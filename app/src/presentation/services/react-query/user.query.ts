@@ -9,8 +9,57 @@ import { UserModel } from 'domain/models';
 // import { selectCurrentUser } from 'presentation/store/selectors/user.selector';
 
 import { RequestKeys } from './queries.model';
+import {
+  getUserPointsInBbox,
+  type MapPoint,
+  type MapPointFilters,
+} from 'services/supabase/supabase.map';
 
 type Variables = Partial<User>;
+
+/**
+ * The map's dots, filtered in the database.
+ *
+ * Separate from useGetUsersInRegionReq, which returns whole profiles and is
+ * capped at 1000 rows — that cap is why most of the country was missing at
+ * default zoom, and why raising it is not the answer: 3,979 whole profiles is
+ * 1.81 MB against 315 KB of points. See supabase.map.ts.
+ *
+ * The filters are part of the query key, so changing one refetches rather than
+ * filtering a set that was already truncated.
+ */
+export const useGetUserPointsInRegionReq = (
+  region: {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  } | null,
+  filters: MapPointFilters = {},
+) => {
+  // Same 25% padding as the profile query, so dots exist just off-screen while
+  // panning, and the same 2dp rounding so small drags reuse the cached box.
+  const bbox = region
+    ? {
+        minLat: +(region.latitude - region.latitudeDelta * 0.625).toFixed(2),
+        maxLat: +(region.latitude + region.latitudeDelta * 0.625).toFixed(2),
+        minLng: +(region.longitude - region.longitudeDelta * 0.625).toFixed(2),
+        maxLng: +(region.longitude + region.longitudeDelta * 0.625).toFixed(2),
+      }
+    : null;
+
+  return useQuery<MapPoint[]>({
+    queryKey: [RequestKeys.userList, 'points', bbox, filters],
+    enabled: !!bbox,
+    queryFn: () => getUserPointsInBbox(bbox!, filters),
+    placeholderData: prev => prev, // keep the dots while the next box loads
+    staleTime: 5 * 60 * 1000,
+    throwOnError: err => {
+      console.error(err?.message);
+      return false;
+    },
+  });
+};
 
 // export function useUpdateUser() {
 //   const dispatch = useAppDispatch();
