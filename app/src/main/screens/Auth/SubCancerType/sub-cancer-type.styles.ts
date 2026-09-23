@@ -63,8 +63,13 @@ export const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.line,
+    borderWidth: 1.5,
+    // An unchecked box has to be obviously tappable. This was colors.line at
+    // 1px - a hairline DIVIDER token, #1E3B3E, on the #051A1D ground - which
+    // is invisible, so the boxes at the end of registration looked like they
+    // were not there. A control needs a body and an edge, not a hairline.
+    borderColor: colors.muted,
+    backgroundColor: colors.surface2,
   },
   selectedCheckbox: {
     backgroundColor: colors.magenta,
