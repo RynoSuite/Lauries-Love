@@ -19,7 +19,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.laurieslove.staging",
-      "buildNumber": "164",
+      "buildNumber": "165",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "LSApplicationQueriesSchemes": [
